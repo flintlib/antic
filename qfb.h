@@ -136,9 +136,9 @@ long qfb_reduced_forms(qfb ** forms, long d);
 
 long qfb_reduced_forms_large(qfb ** forms, long d);
 
-void qfb_nucomp(qfb_t r, qfb_t f, qfb_t g, fmpz_t L);
+void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t L);
 
-void qfb_nudupl(qfb_t r, qfb_t f, fmpz_t L);
+void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t L);
 
 void qfb_pow_ui(qfb_t r, qfb_t f, fmpz_t D, ulong exp);
 

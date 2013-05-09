@@ -32,7 +32,7 @@
 #include "fmpz.h"
 #include "qfb.h"
 
-void qfb_nudupl(qfb_t r, qfb_t f, fmpz_t L)
+void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t L)
 {
    fmpz_t G, dx, dy, 
       Ax, Bx, By, Dy, x, y, 
