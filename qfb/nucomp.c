@@ -444,9 +444,9 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t L)
    fmpz_set(r->c, cc);
 
    fmpz_clear(ca); fmpz_clear(cb); fmpz_clear(cc); 
-   fmpz_clear(k); fmpz_init(m); 
+   fmpz_clear(k); fmpz_clear(m); 
    fmpz_clear(s); fmpz_clear(sp); fmpz_clear(ss); 
-   fmpz_clear(t); fmpz_init(u2); fmpz_init(v1); fmpz_init(v2);
+   fmpz_clear(t); fmpz_clear(u2); fmpz_clear(v1); fmpz_clear(v2);
    fmpz_clear(a1); fmpz_clear(a2); fmpz_clear(c2);
    fmpz_clear(n);
 }
