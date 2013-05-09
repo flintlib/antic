@@ -81,7 +81,7 @@ int main(void)
         qfb_principal_form(t, D);
         for (j = 0; j < exp; j++)
         {
-           qfb_nucomp(t, t, r, L);
+           qfb_nucomp(t, t, r, D, L);
            qfb_reduce(t, t, D);
         }
 

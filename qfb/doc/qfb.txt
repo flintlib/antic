@@ -144,7 +144,7 @@ long qfb_reduced_forms_large(qfb ** forms, long d)
     automatically by \code{qfb_reduced_forms} for large \code{|d|} so that 
     \code{flint_primes} is not exhausted.
 
-void qfb_nucomp(qfb_t r, qfb_t f, qfb_t g, fmpz_t L)
+void qfb_nucomp(qfb_t r, qfb_t f, qfb_t g, fmpz_t D, fmpz_t L)
     
     Shanks' NUCOMP as described in~\citep{JacvdP}
 
@@ -157,7 +157,7 @@ void qfb_nucomp(qfb_t r, qfb_t f, qfb_t g, fmpz_t L)
 
     We require that that $f$ is a primitive form.
 
-void qfb_nudupl(qfb_t r, qfb_t f, fmpz_t L)
+void qfb_nudupl(qfb_t r, qfb_t f, fmpz_t D, fmpz_t L)
    
     As for \code{nucomp} except that the form $f$ is composed with itself.
     We require that that $f$ is a primitive form.

@@ -62,7 +62,7 @@ void qfb_pow(qfb_t r, qfb_t f, fmpz_t D, fmpz_t e)
    qfb_set(pow, f);
    while (fmpz_is_even(exp))
    {
-      qfb_nudupl(pow, pow, L);
+      qfb_nudupl(pow, pow, D, L);
       qfb_reduce(pow, pow, D);
       fmpz_fdiv_q_2exp(exp, exp, 1);
    }
@@ -72,11 +72,11 @@ void qfb_pow(qfb_t r, qfb_t f, fmpz_t D, fmpz_t e)
    
    while (!fmpz_is_zero(exp))
    {
-      qfb_nudupl(pow, pow, L);
+      qfb_nudupl(pow, pow, D, L);
       qfb_reduce(pow, pow, D);
       if (fmpz_is_odd(exp))
       {
-         qfb_nucomp(r, r, pow, L);
+         qfb_nucomp(r, r, pow, D, L);
          qfb_reduce(r, r, D);
       }
       fmpz_fdiv_q_2exp(exp, exp, 1);
@@ -113,7 +113,7 @@ void qfb_pow_with_root(qfb_t r, qfb_t f, fmpz_t D, fmpz_t e, fmpz_t L)
    qfb_set(pow, f);
    while (fmpz_is_even(exp))
    {
-      qfb_nudupl(pow, pow, L);
+      qfb_nudupl(pow, pow, D, L);
       qfb_reduce(pow, pow, D);
       fmpz_fdiv_q_2exp(exp, exp, 1);
    }
@@ -123,11 +123,11 @@ void qfb_pow_with_root(qfb_t r, qfb_t f, fmpz_t D, fmpz_t e, fmpz_t L)
    
    while (!fmpz_is_zero(exp))
    {
-      qfb_nudupl(pow, pow, L);
+      qfb_nudupl(pow, pow, D, L);
       qfb_reduce(pow, pow, D);
       if (fmpz_is_odd(exp))
       {
-         qfb_nucomp(r, r, pow, L);
+         qfb_nucomp(r, r, pow, D, L);
          qfb_reduce(r, r, D);
       }
       fmpz_fdiv_q_2exp(exp, exp, 1);

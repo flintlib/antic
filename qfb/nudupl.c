@@ -145,10 +145,8 @@
    fmpz_clear(Q1);
 }*/
 
-void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t L)
+void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t D, fmpz_t L)
 {
-   fmpz_t n;
-
    fmpz_t a1, b1, c1, ca, cb, cc, k, s, t, u2, v1, v2;
 
    fmpz_init(a1); fmpz_init(b1); fmpz_init(c1);
@@ -156,14 +154,7 @@ void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t L)
    fmpz_init(k);
    fmpz_init(s); 
    fmpz_init(t); fmpz_init(u2); fmpz_init(v1); fmpz_init(v2); 
-   fmpz_init(n);
-
-   /* compute n = b^2 - 4ac */
-   fmpz_mul(n, f->b, f->b);
-   fmpz_mul(t, f->a, f->c);
-   fmpz_mul_2exp(t, t, 2);
-   fmpz_sub(n, n, t);
-
+   
    /* nucomp calculation */
 
    fmpz_set(a1, f->a);
@@ -243,7 +234,7 @@ void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t L)
       fmpz_fdiv_r(cb, cb, temp);
       
       fmpz_mul(cc, cb, cb);
-      fmpz_sub(cc, cc, n);
+      fmpz_sub(cc, cc, D);
       fmpz_fdiv_q(cc, cc, ca);
       fmpz_fdiv_q_2exp(cc, cc, 2);
 
@@ -266,5 +257,4 @@ void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t L)
    fmpz_clear(s); 
    fmpz_clear(t); fmpz_clear(u2); fmpz_clear(v2);
    fmpz_clear(a1); fmpz_clear(b1); fmpz_clear(c1);
-   fmpz_clear(n);
 }

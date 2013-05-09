@@ -74,7 +74,7 @@ int main(void)
 
               while (!qfb_is_principal_form(pow, D))
               {
-                 qfb_nucomp(pow, pow, forms + i1, root);
+                 qfb_nucomp(pow, pow, forms + i1, D, root);
                  qfb_reduce(pow, pow, D);
                  fmpz_add_ui(exp1, exp1, 1);
               }

@@ -58,7 +58,7 @@ void qfb_pow_ui(qfb_t r, qfb_t f, fmpz_t D, ulong exp)
    qfb_set(pow, f);
    while ((exp & 1) == 0)
    {
-      qfb_nudupl(pow, pow, L);
+      qfb_nudupl(pow, pow, D, L);
       qfb_reduce(pow, pow, D);
       exp >>= 1;
    }
@@ -68,11 +68,11 @@ void qfb_pow_ui(qfb_t r, qfb_t f, fmpz_t D, ulong exp)
 
    while (exp)
    {
-      qfb_nudupl(pow, pow, L);
+      qfb_nudupl(pow, pow, D, L);
       qfb_reduce(pow, pow, D);
       if (exp & 1)
       {
-         qfb_nucomp(r, r, pow, L);
+         qfb_nucomp(r, r, pow, D, L);
          qfb_reduce(r, r, D);
       }
       exp >>= 1;

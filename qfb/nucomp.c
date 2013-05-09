@@ -307,15 +307,13 @@ void fmpz_xgcd_partial(fmpz_t co2, fmpz_t co1, fmpz_t r2, fmpz_t r1, fmpz_t L)
    Pell Equation", Michael Jacobson and High Williams, CMS Books in 
    Mathematics, Springer 2009.
 */
-void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t L)
+void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
 {
-   fmpz_t n;
-
    fmpz_t a1, a2, c2, ca, cb, cc, k, s, sp, ss, m, t, u2, v1, v2;
 
    if (fmpz_cmp(f->a, g->a) > 0)
    {
-      qfb_nucomp(r, g, f, L);
+      qfb_nucomp(r, g, f, D, L);
       return;
    }
 
@@ -324,14 +322,7 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t L)
    fmpz_init(k); fmpz_init(m); 
    fmpz_init(s); fmpz_init(sp); fmpz_init(ss); 
    fmpz_init(t); fmpz_init(u2); fmpz_init(v1); fmpz_init(v2); 
-   fmpz_init(n);
-
-   /* compute n = b^2 - 4ac */
-   fmpz_mul(n, f->b, f->b);
-   fmpz_mul(t, f->a, f->c);
-   fmpz_mul_2exp(t, t, 2);
-   fmpz_sub(n, n, t);
-
+   
    /* nucomp calculation */
 
    fmpz_set(a1, f->a);
@@ -425,7 +416,7 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t L)
       fmpz_fdiv_r(cb, cb, temp);
       
       fmpz_mul(cc, cb, cb);
-      fmpz_sub(cc, cc, n);
+      fmpz_sub(cc, cc, D);
       fmpz_fdiv_q(cc, cc, ca);
       fmpz_fdiv_q_2exp(cc, cc, 2);
 
@@ -448,5 +439,4 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t L)
    fmpz_clear(s); fmpz_clear(sp); fmpz_clear(ss); 
    fmpz_clear(t); fmpz_clear(u2); fmpz_clear(v1); fmpz_clear(v2);
    fmpz_clear(a1); fmpz_clear(a2); fmpz_clear(c2);
-   fmpz_clear(n);
 }

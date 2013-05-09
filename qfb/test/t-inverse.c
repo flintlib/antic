@@ -69,7 +69,7 @@ int main(void)
         qfb_inverse(s, r);
         fmpz_abs(L, D);
         fmpz_root(L, L, 4);
-        qfb_nucomp(t, r, s, L);
+        qfb_nucomp(t, r, s, D, L);
         qfb_reduce(t, t, D);
         
         result = (qfb_is_principal_form(t, D));

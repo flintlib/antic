@@ -66,23 +66,23 @@ ulong qfb_exponent_element_stage2(qfb_t f, fmpz_t n, ulong B2)
    qfb_init(pow2);
    qfb_hash_insert(qhash, f, NULL, 1, depth);
 
-   qfb_nucomp(f2, f, f, L); /* large primes are odd */
+   qfb_nucomp(f2, f, f, n, L); /* large primes are odd */
    qfb_reduce(f2, f2, n);
 
    qfb_set(pow, f);
    
    for (i = 1; i < iters - 1; i += 2) /* baby steps */
    {
-      qfb_nucomp(pow, pow, f2, L);
+      qfb_nucomp(pow, pow, f2, n, L);
       qfb_reduce(pow, pow, n);
 
       qfb_hash_insert(qhash, pow, NULL, i + 2, depth);
    }
 
-   qfb_nucomp(pow, pow, f, L); /* compute f^iters */
+   qfb_nucomp(pow, pow, f, n, L); /* compute f^iters */
    qfb_reduce(pow, pow, n);
 
-   qfb_nucomp(pow, pow, pow, L); /* we hash for a form or its inverse,
+   qfb_nucomp(pow, pow, pow, n, L); /* we hash for a form or its inverse,
                                     so we can jump by f^(2x iters) */
    qfb_reduce(pow, pow, n);
    qfb_set(pow2, pow);
@@ -102,7 +102,7 @@ ulong qfb_exponent_element_stage2(qfb_t f, fmpz_t n, ulong B2)
          break;
       }
 
-      qfb_nucomp(pow2, pow2, pow, L);
+      qfb_nucomp(pow2, pow2, pow, n, L);
       qfb_reduce(pow2, pow2, n);
    }
 

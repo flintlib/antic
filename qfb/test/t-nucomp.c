@@ -65,7 +65,8 @@ int main(void)
               i1 = n_randint(state, num);
               i2 = n_randint(state, num);
 
-              qfb_nucomp(r, forms + i1, forms + i2, root);
+              fmpz_set_si(D, -i);
+              qfb_nucomp(r, forms + i1, forms + i2, D, root);
 
               qfb_discriminant(D, r);
               result = (fmpz_cmp_si(D, -i) == 0);
@@ -113,16 +114,16 @@ int main(void)
               i2 = n_randint(state, num);
               i3 = n_randint(state, num);
 
-              qfb_nucomp(r, forms + i1, forms + i2, root);
+              qfb_nucomp(r, forms + i1, forms + i2, D, root);
               qfb_reduce(r, r, D);
 
-              qfb_nucomp(r, r, forms + i3, root);
+              qfb_nucomp(r, r, forms + i3, D, root);
               qfb_reduce(r, r, D);
 
-              qfb_nucomp(s, forms + i2, forms + i3, root);
+              qfb_nucomp(s, forms + i2, forms + i3, D, root);
               qfb_reduce(s, s, D);
 
-              qfb_nucomp(s, forms + i1, s, root);
+              qfb_nucomp(s, forms + i1, s, D, root);
               qfb_reduce(s, s, D);
 
               result = (qfb_equal(r, s));
