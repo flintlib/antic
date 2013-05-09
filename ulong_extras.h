@@ -29,7 +29,7 @@
 #ifndef ULONG_EXTRAS_H
 #define ULONG_EXTRAS_H
 
-#include <mpir.h>
+#include <gmp.h>
 #include "flint.h"
 
 #ifdef __cplusplus
@@ -120,7 +120,7 @@ extern mp_limb_t * flint_primes;
 
 extern double * flint_prime_inverses;
 
-extern mp_limb_t flint_num_primes;
+extern ulong flint_num_primes;
 
 extern mp_limb_t flint_primes_cutoff;
 
@@ -244,6 +244,15 @@ long n_sqrtmodn(mp_limb_t ** sqrt, mp_limb_t a, n_factor_t * fac);
 
 mp_limb_t n_gcd(mp_limb_t x, mp_limb_t y);
 
+static __inline__ mp_limb_t
+n_gcd_full(mp_limb_t x, mp_limb_t y)
+{
+    if (x >= y)
+        return n_gcd(x, y);
+    else
+        return n_gcd(y, x);
+}
+
 mp_limb_t n_xgcd(mp_limb_t * a, mp_limb_t * b, mp_limb_t x, mp_limb_t y);
 
 mp_limb_t n_invmod(mp_limb_t x, mp_limb_t y);
@@ -319,7 +328,7 @@ mp_limb_t n_factor_trial_partial(n_factor_t * factors, mp_limb_t n,
                 mp_limb_t * prod, ulong num_primes, mp_limb_t limit);
 
 mp_limb_t n_factor_trial(n_factor_t * factors, 
-                                  mp_limb_t n, mp_limb_t num_primes);
+                                  mp_limb_t n, ulong num_primes);
 
 mp_limb_t n_factor_partial(n_factor_t * factors, 
                            mp_limb_t n, mp_limb_t limit, int proved);

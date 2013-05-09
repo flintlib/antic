@@ -19,13 +19,21 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2009 William Hart
+    Copyright (C) 2011 Fredrik Johansson
 
 ******************************************************************************/
 
-#include <mpir.h>
+#include <stdlib.h>
 #include "flint.h"
-#include "ulong_extras.h"
-#include "fmpz.h"
+#include "fmpz_poly.h"
+#include "fmpz_poly_mat.h"
 
+void
+fmpz_poly_mat_randtest_unsigned(fmpz_poly_mat_t A, flint_rand_t state, long len, mp_bitcnt_t bits)
+{
+    long i, j;
 
+    for (i = 0; i < A->r; i++)
+        for (j = 0; j < A->c; j++)
+            fmpz_poly_randtest_unsigned(fmpz_poly_mat_entry(A, i, j), state, len, bits);
+}
