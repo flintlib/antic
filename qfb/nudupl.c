@@ -149,9 +149,9 @@ void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t L)
 {
    fmpz_t n;
 
-   fmpz_t a1, c1, ca, cb, cc, k, s, t, u2, v1, v2;
+   fmpz_t a1, b1, c1, ca, cb, cc, k, s, t, u2, v1, v2;
 
-   fmpz_init(a1); fmpz_init(c1);
+   fmpz_init(a1); fmpz_init(b1); fmpz_init(c1);
    fmpz_init(ca); fmpz_init(cb); fmpz_init(cc); 
    fmpz_init(k);
    fmpz_init(s); 
@@ -169,25 +169,30 @@ void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t L)
    fmpz_set(a1, f->a);
    fmpz_set(c1, f->c);
 
-   fmpz_set_ui(v1, 0);
-   
    fmpz_zero(k);
    
-   if (!fmpz_is_one(a1))
+   if (fmpz_cmpabs(b1, a1) == 0)
    {
-      fmpz_xgcd(s, v2, u2, f->b, a1);
-      
-      fmpz_mul(t, v2, c1);
-      fmpz_neg(k, t);
+      fmpz_set(s, a1);
+      fmpz_zero(v2);
+   } else if (fmpz_sgn(f->b) < 0)
+   {
+      fmpz_neg(b1, f->b);
+      fmpz_gcdinv(s, v2, b1, a1);
+      fmpz_neg(v2, v2);
+   } else
+      fmpz_gcdinv(s, v2, f->b, a1);
 
-      if (!fmpz_is_one(s))
-      {
-         fmpz_fdiv_q(a1, a1, s);
-         fmpz_mul(c1, c1, s);
-      }
+   fmpz_mul(t, v2, c1);
+   fmpz_neg(k, t);
 
-      fmpz_fdiv_r(k, k, a1);
+   if (!fmpz_is_one(s))
+   {
+      fmpz_fdiv_q(a1, a1, s);
+      fmpz_mul(c1, c1, s);
    }
+
+   fmpz_fdiv_r(k, k, a1);
 
    if (fmpz_cmp(a1, L) < 0)
    {
@@ -259,7 +264,7 @@ void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t L)
    fmpz_clear(ca); fmpz_clear(cb); fmpz_clear(cc); 
    fmpz_clear(k);  
    fmpz_clear(s); 
-   fmpz_clear(t); fmpz_clear(u2); fmpz_clear(v1); fmpz_clear(v2);
-   fmpz_clear(a1); fmpz_clear(c1);
+   fmpz_clear(t); fmpz_clear(u2); fmpz_clear(v2);
+   fmpz_clear(a1); fmpz_clear(b1); fmpz_clear(c1);
    fmpz_clear(n);
 }

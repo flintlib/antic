@@ -208,6 +208,8 @@ int qfb_exponent(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2, long c);
 
 int qfb_exponent_grh(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2);
 
+void fmpz_xgcd_partial(fmpz_t co2, fmpz_t co1, fmpz_t r2, fmpz_t r1, fmpz_t L);
+
 #ifdef __cplusplus
 }
 #endif
