@@ -167,7 +167,7 @@ int main(void)
                   if (fmpz_sgn(qhash[iters2].q->b) == fmpz_sgn(twopow->b))
                      qfb_inverse(qhash[iters2].q2, qhash[iters2].q2);
 
-                  qfb_nucomp(pow, pow, qhash[iters2].q2, L);
+                  qfb_nucomp(pow, pow, qhash[iters2].q2, n, L);
                   qfb_reduce(pow, pow, n);
 
                   break;
