@@ -33,7 +33,7 @@
 #include "fmpz.h"
 #include "qfb.h"
 
-int qfb_exponent_grh(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2)
+int qfb_exponent_grh(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2_sqrt)
 {
    fmpz_t p, exp, n2;
    mpz_t mn;
@@ -100,7 +100,7 @@ int qfb_exponent_grh(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2)
          if (!fmpz_is_one(exponent))
             qfb_pow(f, f, n2, exponent);
 
-         if (!qfb_exponent_element(exp, f, n2, B1, B2))
+         if (!qfb_exponent_element(exp, f, n2, B1, B2_sqrt))
          {
             ret = 0;
             goto cleanup;

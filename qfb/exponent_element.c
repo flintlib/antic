@@ -48,12 +48,12 @@ ulong find_power(qfb_t f, fmpz_t n, ulong base)
    return s;
 }
 
-ulong qfb_exponent_element_stage2(qfb_t f, fmpz_t n, ulong B2)
+ulong qfb_exponent_element_stage2(qfb_t f, fmpz_t n, ulong B2_sqrt)
 {
    qfb_t pow, pow2, f2;
    fmpz_t L, r;
-   long i, i2, ret = 0, iters = n_sqrt(B2);
-   long depth = FLINT_BIT_COUNT(iters) + 1;
+   long i, i2, ret = 0;
+   long depth = FLINT_BIT_COUNT(B2_sqrt) + 1;
    qfb_hash_t * qhash = qfb_hash_init(depth);
    
    fmpz_init(L);
@@ -71,7 +71,7 @@ ulong qfb_exponent_element_stage2(qfb_t f, fmpz_t n, ulong B2)
 
    qfb_set(pow, f);
    
-   for (i = 1; i < iters - 1; i += 2) /* baby steps */
+   for (i = 1; i < B2_sqrt - 1; i += 2) /* baby steps */
    {
       qfb_nucomp(pow, pow, f2, n, L);
       qfb_reduce(pow, pow, n);
@@ -79,20 +79,20 @@ ulong qfb_exponent_element_stage2(qfb_t f, fmpz_t n, ulong B2)
       qfb_hash_insert(qhash, pow, NULL, i + 2, depth);
    }
 
-   qfb_nucomp(pow, pow, f, n, L); /* compute f^iters */
+   qfb_nucomp(pow, pow, f, n, L); /* compute f^B2_sqrt */
    qfb_reduce(pow, pow, n);
 
    qfb_nucomp(pow, pow, pow, n, L); /* we hash for a form or its inverse,
-                                    so we can jump by f^(2x iters) */
+                                    so we can jump by f^(2x B2_sqrt) */
    qfb_reduce(pow, pow, n);
    qfb_set(pow2, pow);
    
-   for(i = 2; i <= iters; i += 2) /* giant steps */ 
+   for(i = 2; i <= B2_sqrt; i += 2) /* giant steps */ 
    {
       i2 = qfb_hash_find(qhash, pow2, depth);
       if (i2 != -1) /* found collision */
       {
-         fmpz_set_ui(r, iters);
+         fmpz_set_ui(r, B2_sqrt);
          fmpz_mul_ui(r, r, i);
          if (fmpz_sgn(qhash[i2].q->b) == fmpz_sgn(pow2->b))
             fmpz_sub_ui(r, r, qhash[i2].iter);
@@ -140,7 +140,7 @@ typedef struct
       goto do_restart; \
    } while (0)
 
-int qfb_exponent_element(fmpz_t exponent, qfb_t f, fmpz_t n, ulong B1, ulong B2)
+int qfb_exponent_element(fmpz_t exponent, qfb_t f, fmpz_t n, ulong B1, ulong B2_sqrt)
 {
    long i, j, iters = 1024, restart_inc;
    qfb_t pow, oldpow, f2;
@@ -198,7 +198,7 @@ do_restart1:
 
    n_prime_pi_bounds(&lo, &hi, B1);
    restart_inc = (((hi/1024 + 127)/128))*1024;
-   quot = (double) B2/((double) lo * (double) lo);
+   quot = (double) B2_sqrt/(double) lo;
                       
    pr = 2;
    n_primes_jump_after(iter, 2);
@@ -317,7 +317,7 @@ do_restart:
       }
    
       /* stage 2 */
-      s2 = qfb_exponent_element_stage2(pow, n, (ulong) ((double) iters * (double) iters * quot));
+      s2 = qfb_exponent_element_stage2(pow, n, (ulong) ((double) iters * quot));
       if (s2 && n_is_prime(s2)) /* we probably should be more aggressive here */
       {
          fmpz_mul_ui(exponent, exponent, s2);
