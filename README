@@ -1,15 +1,10 @@
-FLINT 2
-=======
+ANT -- Algebraic Number Theory Library
+======================================
 
-FLINT (Fast Library for Number Theory) is a C library in support of computations
-in number theory. It's also a research project into algorithms in number theory.
+ANT is an algebraic number theory extension module for flint2 (see http://flintlib.org).
 
-FLINT 2 is a complete rewrite of the FLINT library from scratch. It includes
-much cleaner code and in many cases much faster algorithms and implementations.
+To install it in flint, clone the repository into a directory on your filesystem, e.g. /home/username/ant
 
-At this stage FLINT consists mainly of fast integer and polynomial 
-arithmetic and linear algebra. In the future it is planned that FLINT will 
-contain algorithms for algebraic number theory and other number theoretic
-functionality.
+Now build flint in the usual way, passing --extensions=/home/username/ant to flint's configure.
 
-William Hart -- 16 Jan 2011.
+William Hart -- 12 May 2013.
