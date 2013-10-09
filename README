@@ -1,10 +1,14 @@
-ANT -- Algebraic Number Theory Library
+ANTIC -- Algebraic Number Theory In C
 ======================================
 
-ANT is an algebraic number theory extension module for flint2 (see http://flintlib.org).
+Antic is an algebraic number theory library.
 
-To install it in flint, clone the repository into a directory on your filesystem, e.g. /home/username/ant
+The only dependency at present is flint2 (see http://flintlib.org).
 
-Now build flint in the usual way, passing --extensions=/home/username/ant to flint's configure.
+To install Antic, clone the repository into a directory on your filesystem, e.g. /home/username/antic
+
+Now build flint in the usual way, passing --extensions=/home/username/antic to flint's configure.
+
+The usual make, make check, make install, make clean, etc. apply.
 
 William Hart -- 12 May 2013.
