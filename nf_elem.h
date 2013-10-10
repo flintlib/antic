@@ -28,7 +28,7 @@
 
 #include <mpir.h>
 #include "flint.h"
-#include "fmpq_poly"
+#include "fmpq_poly.h"
 #include "nf.h"
 
 #ifdef __cplusplus
@@ -37,9 +37,9 @@
 
 typedef struct /* element of a quadratic number field */
 {
-   fmpz a;
-   fmpz b;
-   fmpz den;
+   fmpz_t a;
+   fmpz_t b;
+   fmpz_t den;
 } qnf_elem_struct;
 
 typedef qnf_elem_struct qnf_elem_t[1];
@@ -52,8 +52,22 @@ typedef union /* element in a number field (specified by an nf_t) */
 
 typedef nf_elem_struct nf_elem_t[1];
 
-#define NF_ELEM(xxx) xxx->elem;
-#define QNF_ELEM(xxx) xxx->qelem;
+#define NF_ELEM(xxx) xxx->elem
+#define QNF_ELEM(xxx) xxx->qelem
+
+/******************************************************************************
+
+    Initialisation
+
+******************************************************************************/
+
+void nf_elem_init(nf_elem_t a, nf_t nf);
+
+void nf_elem_clear(nf_elem_t a, nf_t nf);
+
+void nf_elem_randtest(nf_elem_t a, flint_rand_t state, mp_bitcnt_t bits, nf_t nf);
+
+void nf_elem_print(nf_elem_t a, nf_t nf);
 
 /******************************************************************************
 

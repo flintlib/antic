@@ -23,19 +23,15 @@
 
 ******************************************************************************/
 
-#include "nf_elem.h"
+#include "nf.h"
 
-void nf_elem_randtest(nf_elem_t a, flint_rand_t state, mp_bitcnt_t bits, nf_t nf)
+void nf_init(nf_t nf, fmpq_poly_t pol)
 {
-    if (nf->flag & NF_QUADRATIC)
-    {
-        fmpz_randtest(QNF_ELEM(a)->a, state, bits);
-        fmpz_randtest(QNF_ELEM(a)->b, state, bits);
-        fmpz_randtest(QNF_ELEM(a)->den, state, bits);
-    }
-    else
-    {
-        fmpq_poly_randtest(NF_ELEM(a), state, nf->pol->length - 1, bits);
-    }
+    fmpq_poly_init(nf->pol);
+    fmpq_poly_init(nf->pinv);
+
+    fmpq_poly_set(nf->pol, pol);
+
+    nf->flag = 0;
 }
 

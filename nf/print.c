@@ -23,19 +23,11 @@
 
 ******************************************************************************/
 
-#include "nf_elem.h"
+#include "nf.h"
 
-void nf_elem_randtest(nf_elem_t a, flint_rand_t state, mp_bitcnt_t bits, nf_t nf)
+void nf_print(const nf_t nf)
 {
-    if (nf->flag & NF_QUADRATIC)
-    {
-        fmpz_randtest(QNF_ELEM(a)->a, state, bits);
-        fmpz_randtest(QNF_ELEM(a)->b, state, bits);
-        fmpz_randtest(QNF_ELEM(a)->den, state, bits);
-    }
-    else
-    {
-        fmpq_poly_randtest(NF_ELEM(a), state, nf->pol->length - 1, bits);
-    }
+    flint_printf("Number field with defining polynomial ");
+    fmpq_poly_print_pretty(nf->pol, "x");
 }
 

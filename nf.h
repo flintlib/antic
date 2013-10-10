@@ -28,7 +28,7 @@
 
 #include <mpir.h>
 #include "flint.h"
-#include "fmpq_poly"
+#include "fmpq_poly.h"
 
 #ifdef __cplusplus
  extern "C" {
@@ -38,7 +38,12 @@ typedef struct {
    fmpq_poly_t pol;  /* defining polynomial */
    fmpq_poly_t pinv; /* precomputed inverse for reduction mod pol */
    ulong flag;       /* 1 = pol monic over ZZ, 2 = quadratic field */
-} nf_t;
+} nf_struct;
+
+typedef nf_struct nf_t[1];
+
+#define NF_MONIC 1
+#define NF_QUADRATIC 2
 
 /******************************************************************************
 
@@ -49,6 +54,8 @@ typedef struct {
 void nf_init(nf_t nf, fmpq_poly_t pol);
 
 void nf_clear(nf_t nf);
+
+void nf_print(const nf_t nf);
 
 #ifdef __cplusplus
 }

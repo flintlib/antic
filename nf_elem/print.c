@@ -25,17 +25,21 @@
 
 #include "nf_elem.h"
 
-void nf_elem_randtest(nf_elem_t a, flint_rand_t state, mp_bitcnt_t bits, nf_t nf)
+void nf_elem_print(nf_elem_t a, nf_t nf)
 {
     if (nf->flag & NF_QUADRATIC)
     {
-        fmpz_randtest(QNF_ELEM(a)->a, state, bits);
-        fmpz_randtest(QNF_ELEM(a)->b, state, bits);
-        fmpz_randtest(QNF_ELEM(a)->den, state, bits);
+        flint_printf("(");
+        fmpz_print(QNF_ELEM(a)->a);
+        flint_printf(" ");
+        fmpz_print(QNF_ELEM(a)->b);
+        flint_printf(" ");
+        fmpz_print(QNF_ELEM(a)->den);
+        flint_printf(")");
     }
     else
     {
-        fmpq_poly_randtest(NF_ELEM(a), state, nf->pol->length - 1, bits);
+        fmpq_poly_print_pretty(NF_ELEM(a), "a");
     }
 }
 
