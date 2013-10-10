@@ -23,9 +23,7 @@
 
 ******************************************************************************/
 
-#undef ulong /* prevent clash with stdlib */
 #include <stdlib.h>
-#define ulong unsigned long
 #include <mpir.h>
 #include "flint.h"
 #include "ulong_extras.h"

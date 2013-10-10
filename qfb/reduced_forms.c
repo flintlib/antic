@@ -23,9 +23,7 @@
 
 ******************************************************************************/
 
-#undef ulong /* prevent clash with stdlib */
 #include <stdlib.h>
-#define ulong unsigned long
 #include <mpir.h>
 #include "flint.h"
 #include "ulong_extras.h"
@@ -56,6 +54,8 @@ int pow_incr(int * pows, int * exp, int n)
 long qfb_reduced_forms_large(qfb ** forms, long d)
 {
     long a, j, k, p, alim, alloc, num, roots, sqrt, i, prod, prime_i;
+    mp_srcptr primes;
+    const double * prime_inverses;
     mp_limb_t a2;
     n_factor_t * fac;
 
@@ -91,16 +91,17 @@ long qfb_reduced_forms_large(qfb ** forms, long d)
     }
     
     sqrt = n_sqrt(alim);
-    n_compute_primes(FLINT_MAX(sqrt, 10000));
+    primes = n_primes_arr_readonly(FLINT_MAX(sqrt, 10000));
+    prime_inverses = n_prime_inverses_arr_readonly(FLINT_MAX(sqrt, 10000));
 
     prime_i = 1;
-    while ((p = flint_primes[prime_i]) <= sqrt) /* sieve for factors of 4a values */
+    while ((p = primes[prime_i]) <= sqrt) /* sieve for factors of 4a values */
     {
         for (a = p; a <= alim; a+= p)
         {
             a2 = a;
             num = fac[a].num;
-            fac[a].exp[num] = n_remove2_precomp(&a2, p, flint_prime_inverses[prime_i]);
+            fac[a].exp[num] = n_remove2_precomp(&a2, p, prime_inverses[prime_i]);
             fac[a].p[num] = p;
             fac[a].num++;
         }
@@ -185,6 +186,8 @@ long qfb_reduced_forms_large(qfb ** forms, long d)
 long qfb_reduced_forms(qfb ** forms, long d)
 {
     long a, b, k, c, p, blim, alloc, num, sqrt, i, prod, prime_i;
+    mp_srcptr primes;
+    const double * prime_inverses;
     mp_limb_t b2, exp, primes_cutoff = 0;
     n_factor_t * fac;
     mp_limb_t * s;
@@ -208,12 +211,13 @@ long qfb_reduced_forms(qfb ** forms, long d)
     if (primes_cutoff > FLINT_PRIMES_SMALL_CUTOFF*FLINT_PRIMES_SMALL_CUTOFF)
        return qfb_reduced_forms_large(forms, d);
 
-    n_compute_primes(FLINT_MAX(sqrt, 10000));
+    primes = n_primes_arr_readonly(FLINT_MAX(sqrt, 10000));
+    prime_inverses = n_prime_inverses_arr_readonly(FLINT_MAX(sqrt, 10000));
     
     fac = flint_calloc(blim + 1, sizeof(n_factor_t));
     
     prime_i = 1;
-    while ((p = flint_primes[prime_i]) <= sqrt) /* sieve for factors of p^exp */
+    while ((p = primes[prime_i]) <= sqrt) /* sieve for factors of p^exp */
     {
         num = n_sqrtmod_primepow(&s, n_negmod((-d) % p, p), p, 1);
             
@@ -225,7 +229,7 @@ long qfb_reduced_forms(qfb ** forms, long d)
                 b2 = (off*off - (mp_limb_t) d)/4;
                          
                 fac[off].p[fac[off].num] = p;
-                fac[off].exp[fac[off].num] = n_remove2_precomp(&b2, p, flint_prime_inverses[prime_i]);
+                fac[off].exp[fac[off].num] = n_remove2_precomp(&b2, p, prime_inverses[prime_i]);
                 fac[off].num++;
                          
                 off += p;
