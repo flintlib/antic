@@ -37,7 +37,7 @@
 typedef struct {
    fmpq_poly_t pol;  /* defining polynomial */
    fmpq_poly_t pinv; /* precomputed inverse for reduction mod pol */
-   ulong flag;       /* 1 = pol monic, 2 = pol over ZZ */
+   ulong flag;       /* 1 = pol monic, 2 = pol over ZZ, 4 = quadratic field */
 } nf_t;
 
 /******************************************************************************

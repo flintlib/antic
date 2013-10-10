@@ -35,7 +35,25 @@
  extern "C" {
 #endif
 
-typedef fmpq_poly_t nf_elem_t; /* element in a number field (specified by an nf_t) */
+typedef struct /* element of a quadratic number field */
+{
+   fmpz a;
+   fmpz b;
+   fmpz den;
+} qnf_elem_struct;
+
+typedef qnf_elem_struct qnf_elem_t[1];
+
+typedef union /* element in a number field (specified by an nf_t) */
+{
+   fmpq_poly_t elem; /* general case */
+   qnf_elem_t qelem; /* quadratic number field */
+} nf_elem_struct;
+
+typedef nf_elem_struct nf_elem_t[1];
+
+#define NF_ELEM(xxx) xxx->elem;
+#define QNF_ELEM(xxx) xxx->qelem;
 
 /******************************************************************************
 
