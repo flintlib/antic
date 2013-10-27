@@ -20,6 +20,7 @@
 /******************************************************************************
 
     Copyright (C) 2013 Fredrik Johansson
+    Copyright (C) 2013 William Hart
 
 ******************************************************************************/
 
@@ -35,6 +36,6 @@ void nf_elem_init(nf_elem_t a, nf_t nf)
     }
     else
     {
-        fmpq_poly_init(NF_ELEM(a));
+        fmpq_poly_init2(NF_ELEM(a), nf->pol->length - 1);
     }
 }

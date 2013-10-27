@@ -20,6 +20,7 @@
 /******************************************************************************
 
     Copyright (C) 2013 Fredrik Johansson
+    Copyright (C) 2013 William Hart
 
 ******************************************************************************/
 
@@ -28,10 +29,20 @@
 void nf_init(nf_t nf, fmpq_poly_t pol)
 {
     fmpq_poly_init(nf->pol);
-    fmpq_poly_init(nf->pinv);
-
     fmpq_poly_set(nf->pol, pol);
 
-    nf->flag = 0;
+    if (fmpz_is_one(fmpq_poly_denref(pol)) /* denominator is one and numerator is monic */
+     && fmpz_is_one(fmpq_poly_numref(pol) + pol->length - 1))
+    {
+       fmpz_poly_init2(nf->pinv.zz, pol->length);
+       _fmpz_poly_preinvert(nf->pinv.zz->coeffs, fmpq_poly_numref(pol), pol->length);
+       nf->pinv.zz->length = pol->length;
+
+       nf->flag = NF_MONIC;
+    } else
+    {
+       fmpz_preinvn_init(nf->pinv.qq, fmpq_poly_numref(pol) + pol->length - 1);
+       nf->flag = NF_GENERIC;
+    }
 }
 

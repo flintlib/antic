@@ -52,8 +52,9 @@ typedef union /* element in a number field (specified by an nf_t) */
 
 typedef nf_elem_struct nf_elem_t[1];
 
-#define NF_ELEM(xxx) xxx->elem
-#define QNF_ELEM(xxx) xxx->qelem
+#define NF_ELEM_NUMREF(xxx) fmpq_poly_numref((xxx)->elem)
+#define NF_ELEM(xxx) (xxx)->elem
+#define QNF_ELEM(xxx) (xxx)->qelem
 
 /******************************************************************************
 
@@ -67,6 +68,20 @@ void nf_elem_clear(nf_elem_t a, nf_t nf);
 
 void nf_elem_randtest(nf_elem_t a, flint_rand_t state, mp_bitcnt_t bits, nf_t nf);
 
+/******************************************************************************
+
+    Comparison
+
+******************************************************************************/
+
+int nf_elem_equal(nf_elem_t a, nf_elem_t b, nf_t nf);
+
+/******************************************************************************
+
+    I/O
+
+******************************************************************************/
+
 void nf_elem_print(nf_elem_t a, nf_t nf);
 
 /******************************************************************************
@@ -75,13 +90,15 @@ void nf_elem_print(nf_elem_t a, nf_t nf);
 
 ******************************************************************************/
 
-void nf_elem_add(nf_elem_t r, nf_elem_t a, nf_elem_t b, nf_t nf);
+void nf_elem_set(nf_elem_t a, nf_elem_t b, nf_t nf);
 
-void nf_elem_sub(nf_elem_t r, nf_elem_t a, nf_elem_t b, nf_t nf);
+void nf_elem_add(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf);
 
-void nf_elem_mul(nf_elem_t r, nf_elem_t a, nf_elem_t b, nf_t nf);
+void nf_elem_sub(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf);
 
-void nf_elem_inv(nf_elem_t r, nf_elem_t a, nf_t nf);
+void nf_elem_mul(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf);
+
+void nf_elem_inv(nf_elem_t a, nf_elem_t b, nf_t nf);
 
 #ifdef __cplusplus
 }

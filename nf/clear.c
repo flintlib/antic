@@ -20,6 +20,7 @@
 /******************************************************************************
 
     Copyright (C) 2013 Fredrik Johansson
+    Copyright (C) 2013 William Hart
 
 ******************************************************************************/
 
@@ -28,6 +29,10 @@
 void nf_clear(nf_t nf)
 {
     fmpq_poly_clear(nf->pol);
-    fmpq_poly_clear(nf->pinv);
+
+    if (nf->flag & NF_MONIC)
+       fmpz_poly_clear(nf->pinv.zz);
+    else
+       fmpz_preinvn_clear(nf->pinv.qq);
 }
 

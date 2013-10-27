@@ -37,9 +37,12 @@ void nf_elem_print(nf_elem_t a, nf_t nf)
         fmpz_print(QNF_ELEM(a)->den);
         flint_printf(")");
     }
-    else
+    else if (nf->flag & NF_MONIC)
     {
-        fmpq_poly_print_pretty(NF_ELEM(a), "a");
+       _fmpz_poly_fprint_pretty(stdout, NF_ELEM_NUMREF(a), NF_ELEM(a)->length, "x");
+    } else
+    {
+        fmpq_poly_print_pretty(NF_ELEM(a), "x");
     }
 }
 

@@ -25,9 +25,57 @@
 
 *******************************************************************************
 
+    Initialisation
+
+*******************************************************************************
+
+void nf_elem_init(nf_elem_t a, nf_t nf)
+
+    Initialise a number field element to belong to the given number field
+    \code{nf}.
+
+void nf_elem_clear(nf_elem_t a, nf_t nf)
+
+    Clear resources allocated by the given number field element in the given
+    number field.
+
+void nf_elem_randtest(nf_elem_t a, flint_rand_t state, 
+                                                     mp_bitcnt_t bits, nf_t nf)
+
+    Generate a random number field element $a$ in the number field \code{nf}
+    whose coefficients have up to the given number of bits.
+
+*******************************************************************************
+
+    Comparison
+
+*******************************************************************************
+
+int nf_elem_equal(nf_elem_t a, nf_elem_t b, nf_t nf)
+
+    Return $1$ if the given number field elements are equal in the given
+    number field \code{nf}.
+
+*******************************************************************************
+
+    I/O
+
+*******************************************************************************
+
+void nf_elem_print(nf_elem_t a, nf_t nf)
+
+    Print the given number field element.
+
+*******************************************************************************
+
     Arithmetic
 
 *******************************************************************************
+
+void nf_elem_set(nf_elem_t a, nf_elem_t b, nf_t nf)
+
+    Set the number field element $a$ to equal the number field element $b$,
+    i.e. set $a = b$.
 
 void nf_elem_add(nf_elem_t r, nf_elem_t a, nf_elem_t b, nf_t nf)
 

@@ -23,48 +23,27 @@
 
 ******************************************************************************/
 
-#ifndef NF_H
-#define NF_H
+#include "nf_elem.h"
 
-#include <mpir.h>
-#include "flint.h"
-#include "fmpz.h"
-#include "fmpz_poly.h"
-#include "fmpq_poly.h"
+void nf_elem_sub(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf)
+{
+    if (nf->flag & NF_MONIC)
+    {
+        const slong len1 = NF_ELEM(b)->length;
+        const slong len2 = NF_ELEM(c)->length;
+        slong len;
 
-#ifdef __cplusplus
- extern "C" {
-#endif
+        _fmpz_poly_sub(NF_ELEM_NUMREF(a), NF_ELEM_NUMREF(b), len1,
+                                          NF_ELEM_NUMREF(c), len2);
 
-typedef struct {
-   fmpq_poly_t pol;  /* defining polynomial */
-   union {
-      fmpz_poly_t zz; /* precomputed inverse for reduction mod pol ZZ case */
-      fmpz_preinvn_t qq; /* precomputed inverse for leading coeff of num(pol), QQ case */
-   } pinv;
-   ulong flag;       /* 1 = pol monic over ZZ, 2 = quadratic field */
-} nf_struct;
+        len = FLINT_MAX(len1, len2);
 
-typedef nf_struct nf_t[1];
-
-#define NF_GENERIC 0
-#define NF_MONIC 1
-#define NF_QUADRATIC 2
-
-/******************************************************************************
-
-    Initialisation
-
-******************************************************************************/
-
-void nf_init(nf_t nf, fmpq_poly_t pol);
-
-void nf_clear(nf_t nf);
-
-void nf_print(const nf_t nf);
-
-#ifdef __cplusplus
+        /* normalise */
+        while (len && fmpz_is_zero(NF_ELEM_NUMREF(a) + len - 1)) len--;
+        NF_ELEM(a)->length = len;
+    }
+    else
+    {
+        fmpq_poly_sub(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c));
+    }
 }
-#endif
-
-#endif

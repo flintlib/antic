@@ -23,48 +23,48 @@
 
 ******************************************************************************/
 
-#ifndef NF_H
-#define NF_H
-
-#include <mpir.h>
+#include <stdio.h>
+#include <gmp.h>
 #include "flint.h"
 #include "fmpz.h"
 #include "fmpz_poly.h"
-#include "fmpq_poly.h"
+#include "nf.h"
+#include "nf_elem.h"
+#include "ulong_extras.h"
 
-#ifdef __cplusplus
- extern "C" {
-#endif
+int
+main(void)
+{
+    int i;
+    flint_rand_t state;
 
-typedef struct {
-   fmpq_poly_t pol;  /* defining polynomial */
-   union {
-      fmpz_poly_t zz; /* precomputed inverse for reduction mod pol ZZ case */
-      fmpz_preinvn_t qq; /* precomputed inverse for leading coeff of num(pol), QQ case */
-   } pinv;
-   ulong flag;       /* 1 = pol monic over ZZ, 2 = quadratic field */
-} nf_struct;
+    flint_printf("init/clear....");
+    fflush(stdout);
 
-typedef nf_struct nf_t[1];
+    flint_randinit(state);
 
-#define NF_GENERIC 0
-#define NF_MONIC 1
-#define NF_QUADRATIC 2
+    for (i = 0; i < 1000 * flint_test_multiplier(); i++)
+    {
+        fmpq_poly_t pol;
+        nf_t nf;
+        nf_elem_t a;
 
-/******************************************************************************
+        fmpq_poly_init(pol);
+        fmpq_poly_randtest_not_zero(pol, state, 40, 200);
 
-    Initialisation
+        nf_init(nf, pol);
 
-******************************************************************************/
+        nf_elem_init(a, nf);
+        nf_elem_randtest(a, state, 200, nf);
+        nf_elem_clear(a, nf);
+        
+        nf_clear(nf);
 
-void nf_init(nf_t nf, fmpq_poly_t pol);
+        fmpq_poly_clear(pol);
+    }
 
-void nf_clear(nf_t nf);
-
-void nf_print(const nf_t nf);
-
-#ifdef __cplusplus
+    flint_randclear(state);
+    flint_cleanup();
+    flint_printf("PASS\n");
+    return 0;
 }
-#endif
-
-#endif
