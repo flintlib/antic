@@ -60,7 +60,23 @@ void nf_elem_mul(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf)
     }
     else
     {
+        fmpq_poly_t t;
+        
         fmpq_poly_mul(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c));
-        fmpq_poly_rem(NF_ELEM(a), NF_ELEM(a), nf->pol);
+        
+        if (NF_ELEM(a)->length > nf->pol->length - 1)
+        {
+           fmpq_poly_init2(t, NF_ELEM(a)->length);
+        
+           _fmpq_poly_rem(t->coeffs, t->den,
+              NF_ELEM(a)->coeffs, NF_ELEM(a)->den, NF_ELEM(a)->length, 
+              nf->pol->coeffs, nf->pol->den, nf->pol->length, nf->pinv.qq); 
+           
+           _fmpq_poly_set_length(t, nf->pol->length - 1);
+           _fmpq_poly_normalise(t);
+        
+           fmpq_poly_swap(t, NF_ELEM(a));
+           fmpq_poly_clear(t);
+        }
     }
 }
