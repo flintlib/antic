@@ -34,14 +34,7 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state, mp_bitcnt_t bits, nf_t nf
         fmpz_randtest(QNF_ELEM(a)->b, state, bits);
         fmpz_randtest(QNF_ELEM(a)->den, state, bits);
     }
-    else if (nf->flag & NF_MONIC)
-    {
-        slong len = nf->pol->length - 1;
-        
-        _fmpz_vec_randtest(NF_ELEM_NUMREF(a), state, len, bits);
-        while (len && fmpz_is_zero(NF_ELEM_NUMREF(a) + len - 1)) len--;
-        NF_ELEM(a)->length = len;
-    } else
+    else
     {
         fmpq_poly_randtest(NF_ELEM(a), state, nf->pol->length - 1, bits);
     }

@@ -39,39 +39,23 @@ void nf_elem_mul(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf)
 
     if (nf->flag & NF_MONIC)
     {
-        const slong plen = len1 + len2 - 1;
-        const slong nflen = nf->pol->length;
-        slong len = nflen - 1;
-        fmpz * p;
-
-        if (a == b || a == c) /* deal with aliasing */
-           p = _fmpz_vec_init(2*nflen - 3);
-        else
-           p = NF_ELEM_NUMREF(a);
-
-        _fmpz_poly_mul(p, NF_ELEM_NUMREF(b), len1,
-                                          NF_ELEM_NUMREF(c), len2);
-
-        if (plen > nflen - 1)
+        slong plen = len1 + len2 - 1;
+        const slong len = nf->pol->length;
+        
+        fmpq_poly_mul(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c));
+       
+        if (plen > len - 1)
         {
-           fmpz * q = _fmpz_vec_init(plen - nflen + 1);
+           fmpz * q = _fmpz_vec_init(plen - len + 1);
 
-           _fmpz_poly_divrem_preinv(q, p, plen, 
-                  fmpq_poly_numref(nf->pol), nf->pinv.zz->coeffs, nflen);
+           _fmpz_poly_divrem_preinv(q, NF_ELEM_NUMREF(a), plen, 
+                  fmpq_poly_numref(nf->pol), nf->pinv.zz->coeffs, len);
 
-           /* normalise */
-           while (len && fmpz_is_zero(p + len - 1)) len--;
-          
-           _fmpz_vec_clear(q, plen - nflen + 1);
-        } else
-           len = plen;
+           _fmpz_vec_clear(q, plen - len + 1);
+           
+           NF_ELEM(a)->length = len - 1;
 
-        NF_ELEM(a)->length = len;
-
-        if (a == b || a == c)
-        {
-           _fmpz_vec_clear(NF_ELEM_NUMREF(a), 2*nflen - 3);
-           NF_ELEM_NUMREF(a) = p;
+           fmpq_poly_canonicalise(NF_ELEM(a));
         }
     }
     else
