@@ -36,6 +36,6 @@ void nf_elem_init(nf_elem_t a, nf_t nf)
     }
     else
     {
-        fmpq_poly_init2(NF_ELEM(a), nf->pol->length - 1);
+        fmpq_poly_init2(NF_ELEM(a), FLINT_MAX(2*nf->pol->length - 3, 0));
     }
 }

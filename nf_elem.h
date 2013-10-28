@@ -90,6 +90,15 @@ void nf_elem_print(nf_elem_t a, nf_t nf);
 
 ******************************************************************************/
 
+static __inline__
+void nf_elem_zero(nf_elem_t a, nf_t nf)
+{
+    if (nf->flag & NF_MONIC)
+       NF_ELEM(a)->length = 0;
+    else
+       fmpq_poly_zero(NF_ELEM(a));
+}
+
 void nf_elem_set(nf_elem_t a, nf_elem_t b, nf_t nf);
 
 void nf_elem_add(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf);

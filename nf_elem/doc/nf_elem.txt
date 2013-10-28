@@ -72,6 +72,10 @@ void nf_elem_print(nf_elem_t a, nf_t nf)
 
 *******************************************************************************
 
+void nf_elem_zero(nf_elem_t a)
+
+   Set the given number field element to zero.
+
 void nf_elem_set(nf_elem_t a, nf_elem_t b, nf_t nf)
 
     Set the number field element $a$ to equal the number field element $b$,

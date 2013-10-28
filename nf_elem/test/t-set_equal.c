@@ -67,7 +67,7 @@ main(void)
         {
            printf("FAIL:\n");
            printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("b = "); nf_elem_print(a, nf); printf("\n");
+           printf("b = "); nf_elem_print(b, nf); printf("\n");
            abort();
         }
 

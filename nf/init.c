@@ -38,7 +38,7 @@ void nf_init(nf_t nf, fmpq_poly_t pol)
        _fmpz_poly_preinvert(nf->pinv.zz->coeffs, fmpq_poly_numref(pol), pol->length);
        nf->pinv.zz->length = pol->length;
 
-       nf->flag = NF_MONIC;
+      nf->flag = NF_MONIC;
     } else
     {
        fmpz_preinvn_init(nf->pinv.qq, fmpq_poly_numref(pol) + pol->length - 1);

@@ -38,54 +38,71 @@ main(void)
     int i, result;
     flint_rand_t state;
 
-    flint_printf("add/sub....");
+    flint_printf("mul....");
     fflush(stdout);
 
     flint_randinit(state);
 
-    /* test b + c - c = b */
-    for (i = 0; i < 1000 * flint_test_multiplier(); i++)
+    /* test a*(b + c) = a*b + a*c */
+    for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         fmpq_poly_t pol;
         nf_t nf;
-        nf_elem_t a, b, c;
+        nf_elem_t a, b, c, s, p, p1, p2;
 
         fmpq_poly_init(pol);
         fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-
+        
         nf_init(nf, pol);
-
+        
         nf_elem_init(a, nf);
         nf_elem_init(b, nf);
         nf_elem_init(c, nf);
+        nf_elem_init(s, nf);
+        nf_elem_init(p, nf);
+        nf_elem_init(p1, nf);
+        nf_elem_init(p2, nf);
 
+        nf_elem_randtest(a, state, 200, nf);
         nf_elem_randtest(b, state, 200, nf);
         nf_elem_randtest(c, state, 200, nf);
         
-        nf_elem_add(a, b, c, nf);
-        nf_elem_sub(a, a, c, nf);
+        nf_elem_add(s, b, c, nf);
+        nf_elem_mul(p1, a, b, nf);
+        nf_elem_mul(p2, a, c, nf);
 
-        result = (nf_elem_equal(a, b, nf));
+        nf_elem_mul(p, a, s, nf);
+        nf_elem_add(s, p1, p2, nf);
+
+        result = (nf_elem_equal(p, s, nf));
         if (!result)
         {
            printf("FAIL:\n");
            printf("a = "); nf_elem_print(a, nf); printf("\n");
            printf("b = "); nf_elem_print(b, nf); printf("\n");
            printf("c = "); nf_elem_print(c, nf); printf("\n");
+           printf("s = "); nf_elem_print(s, nf); printf("\n");
+           printf("p = "); nf_elem_print(p, nf); printf("\n");
+           printf("p1 = "); nf_elem_print(p1, nf); printf("\n");
+           printf("p2 = "); nf_elem_print(p2, nf); printf("\n");
            abort();
         }
 
         nf_elem_clear(a, nf);
         nf_elem_clear(b, nf);
         nf_elem_clear(c, nf);
+        nf_elem_clear(s, nf);
+        nf_elem_clear(p, nf);
+        nf_elem_clear(p1, nf);
+        nf_elem_clear(p2, nf);
          
         nf_clear(nf);
 
         fmpq_poly_clear(pol);
     }
-
+    
     /* test aliasing a and b */
-    for (i = 0; i < 1000 * flint_test_multiplier(); i++)
+    for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         fmpq_poly_t pol;
         nf_t nf;
@@ -93,7 +110,7 @@ main(void)
 
         fmpq_poly_init(pol);
         fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-
+        
         nf_init(nf, pol);
 
         nf_elem_init(a, nf);
@@ -103,10 +120,9 @@ main(void)
         nf_elem_randtest(b, state, 200, nf);
         nf_elem_randtest(c, state, 200, nf);
         
-        nf_elem_set(a, b, nf);
-        nf_elem_add(b, b, c, nf);
-        nf_elem_sub(b, b, c, nf);
-
+        nf_elem_mul(a, b, c, nf);
+        nf_elem_mul(b, b, c, nf);
+        
         result = (nf_elem_equal(a, b, nf));
         if (!result)
         {
@@ -127,7 +143,7 @@ main(void)
     }
 
     /* test aliasing a and c */
-    for (i = 0; i < 1000 * flint_test_multiplier(); i++)
+    for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         fmpq_poly_t pol;
         nf_t nf;
@@ -135,7 +151,7 @@ main(void)
 
         fmpq_poly_init(pol);
         fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-
+        
         nf_init(nf, pol);
 
         nf_elem_init(a, nf);
@@ -145,11 +161,10 @@ main(void)
         nf_elem_randtest(b, state, 200, nf);
         nf_elem_randtest(c, state, 200, nf);
         
-        nf_elem_set(a, c, nf);
-        nf_elem_add(c, b, c, nf);
-        nf_elem_sub(a, c, a, nf);
-
-        result = (nf_elem_equal(a, b, nf));
+        nf_elem_mul(a, b, c, nf);
+        nf_elem_mul(c, b, c, nf);
+        
+        result = (nf_elem_equal(a, c, nf));
         if (!result)
         {
            printf("FAIL:\n");
