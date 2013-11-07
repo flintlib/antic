@@ -105,13 +105,15 @@ void nf_elem_set(nf_elem_t a, nf_elem_t b, nf_t nf)
 static __inline__
 void nf_elem_add(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf)
 {
-   fmpq_poly_add(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c));
+   fmpq_poly_add_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 0);
+   fmpq_poly_canonicalise_weak(NF_ELEM(a));
 }
 
 static __inline__
 void nf_elem_sub(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf)
 {
-   fmpq_poly_sub(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c));
+   fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 0);
+   fmpq_poly_canonicalise_weak(NF_ELEM(a));
 }
 
 void nf_elem_mul(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf);

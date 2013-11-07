@@ -27,18 +27,37 @@
 
 int nf_elem_equal(nf_elem_t a, nf_elem_t b, nf_t nf)
 {
-    if (nf->flag & NF_MONIC)
-    {
-        const slong len1 = NF_ELEM(a)->length;
-        const slong len2 = NF_ELEM(b)->length;
+    const slong len1 = NF_ELEM(a)->length;
+    const slong len2 = NF_ELEM(b)->length;
         
-        if (len1 != len2)
-           return 0;
+    if (len1 != len2)
+       return 0;
 
-        return _fmpz_vec_equal(NF_ELEM_NUMREF(a), NF_ELEM_NUMREF(b), len1);
-    }
-    else
+    if (fmpz_equal(fmpq_poly_denref(NF_ELEM(a)), fmpq_poly_denref(NF_ELEM(b))))
     {
+       if (nf->flag & NF_MONIC)
+          return _fmpz_vec_equal(NF_ELEM_NUMREF(a), NF_ELEM_NUMREF(b), len1);
+       else
+          return fmpq_poly_equal(NF_ELEM(a), NF_ELEM(b));
+    } else
+    {
+        slong i;
+        slong d = fmpz_bits(fmpq_poly_denref(NF_ELEM(b)))
+                - fmpz_bits(fmpq_poly_denref(NF_ELEM(a))) + 1;
+        fmpz * p1 = NF_ELEM_NUMREF(a);
+        fmpz * p2 = NF_ELEM_NUMREF(b);
+
+        for (i = 0; i < len1; i++)
+        {
+           slong b1 = fmpz_bits(p1 + i);
+           slong b2 = fmpz_bits(p2 + i);
+           if (!(b1 == 0 && b2 == 0) && (ulong) (b1 - b2 + d) > 2)
+              return 0;
+        }
+
+        fmpq_poly_canonicalise(NF_ELEM(a));
+        fmpq_poly_canonicalise(NF_ELEM(b));
+        
         return fmpq_poly_equal(NF_ELEM(a), NF_ELEM(b));
     }
 }

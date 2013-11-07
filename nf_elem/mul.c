@@ -47,10 +47,13 @@ void nf_elem_mul(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf)
         if (plen > len - 1)
         {
            fmpz * q = _fmpz_vec_init(plen - len + 1);
+           fmpz * r = _fmpz_vec_init(plen);
+           _fmpz_vec_set(r, NF_ELEM_NUMREF(a), plen);
 
-           _fmpz_poly_divrem_preinv(q, NF_ELEM_NUMREF(a), plen, 
-                  fmpq_poly_numref(nf->pol), nf->pinv.zz->coeffs, len);
+           _fmpz_poly_divrem(q, NF_ELEM_NUMREF(a), r, plen, 
+                  fmpq_poly_numref(nf->pol), len);
 
+           _fmpz_vec_clear(r, plen);
            _fmpz_vec_clear(q, plen - len + 1);
            
            NF_ELEM(a)->length = len - 1;
@@ -66,17 +69,49 @@ void nf_elem_mul(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf)
         
         if (NF_ELEM(a)->length > nf->pol->length - 1)
         {
-           fmpq_poly_init2(t, NF_ELEM(a)->length);
+           if (nf->pol->length <= NF_POWERS_CUTOFF)
+           {
+              fmpq_poly_t prod;
+              fmpz_t den;
+              slong i;
+
+              fmpz_init(den);
+              fmpq_poly_init2(prod, nf->pol->length - 1);
+             
+              fmpz_set(den, fmpq_poly_denref(NF_ELEM(a)));
+              
+              for (i = nf->pol->length - 1; i < NF_ELEM(a)->length; i++)
+              {
+                 _fmpz_vec_scalar_mul_fmpz(fmpq_poly_numref(prod), 
+                    fmpq_poly_numref(nf->powers + i),
+                    nf->powers[i].length,
+                    NF_ELEM_NUMREF(a) + i);
+                 fmpz_mul(fmpq_poly_denref(prod), fmpq_poly_denref(nf->powers + i), den);
+                 _fmpq_poly_add_can(NF_ELEM_NUMREF(a), fmpq_poly_denref(NF_ELEM(a)),
+                    NF_ELEM_NUMREF(a), fmpq_poly_denref(NF_ELEM(a)), nf->pol->length - 1,
+                    fmpq_poly_numref(prod), fmpq_poly_denref(prod), nf->powers[i].length, 0);
+              }
+
+              _fmpq_poly_set_length(NF_ELEM(a), nf->pol->length - 1);
+              _fmpq_poly_normalise(NF_ELEM(a));
+              fmpq_poly_canonicalise_weak(NF_ELEM(a));
+
+              fmpz_clear(den);
+              fmpq_poly_clear(prod);
+           } else
+           {
+              fmpq_poly_init2(t, NF_ELEM(a)->length);
         
-           _fmpq_poly_rem(t->coeffs, t->den,
-              NF_ELEM(a)->coeffs, NF_ELEM(a)->den, NF_ELEM(a)->length, 
-              nf->pol->coeffs, nf->pol->den, nf->pol->length, nf->pinv.qq); 
+              _fmpq_poly_rem(t->coeffs, t->den,
+                 NF_ELEM(a)->coeffs, NF_ELEM(a)->den, NF_ELEM(a)->length, 
+                 nf->pol->coeffs, nf->pol->den, nf->pol->length, nf->pinv.qq); 
            
-           _fmpq_poly_set_length(t, nf->pol->length - 1);
-           _fmpq_poly_normalise(t);
+              _fmpq_poly_set_length(t, nf->pol->length - 1);
+              _fmpq_poly_normalise(t);
         
-           fmpq_poly_swap(t, NF_ELEM(a));
-           fmpq_poly_clear(t);
+              fmpq_poly_swap(t, NF_ELEM(a));
+              fmpq_poly_clear(t);
+           }
         }
     }
 }
