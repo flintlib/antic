@@ -35,7 +35,7 @@
 #include "nf.h"
 #include "nf_elem.h"
 
-#define BITS 1000
+#define BITS 10
 
 typedef struct
 {
@@ -141,10 +141,10 @@ int main(void)
    printf("Number field element multiplication\n");
    flint_printf("bits = %ld\n", BITS);
 
-   for (k = 1; k <= 1000; k = (slong) ceil(1.1*k))
+   for (k = 4; k <= 1000; k = (slong) ceil(1.1*k))
    {
       info.length = k;
-      info.monic = 1;
+      info.monic = 0;
 
       scale = 100;
       if (k >= 50) scale = 10;
@@ -152,20 +152,20 @@ int main(void)
       
       prof_repeat(&min, &max, sample, (void *) &info);
       
-      flint_printf("Monic/ZZ: length %wd, min %.3g ms, max %.3g ms\n", 
+      flint_printf("length %wd, min %.3e ms, max %.3e ms\n", 
            info.length,
-		   ((min/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400000.0,
-           ((max/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400000.0
+		   ((min/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400.0,
+           ((max/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400.0
 	     );
 
-     info.monic = 0;
+     info.monic = 1;
      
      prof_repeat(&min, &max, sample, (void *) &info);
          
-      flint_printf("QQ: length %wd, min %.3g ms, max %.3g ms\n\n", 
+      flint_printf("length %wd, min %.3e ms, max %.3e ms\n", 
            info.length,
-		   ((min/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400000.0,
-           ((max/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400000.0
+		   ((min/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400.0,
+           ((max/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400.0
 	     );
    }
 

@@ -39,16 +39,19 @@
 typedef struct {
    fmpq_poly_t pol;  /* defining polynomial */
    union {
-      fmpz_poly_t zz; /* precomputed inverse for reduction mod pol ZZ case */
+      /* insert any precomputed inverse for zz case here */
       fmpz_preinvn_t qq; /* precomputed inverse for leading coeff of num(pol), QQ case */
    } pinv;
-   fmpq_poly_struct * powers; /* powers of the generator mod pol */
+   union { /* powers of the generator mod pol */
+      fmpq_poly_powers_precomp_t qq; 
+      fmpz_poly_powers_precomp_t zz;
+   } powers;
    ulong flag;       /* 1 = pol monic over ZZ, 2 = quadratic field */
 } nf_struct;
 
 typedef nf_struct nf_t[1];
 
-#define NF_POWERS_CUTOFF 12 /* maximum length of pol where we precompute powers */
+#define NF_POWERS_CUTOFF 30 /* maximum length of pol where we precompute powers */
 
 #define NF_GENERIC 0
 #define NF_MONIC 1

@@ -30,19 +30,15 @@ void nf_clear(nf_t nf)
 {
     fmpq_poly_clear(nf->pol);
 
-    if (nf->flag & NF_MONIC)
-       fmpz_poly_clear(nf->pinv.zz);
-    else
+    if (!(nf->flag & NF_MONIC))
        fmpz_preinvn_clear(nf->pinv.qq);
 
     if (nf->pol->length <= NF_POWERS_CUTOFF && nf->pol->length > 1)
     {
-       slong i;
-
-       for (i = 0; i < 2*nf->pol->length - 3; i++)
-          fmpq_poly_clear(nf->powers + i);
-
-       flint_free(nf->powers);
+       if (nf->flag & NF_MONIC)
+          _fmpz_poly_powers_clear(nf->powers.zz->powers, nf->powers.zz->len);
+       else
+          _fmpq_poly_powers_clear(nf->powers.qq->powers, nf->powers.qq->len);
     }
 }
 

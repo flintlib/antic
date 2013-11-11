@@ -116,7 +116,7 @@ void nf_elem_sub(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf)
    fmpq_poly_canonicalise_weak(NF_ELEM(a));
 }
 
-void nf_elem_mul(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf);
+void nf_elem_mul(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, nf_t nf);
 
 void nf_elem_inv(nf_elem_t a, nf_elem_t b, nf_t nf);
 

@@ -33,13 +33,8 @@ void nf_init(nf_t nf, fmpq_poly_t pol)
 
     if (fmpz_is_one(fmpq_poly_denref(pol)) /* denominator is one and numerator is monic */
      && fmpz_is_one(fmpq_poly_numref(pol) + pol->length - 1))
-    {
-       fmpz_poly_init2(nf->pinv.zz, pol->length);
-       _fmpz_poly_preinvert(nf->pinv.zz->coeffs, fmpq_poly_numref(pol), pol->length);
-       nf->pinv.zz->length = pol->length;
-
-      nf->flag = NF_MONIC;
-    } else
+       nf->flag = NF_MONIC;
+    else
     {
        fmpz_preinvn_init(nf->pinv.qq, fmpq_poly_numref(pol) + pol->length - 1);
        nf->flag = NF_GENERIC;
@@ -47,39 +42,18 @@ void nf_init(nf_t nf, fmpq_poly_t pol)
 
     if (pol->length <= NF_POWERS_CUTOFF && pol->length > 1) /* compute powers of generator mod pol */
     {
-       slong i;
-       fmpq_poly_t pow, p;
-       
-       fmpq_poly_init2(pow, pol->length);
-       fmpq_poly_one(pow);
-       fmpq_poly_init2(p, pol->length - 1);
-       
-       nf->powers = flint_malloc(sizeof(fmpq_poly_t)*(2*pol->length - 3));
-
-       for (i = 0; i < 2*pol->length - 3; i++)
+       if (nf->flag & NF_MONIC)
        {
-          fmpq_poly_init(nf->powers + i);
-
-          if (pow->length == pol->length) /* reduce power mod pol */
-          {
-             fmpz_set(fmpq_poly_denref(p), fmpq_poly_numref(pol) + pol->length - 1);
-             _fmpz_vec_scalar_mul_fmpz(fmpq_poly_numref(p), fmpq_poly_numref(pol), 
-                   pol->length - 1, fmpq_poly_numref(pow) + pow->length - 1);
-             _fmpq_poly_set_length(p, pol->length - 1);
-             _fmpq_poly_normalise(p);
-             fmpq_poly_canonicalise(p);
-             fmpq_poly_sub(pow, pow, p);
-             _fmpq_poly_set_length(pow, pol->length - 1);
-             _fmpq_poly_normalise(pow);
-             fmpq_poly_canonicalise(pow);
-          }
-
-          fmpq_poly_set(nf->powers + i, pow);
-          fmpq_poly_shift_left(pow, pow, 1);
+          nf->powers.zz->powers = _fmpz_poly_powers_precompute(fmpq_poly_numref(pol), 
+                                       pol->length);
+          nf->powers.zz->len = pol->length;
        }
-
-       fmpq_poly_clear(p);
-       fmpq_poly_clear(pow);
-    }
+       else
+       {
+          nf->powers.qq->powers = _fmpq_poly_powers_precompute(fmpq_poly_numref(pol), 
+                                       fmpq_poly_denref(pol), pol->length);
+          nf->powers.qq->len = pol->length;
+       }
+   }
 }
 
