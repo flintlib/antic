@@ -25,7 +25,8 @@
 
 #include "nf_elem.h"
 
-void _nf_elem_mul(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, nf_t nf)
+void _nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
+                                              const nf_elem_t c, const nf_t nf)
 {
     const slong len1 = NF_ELEM(b)->length;
     const slong len2 = NF_ELEM(c)->length;
@@ -116,7 +117,8 @@ void _nf_elem_mul(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, nf_t nf)
     }
 }
 
-void nf_elem_mul(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, nf_t nf)
+void nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
+                                              const nf_elem_t c, const nf_t nf)
 {
    nf_elem_t t;
    

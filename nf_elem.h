@@ -62,11 +62,12 @@ typedef nf_elem_struct nf_elem_t[1];
 
 ******************************************************************************/
 
-void nf_elem_init(nf_elem_t a, nf_t nf);
+void nf_elem_init(nf_elem_t a, const nf_t nf);
 
-void nf_elem_clear(nf_elem_t a, nf_t nf);
+void nf_elem_clear(nf_elem_t a, const nf_t nf);
 
-void nf_elem_randtest(nf_elem_t a, flint_rand_t state, mp_bitcnt_t bits, nf_t nf);
+void nf_elem_randtest(nf_elem_t a, flint_rand_t state, 
+                                              mp_bitcnt_t bits, const nf_t nf);
 
 /******************************************************************************
 
@@ -74,7 +75,9 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state, mp_bitcnt_t bits, nf_t nf
 
 ******************************************************************************/
 
-int nf_elem_equal(nf_elem_t a, nf_elem_t b, nf_t nf);
+int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
+
+int nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
 /******************************************************************************
 
@@ -82,7 +85,7 @@ int nf_elem_equal(nf_elem_t a, nf_elem_t b, nf_t nf);
 
 ******************************************************************************/
 
-void nf_elem_print(nf_elem_t a, nf_t nf);
+void nf_elem_print(const nf_elem_t a, const nf_t nf);
 
 /******************************************************************************
 
@@ -91,34 +94,52 @@ void nf_elem_print(nf_elem_t a, nf_t nf);
 ******************************************************************************/
 
 static __inline__
-void nf_elem_zero(nf_elem_t a, nf_t nf)
+void nf_elem_zero(nf_elem_t a, const nf_t nf)
 {
    fmpq_poly_zero(NF_ELEM(a));
 }
 
 static __inline__
-void nf_elem_set(nf_elem_t a, nf_elem_t b, nf_t nf)
+void nf_elem_set(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
    fmpq_poly_set(NF_ELEM(a), NF_ELEM(b));
 }
 
 static __inline__
-void nf_elem_add(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf)
+void _nf_elem_add(nf_elem_t a, const nf_elem_t b, 
+                                              const nf_elem_t c, const nf_t nf)
 {
    fmpq_poly_add_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 0);
-   fmpq_poly_canonicalise_weak(NF_ELEM(a));
 }
 
 static __inline__
-void nf_elem_sub(nf_elem_t a, nf_elem_t b, nf_elem_t c, nf_t nf)
+void _nf_elem_sub(nf_elem_t a, const nf_elem_t b, 
+                                              const nf_elem_t c, const nf_t nf)
 {
    fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 0);
-   fmpq_poly_canonicalise_weak(NF_ELEM(a));
 }
 
-void nf_elem_mul(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, nf_t nf);
+static __inline__
+void nf_elem_add(nf_elem_t a, const nf_elem_t b, 
+                                              const nf_elem_t c, const nf_t nf)
+{
+   fmpq_poly_add_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 1);
+}
 
-void nf_elem_inv(nf_elem_t a, nf_elem_t b, nf_t nf);
+static __inline__
+void nf_elem_sub(nf_elem_t a, const nf_elem_t b, 
+                                              const nf_elem_t c, const nf_t nf)
+{
+   fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 1);
+}
+
+void _nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
+                                             const nf_elem_t c, const nf_t nf);
+
+void nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
+                                             const nf_elem_t c, const nf_t nf);
+
+void nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
 #ifdef __cplusplus
 }

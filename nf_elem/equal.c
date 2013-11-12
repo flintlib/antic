@@ -25,7 +25,7 @@
 
 #include "nf_elem.h"
 
-int nf_elem_equal(nf_elem_t a, nf_elem_t b, nf_t nf)
+int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
     const slong len1 = NF_ELEM(a)->length;
     const slong len2 = NF_ELEM(b)->length;
@@ -34,18 +34,17 @@ int nf_elem_equal(nf_elem_t a, nf_elem_t b, nf_t nf)
        return 0;
 
     if (fmpz_equal(fmpq_poly_denref(NF_ELEM(a)), fmpq_poly_denref(NF_ELEM(b))))
-    {
-       if (nf->flag & NF_MONIC)
-          return _fmpz_vec_equal(NF_ELEM_NUMREF(a), NF_ELEM_NUMREF(b), len1);
-       else
-          return fmpq_poly_equal(NF_ELEM(a), NF_ELEM(b));
-    } else
+       return _fmpz_vec_equal(NF_ELEM_NUMREF(a), NF_ELEM_NUMREF(b), len1);
+    else
     {
         slong i;
         slong d = fmpz_bits(fmpq_poly_denref(NF_ELEM(b)))
                 - fmpz_bits(fmpq_poly_denref(NF_ELEM(a))) + 1;
         fmpz * p1 = NF_ELEM_NUMREF(a);
         fmpz * p2 = NF_ELEM_NUMREF(b);
+        fmpz_t gcd, den1, den2;
+        fmpz * t1, * t2;
+        int equal;
 
         for (i = 0; i < len1; i++)
         {
@@ -55,9 +54,44 @@ int nf_elem_equal(nf_elem_t a, nf_elem_t b, nf_t nf)
               return 0;
         }
 
-        fmpq_poly_canonicalise(NF_ELEM(a));
-        fmpq_poly_canonicalise(NF_ELEM(b));
-        
-        return fmpq_poly_equal(NF_ELEM(a), NF_ELEM(b));
+        fmpz_init(gcd);
+        fmpz_init(den1);
+        fmpz_init(den2);
+
+        /* TODO: possibly only compute GCD if it will save time */
+        fmpz_gcd(gcd, fmpq_poly_denref(NF_ELEM(a)), fmpq_poly_denref(NF_ELEM(b)));
+        fmpz_divexact(den1, fmpq_poly_denref(NF_ELEM(a)), gcd);
+        fmpz_divexact(den2, fmpq_poly_denref(NF_ELEM(b)), gcd);
+
+        t1 = _fmpz_vec_init(len1);
+        t2 = _fmpz_vec_init(len1);
+
+        _fmpz_vec_scalar_mul_fmpz(t1, p1, len1, den2);
+        _fmpz_vec_scalar_mul_fmpz(t2, p2, len2, den1);
+
+        equal = _fmpz_vec_equal(t1, t2, len1);
+
+        fmpz_clear(gcd);
+        fmpz_clear(den1);
+        fmpz_clear(den2);
+
+        _fmpz_vec_clear(t1, len1);
+        _fmpz_vec_clear(t2, len1);
+
+        return equal;
     }
+}
+
+int nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf)
+{
+    const slong len1 = NF_ELEM(a)->length;
+    const slong len2 = NF_ELEM(b)->length;
+        
+    if (len1 != len2)
+       return 0;
+
+    if (fmpz_equal(fmpq_poly_denref(NF_ELEM(a)), fmpq_poly_denref(NF_ELEM(b))))
+       return _fmpz_vec_equal(NF_ELEM_NUMREF(a), NF_ELEM_NUMREF(b), len1);
+    else
+       return 0;
 }

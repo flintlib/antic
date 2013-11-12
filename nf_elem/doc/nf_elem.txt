@@ -29,18 +29,18 @@
 
 *******************************************************************************
 
-void nf_elem_init(nf_elem_t a, nf_t nf)
+void nf_elem_init(nf_elem_t a, const nf_t nf)
 
     Initialise a number field element to belong to the given number field
     \code{nf}.
 
-void nf_elem_clear(nf_elem_t a, nf_t nf)
+void nf_elem_clear(nf_elem_t a, const nf_t nf)
 
     Clear resources allocated by the given number field element in the given
     number field.
 
 void nf_elem_randtest(nf_elem_t a, flint_rand_t state, 
-                                                     mp_bitcnt_t bits, nf_t nf)
+                                               mp_bitcnt_t bits, const nf_t nf)
 
     Generate a random number field element $a$ in the number field \code{nf}
     whose coefficients have up to the given number of bits.
@@ -51,10 +51,17 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
 
 *******************************************************************************
 
-int nf_elem_equal(nf_elem_t a, nf_elem_t b, nf_t nf)
+int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
     Return $1$ if the given number field elements are equal in the given
-    number field \code{nf}.
+    number field \code{nf}. This function does \emph{not} assume $a$ and $b$
+    are canonicalised.
+
+int nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf)
+
+    Return $1$ if the given number field elements are equal in the given
+    number field \code{nf}. This function assumes $a$ and $b$ \emph{are}
+    canonicalised.
 
 *******************************************************************************
 
@@ -62,7 +69,7 @@ int nf_elem_equal(nf_elem_t a, nf_elem_t b, nf_t nf)
 
 *******************************************************************************
 
-void nf_elem_print(nf_elem_t a, nf_t nf)
+void nf_elem_print(const nf_elem_t a, const nf_t nf)
 
     Print the given number field element.
 
@@ -72,27 +79,48 @@ void nf_elem_print(nf_elem_t a, nf_t nf)
 
 *******************************************************************************
 
-void nf_elem_zero(nf_elem_t a)
+void nf_elem_zero(nf_elem_t a, const nf_t nf)
 
    Set the given number field element to zero.
 
-void nf_elem_set(nf_elem_t a, nf_elem_t b, nf_t nf)
+void nf_elem_set(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
     Set the number field element $a$ to equal the number field element $b$,
-    i.e. set $a = b$.
+    i.e. set $a = b$. If the inputs 
 
-void nf_elem_add(nf_elem_t r, nf_elem_t a, nf_elem_t b, nf_t nf)
+void _nf_elem_add(nf_elem_t r, const nf_elem_t a, 
+                                              const nf_elem_t b, const nf_t nf)
+
+    Add two elements of a number field \code{nf}, i.e. set $r = a + b$.
+    Canonicalisation is not performed.
+
+void nf_elem_add(nf_elem_t r, const nf_elem_t a, 
+                                              const nf_elem_t b, const nf_t nf)
 
     Add two elements of a number field \code{nf}, i.e. set $r = a + b$.
 
-void nf_elem_sub(nf_elem_t r, nf_elem_t a, nf_elem_t b, nf_t nf)
+void _nf_elem_sub(nf_elem_t r, const nf_elem_t a, 
+                                              const nf_elem_t b, const nf_t nf)
+
+    Subtract two elements of a number field \code{nf}, i.e. set $r = a - b$.
+    Canonicalisation is not performed.
+
+void nf_elem_sub(nf_elem_t r, const nf_elem_t a, 
+                                              const nf_elem_t b, const nf_t nf)
 
     Subtract two elements of a number field \code{nf}, i.e. set $r = a - b$.
 
-void nf_elem_mul(nf_elem_t r, nf_elem_t a, nf_elem_t b, nf_t nf)
+void _nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
+                                              const nf_elem_t c, const nf_t nf)
+   
+    Multiply two elements of a number field \code{nf}, i.e. set $r = a * b$.
+    Does not canonicalise. Aliasing of inputs with output is not supported.
+
+void nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
+                                              const nf_elem_t c, const nf_t nf)
 
     Multiply two elements of a number field \code{nf}, i.e. set $r = a * b$.
 
-void nf_elem_inv(nf_elem_t r, nf_elem_t a, nf_t nf)
+void nf_elem_inv(nf_elem_t r, const nf_elem_t a, const nf_t nf)
 
     Invert an element of a number field \code{nf}, i.e. set $r = a^{-1}$.

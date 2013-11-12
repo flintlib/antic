@@ -25,7 +25,7 @@
 
 #include "nf_elem.h"
 
-void nf_elem_print(nf_elem_t a, nf_t nf)
+void nf_elem_print(const nf_elem_t a, const nf_t nf)
 {
     if (nf->flag & NF_QUADRATIC)
     {
