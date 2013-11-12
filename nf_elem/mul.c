@@ -25,8 +25,8 @@
 
 #include "nf_elem.h"
 
-void _nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
-                                              const nf_elem_t c, const nf_t nf)
+void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
+                                     const nf_elem_t c, const nf_t nf, int red)
 {
     const slong len1 = NF_ELEM(b)->length;
     const slong len2 = NF_ELEM(c)->length;
@@ -56,69 +56,72 @@ void _nf_elem_mul(nf_elem_t a, const nf_elem_t b,
 
     _fmpq_poly_set_length(NF_ELEM(a), plen);
 
-    if (nf->flag & NF_MONIC)
+    if (red && plen >= len)
     {
-        if (plen > len - 1)
-        {
-           if (len <= NF_POWERS_CUTOFF)
-           {
-              _fmpz_poly_rem_powers_precomp(NF_ELEM_NUMREF(a), plen,
-                 fmpq_poly_numref(nf->pol), len, nf->powers.zz->powers);
+       if (nf->flag & NF_MONIC)
+       {
+          if (len <= NF_POWERS_CUTOFF)
+          {
+             _fmpz_poly_rem_powers_precomp(NF_ELEM_NUMREF(a), plen,
+                fmpq_poly_numref(nf->pol), len, nf->powers.zz->powers);
 
-              _fmpq_poly_set_length(NF_ELEM(a), len - 1);
-              _fmpq_poly_normalise(NF_ELEM(a));
-              
-           } else
-           {
-              fmpz * q = _fmpz_vec_init(plen - len + 1);
-              fmpz * r = _fmpz_vec_init(plen);
-              _fmpz_vec_set(r, NF_ELEM_NUMREF(a), plen);
+             _fmpq_poly_set_length(NF_ELEM(a), len - 1);
+             _fmpq_poly_normalise(NF_ELEM(a));
+             
+          } else
+          {
+             fmpz * q = _fmpz_vec_init(plen - len + 1);
+             fmpz * r = _fmpz_vec_init(plen);
+             _fmpz_vec_set(r, NF_ELEM_NUMREF(a), plen);
 
-              _fmpz_poly_divrem(q, NF_ELEM_NUMREF(a), r, plen, 
+             _fmpz_poly_divrem(q, NF_ELEM_NUMREF(a), r, plen, 
                   fmpq_poly_numref(nf->pol), len);
 
-              _fmpz_vec_clear(r, plen);
-              _fmpz_vec_clear(q, plen - len + 1);
-           
-              NF_ELEM(a)->length = len - 1;
-           }
-        }
-    }
-    else
-    {
-        fmpq_poly_t t;
+             _fmpz_vec_clear(r, plen);
+             _fmpz_vec_clear(q, plen - len + 1);
+          
+             NF_ELEM(a)->length = len - 1;
+          }
+       }
+       else
+       {
+          fmpq_poly_t t;
         
-        if (NF_ELEM(a)->length >= len)
-        {
-           if (nf->pol->length <= NF_POWERS_CUTOFF)
-           {
-              _fmpq_poly_rem_powers_precomp(NF_ELEM_NUMREF(a), 
-                 fmpq_poly_denref(NF_ELEM(a)), plen,
-                 fmpq_poly_numref(nf->pol), fmpq_poly_denref(nf->pol), 
-                 len, nf->powers.qq->powers);
+          if (len <= NF_POWERS_CUTOFF)
+          {
+             _fmpq_poly_rem_powers_precomp(NF_ELEM_NUMREF(a), 
+                fmpq_poly_denref(NF_ELEM(a)), plen,
+                fmpq_poly_numref(nf->pol), fmpq_poly_denref(nf->pol), 
+                len, nf->powers.qq->powers);
 
-              _fmpq_poly_set_length(NF_ELEM(a), len - 1);
-              _fmpq_poly_normalise(NF_ELEM(a));
-           } else
-           {
-              fmpq_poly_init2(t, NF_ELEM(a)->length);
+             _fmpq_poly_set_length(NF_ELEM(a), len - 1);
+             _fmpq_poly_normalise(NF_ELEM(a));
+          } else
+          {
+             fmpq_poly_init2(t, plen);
         
-              _fmpq_poly_rem(t->coeffs, t->den,
-                 NF_ELEM(a)->coeffs, NF_ELEM(a)->den, NF_ELEM(a)->length, 
-                 nf->pol->coeffs, nf->pol->den, len, nf->pinv.qq); 
+             _fmpq_poly_rem(t->coeffs, t->den,
+                NF_ELEM(a)->coeffs, NF_ELEM(a)->den, plen, 
+                nf->pol->coeffs, nf->pol->den, len, nf->pinv.qq); 
            
-              _fmpq_poly_set_length(t, len - 1);
-              _fmpq_poly_normalise(t);
+             _fmpq_poly_set_length(t, len - 1);
+             _fmpq_poly_normalise(t);
         
-              fmpq_poly_swap(t, NF_ELEM(a));
-              fmpq_poly_clear(t);
-           }
-        }
+             fmpq_poly_swap(t, NF_ELEM(a));
+             fmpq_poly_clear(t);
+          }
+       }
     }
 }
 
-void nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
-                                              const nf_elem_t c, const nf_t nf)
+void _nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
+                                     const nf_elem_t c, const nf_t nf)
+{
+   _nf_elem_mul_red(a, b, c, nf, 1);
+}
+
+void nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
+                                     const nf_elem_t c, const nf_t nf, int red)
 {
    nf_elem_t t;
    
@@ -126,13 +129,19 @@ void nf_elem_mul(nf_elem_t a, const nf_elem_t b,
    {
       nf_elem_init(t, nf);
 
-      _nf_elem_mul(t, b, c, nf);
+      _nf_elem_mul_red(t, b, c, nf, red);
       fmpq_poly_swap(NF_ELEM(t), NF_ELEM(a));
 
       nf_elem_clear(t, nf);
    }
    else
-      _nf_elem_mul(a, b, c, nf);
+      _nf_elem_mul_red(a, b, c, nf, red);
 
    fmpq_poly_canonicalise(NF_ELEM(a));
+}
+
+void nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
+                                              const nf_elem_t c, const nf_t nf)
+{
+   nf_elem_mul_red(a, b, c, nf, 1);
 }

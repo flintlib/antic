@@ -139,6 +139,12 @@ void _nf_elem_mul(nf_elem_t a, const nf_elem_t b,
 void nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
                                              const nf_elem_t c, const nf_t nf);
 
+void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
+                                    const nf_elem_t c, const nf_t nf, int red);
+
+void nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
+                                    const nf_elem_t c, const nf_t nf, int red);
+
 void nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
 #ifdef __cplusplus

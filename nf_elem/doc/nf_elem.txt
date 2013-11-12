@@ -116,10 +116,25 @@ void _nf_elem_mul(nf_elem_t a, const nf_elem_t b,
     Multiply two elements of a number field \code{nf}, i.e. set $r = a * b$.
     Does not canonicalise. Aliasing of inputs with output is not supported.
 
+void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
+                                     const nf_elem_t c, const nf_t nf, int red)
+   
+
+    As per \code{_nf_elem_mul}, but reduction modulo the defining polynomial
+    of the number field is only carried out if \code{red == 1}. Assumes both
+    inputs are reduced.
+
 void nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
                                               const nf_elem_t c, const nf_t nf)
 
     Multiply two elements of a number field \code{nf}, i.e. set $r = a * b$.
+
+void nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
+                                     const nf_elem_t c, const nf_t nf, int red)
+
+    As per \code{nf_elem_mul}, but reduction modulo the defining polynomial
+    of the number field is only carried out if \code{red == 1}. Assumes both
+    inputs are reduced.
 
 void nf_elem_inv(nf_elem_t r, const nf_elem_t a, const nf_t nf)
 
