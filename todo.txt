@@ -1,9 +1,26 @@
 TODO
 ====
 
+flint
+-----
+
+* in fmpq_poly_rem_powers_precomp, use precomputed powers in cases where
+  m >= 2*n - 1
+
 qfb
 ---
 
 * Cubing version of NUCOMP (NUCUBE)
 * Pow which makes use of NUDUPL and NUCUBE
 
+nf_elem
+-------
+
+* in _nf_elem_equal only compute gcd if this will be faster than multiplying
+  by full denominators
+
+* special case quadratic number fields
+
+* fix nf_elem_print to print consistent format
+
+* add nf_elem_print_pretty ?
