@@ -33,7 +33,7 @@
 int main(void)
 {
    fmpz_t n, p;
-   long iters, i, j;
+   slong iters, i, j;
    qfb_t pow, oldpow, twopow;
    ulong pr, oldpr, nmodpr;
    int done = 1;

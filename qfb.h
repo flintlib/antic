@@ -47,7 +47,7 @@ typedef struct
 {
    qfb_t q;
    qfb_t q2;
-   long iter;
+   slong iter;
 } qfb_hash_t;
 
 static __inline__
@@ -106,9 +106,9 @@ void qfb_print(qfb_t q)
 }
 
 static __inline__
-void qfb_array_clear(qfb ** forms, long num)
+void qfb_array_clear(qfb ** forms, slong num)
 {
-   long k;
+   slong k;
 
    for (k = 0; k < num; k++)
    {
@@ -119,22 +119,22 @@ void qfb_array_clear(qfb ** forms, long num)
    flint_free(*forms);
 }
 
-qfb_hash_t * qfb_hash_init(long depth);
+qfb_hash_t * qfb_hash_init(slong depth);
 
-void qfb_hash_clear(qfb_hash_t * qhash, long depth);
+void qfb_hash_clear(qfb_hash_t * qhash, slong depth);
 
 void qfb_hash_insert(qfb_hash_t * qhash, qfb_t q, 
-                     qfb_t q2, long iter, long depth);
+                     qfb_t q2, slong iter, slong depth);
 
-long qfb_hash_find(qfb_hash_t * qhash, qfb_t q, long depth);
+slong qfb_hash_find(qfb_hash_t * qhash, qfb_t q, slong depth);
 
 void qfb_reduce(qfb_t r, qfb_t f, fmpz_t D);
 
 int qfb_is_reduced(qfb_t r);
 
-long qfb_reduced_forms(qfb ** forms, long d);
+slong qfb_reduced_forms(qfb ** forms, slong d);
 
-long qfb_reduced_forms_large(qfb ** forms, long d);
+slong qfb_reduced_forms_large(qfb ** forms, slong d);
 
 void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L);
 
@@ -205,7 +205,7 @@ void qfb_prime_form(qfb_t r, fmpz_t D, fmpz_t p);
 int qfb_exponent_element(fmpz_t exponent, qfb_t f, 
                                           fmpz_t n, ulong B1, ulong B2_sqrt);
 
-int qfb_exponent(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2_sqrt, long c);
+int qfb_exponent(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2_sqrt, slong c);
 
 int qfb_exponent_grh(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2_sqrt);
 

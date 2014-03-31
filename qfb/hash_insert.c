@@ -30,9 +30,9 @@
 #include "fmpz.h"
 #include "qfb.h"
 
-void qfb_hash_insert(qfb_hash_t * qhash, qfb_t q, qfb_t q2, long iter, long depth)
+void qfb_hash_insert(qfb_hash_t * qhash, qfb_t q, qfb_t q2, slong iter, slong depth)
 {
-   long size = (1L<<depth), i;
+   slong size = (1L<<depth), i;
    fmpz_t r;
 
    fmpz_init(r);

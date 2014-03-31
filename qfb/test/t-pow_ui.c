@@ -35,7 +35,7 @@ int main(void)
 {
     int result;
     flint_rand_t state;
-    long i, j;
+    slong i, j;
 
     printf("pow_ui....");
     fflush(stdout);

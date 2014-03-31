@@ -30,10 +30,10 @@
 #include "fmpz.h"
 #include "qfb.h"
 
-int qfb_exponent(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2_sqrt, long c)
+int qfb_exponent(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2_sqrt, slong c)
 {
    fmpz_t p, exp, n2;
-   long i;
+   slong i;
    qfb_t f;
    ulong pr, nmodpr, s;
    int ret = 1;

@@ -30,9 +30,9 @@
 #include "fmpz.h"
 #include "qfb.h"
 
-long qfb_hash_find(qfb_hash_t * qhash, qfb_t q, long depth)
+slong qfb_hash_find(qfb_hash_t * qhash, qfb_t q, slong depth)
 {
-   long size = (1L<<depth), i;
+   slong size = (1L<<depth), i;
    fmpz_t r;
 
    fmpz_init(r);

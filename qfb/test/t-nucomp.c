@@ -36,7 +36,7 @@ int main(void)
     int result;
     flint_rand_t state;
     qfb * forms;
-    long i, k, i1, i2, i3, num;
+    slong i, k, i1, i2, i3, num;
 
     printf("nucomp....");
     fflush(stdout);

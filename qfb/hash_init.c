@@ -30,9 +30,9 @@
 #include "fmpz.h"
 #include "qfb.h"
 
-qfb_hash_t * qfb_hash_init(long depth)
+qfb_hash_t * qfb_hash_init(slong depth)
 {
-   long i, size = (1L<<depth);
+   slong i, size = (1L<<depth);
    qfb_hash_t * qhash = flint_malloc(size*sizeof(qfb_hash_t));
 
    for (i = 0; i < size; i++)

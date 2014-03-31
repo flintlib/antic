@@ -38,7 +38,7 @@ void qfb_clear(qfb_t q)
     Clear a \code{qfb_t} after use. This releases any memory allocated for
     $q$ back to flint.
 
-void qfb_array_clear(qfb ** forms, long num)
+void qfb_array_clear(qfb ** forms, slong num)
 
     Clean up an array of \code{qfb} structs allocated by a qfb function.
     The parameter \code{num} must be set to the length of the array.
@@ -49,16 +49,16 @@ void qfb_array_clear(qfb ** forms, long num)
 
 *******************************************************************************
 
-qfb_hash_t * qfb_hash_init(long depth)
+qfb_hash_t * qfb_hash_init(slong depth)
     
     Initialises a hash table of size $2^\mbox{depth}$. 
 
-void qfb_hash_clear(qfb_hash_t * qhash, long depth)
+void qfb_hash_clear(qfb_hash_t * qhash, slong depth)
 
     Frees all memory used by a hash table of size $2^\mbox{depth}$. 
 
 void qfb_hash_insert(qfb_hash_t * qhash, qfb_t q, 
-                              qfb_t q2, long iter, long depth)
+                              qfb_t q2, slong iter, slong depth)
 
     Insert the binary quadratic form \code{q} into the given hash table 
     of size $2^\mbox{depth}$ in the field \code{q} of the hash structure. 
@@ -66,7 +66,7 @@ void qfb_hash_insert(qfb_hash_t * qhash, qfb_t q,
     \code{NULL}) in the similarly named field and \code{iter} in the 
     similarly named field of the hash structure. 
 
-long qfb_hash_find(qfb_hash_t * qhash, qfb_t q, long depth)
+slong qfb_hash_find(qfb_hash_t * qhash, qfb_t q, slong depth)
 
     Search for the given binary quadratic form or its inverse in the 
     given hash table of size $2^\mbox{depth}$. If it is found, return
@@ -126,7 +126,7 @@ int qfb_is_reduced(qfb_t r)
     Returns $1$ if $q$ is a reduced binary quadratic form. Otherwise returns
     $1$.
 
-long qfb_reduced_forms(qfb ** forms, long d)
+slong qfb_reduced_forms(qfb ** forms, slong d)
 
     Given a discriminant $d$ (negative for negative definite forms), compute
     all the reduced binary quadratic forms of that discriminant. The function
@@ -137,7 +137,7 @@ long qfb_reduced_forms(qfb ** forms, long d)
     stored in an array of \code{qfb} structs, which contain fields 
     \code{a, b, c} corresponding to forms $(a, b, c)$. 
 
-long qfb_reduced_forms_large(qfb ** forms, long d)
+slong qfb_reduced_forms_large(qfb ** forms, slong d)
 
     As for \code{qfb_reduced_forms}. However, for small \code{|d|} it requires 
     fewer primes to be computed at a small cost in speed. It is called 
@@ -216,7 +216,7 @@ int qfb_exponent_element(fmpz_t exponent, qfb_t f,
     additional limbs of data in a hash table, where \code{iters} is the
     square root of \code{B2}.
 
-int qfb_exponent(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2_sqrt, long c)
+int qfb_exponent(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2_sqrt, slong c)
 
     Compute the exponent of the class group of discriminant $n$, doing a 
     stage $1$ with primes up to at least \code{B1} and a stage $2$ for a 

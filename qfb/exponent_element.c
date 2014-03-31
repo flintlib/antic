@@ -50,8 +50,8 @@ ulong qfb_exponent_element_stage2(qfb_t f, fmpz_t n, ulong B2_sqrt)
 {
    qfb_t pow, pow2, f2;
    fmpz_t L, r;
-   long i, i2, ret = 0;
-   long depth = FLINT_BIT_COUNT(B2_sqrt) + 1;
+   slong i, i2, ret = 0;
+   slong depth = FLINT_BIT_COUNT(B2_sqrt) + 1;
    qfb_hash_t * qhash = qfb_hash_init(depth);
    
    fmpz_init(L);
@@ -118,7 +118,7 @@ typedef struct
 {
    ulong pr;
    qfb_t pow;
-   long i;
+   slong i;
 } qfb_restart_t;
 
 #define go_restart \
@@ -140,7 +140,7 @@ typedef struct
 
 int qfb_exponent_element(fmpz_t exponent, qfb_t f, fmpz_t n, ulong B1, ulong B2_sqrt)
 {
-   long i, j, iters = 1024, restart_inc;
+   slong i, j, iters = 1024, restart_inc;
    qfb_t pow, oldpow, f2;
    ulong pr, oldpr, s2, sqrt, exp;
    fmpz_t prod, L, pow2;

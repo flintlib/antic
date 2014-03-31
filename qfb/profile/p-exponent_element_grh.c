@@ -34,7 +34,7 @@
 int main(int argc, char *argv[])
 {
     int result;
-    long exp, val, num, B1, B2, i;
+    slong exp, val, num, B1, B2, i;
 
     if (argc != 6)
     {
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < num; i++) 
     {
         fmpz_t D, exponent;
-        long e;
+        slong e;
         
         fmpz_init(D);
         fmpz_init(exponent);

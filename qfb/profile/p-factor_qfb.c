@@ -33,7 +33,7 @@
 int main(void)
 {
    fmpz_t g, n, n0, p, L;
-   long iters, i, j, depth, jmax = 10;
+   slong iters, i, j, depth, jmax = 10;
    qfb_t pow, twopow;
    ulong pr, nmodpr, mult, n0mod4;
    qfb_hash_t * qhash;
@@ -153,7 +153,7 @@ int main(void)
          if (i == iters) /* stage 2 */
          {
             ulong jump = iters*iters;
-            long iters2;
+            slong iters2;
       
             for (i = 0; i < iters; i++)
             {
@@ -217,7 +217,7 @@ done:
       }
 
       iters *= 2;
-      jmax = (long) (jmax * 1.15);
+      jmax = (slong) (jmax * 1.15);
 
       mult = iters/10;
       mult |= 1;

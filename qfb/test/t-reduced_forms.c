@@ -37,7 +37,7 @@ int main(void)
     flint_rand_t state;
     qfb * forms;
     qfb * forms2;
-    long i, j, k, num, num2;
+    slong i, j, k, num, num2;
 
     printf("reduced_forms....");
     fflush(stdout);

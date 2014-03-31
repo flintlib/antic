@@ -30,9 +30,9 @@
 #include "fmpz.h"
 #include "qfb.h"
 
-void qfb_hash_clear(qfb_hash_t * qhash, long depth)
+void qfb_hash_clear(qfb_hash_t * qhash, slong depth)
 {
-   long i, size = (1L<<depth);
+   slong i, size = (1L<<depth);
    
    for (i = 0; i < size; i++)
    {

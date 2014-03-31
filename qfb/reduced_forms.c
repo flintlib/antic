@@ -51,9 +51,9 @@ int pow_incr(int * pows, int * exp, int n)
     return 0;
 }
 
-long qfb_reduced_forms_large(qfb ** forms, long d)
+slong qfb_reduced_forms_large(qfb ** forms, slong d)
 {
-    long a, j, k, p, alim, alloc, num, roots, sqrt, i, prod, prime_i;
+    slong a, j, k, p, alim, alloc, num, roots, sqrt, i, prod, prime_i;
     mp_srcptr primes;
     const double * prime_inverses;
     mp_limb_t a2;
@@ -183,9 +183,9 @@ long qfb_reduced_forms_large(qfb ** forms, long d)
     return num;
 }
 
-long qfb_reduced_forms(qfb ** forms, long d)
+slong qfb_reduced_forms(qfb ** forms, slong d)
 {
-    long a, b, k, c, p, blim, alloc, num, sqrt, i, prod, prime_i;
+    slong a, b, k, c, p, blim, alloc, num, sqrt, i, prod, prime_i;
     mp_srcptr primes;
     const double * prime_inverses;
     mp_limb_t b2, exp, primes_cutoff = 0;

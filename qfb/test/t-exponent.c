@@ -36,7 +36,7 @@ int main(void)
     int result;
     flint_rand_t state;
     qfb * forms;
-    long i, k, i1, d, num;
+    slong i, k, i1, d, num;
 
     printf("exponent....");
     fflush(stdout);
@@ -48,7 +48,7 @@ int main(void)
     {
         fmpz_t D, exp;
         qfb_t pow;
-        long e;
+        slong e;
         
         d = n_randint(state, 100000) + 1;
         num = qfb_reduced_forms(&forms, -d);

@@ -36,7 +36,7 @@ int main(void)
     int result;
     flint_rand_t state;
     qfb * forms;
-    long i, k, i1, d, num;
+    slong i, k, i1, d, num;
 
     printf("exponent_element....");
     fflush(stdout);
