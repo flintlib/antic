@@ -69,6 +69,9 @@ void nf_elem_clear(nf_elem_t a, const nf_t nf);
 void nf_elem_randtest(nf_elem_t a, flint_rand_t state, 
                                               mp_bitcnt_t bits, const nf_t nf);
 
+void nf_elem_randtest_not_zero(nf_elem_t a, flint_rand_t state, 
+                                              mp_bitcnt_t bits, const nf_t nf);
+
 /******************************************************************************
 
     Comparison
@@ -78,6 +81,12 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
 int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
 int nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
+
+static __inline__
+int nf_elem_is_one(nf_elem_t a, const nf_t nf)
+{
+   return fmpq_poly_is_one(a->elem);
+}
 
 /******************************************************************************
 
@@ -144,6 +153,8 @@ void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
 
 void nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
                                     const nf_elem_t c, const nf_t nf, int red);
+
+void _nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
 void nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 

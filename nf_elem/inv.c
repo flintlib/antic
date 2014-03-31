@@ -19,40 +19,39 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2013 Fredrik Johansson
     Copyright (C) 2013 William Hart
 
 ******************************************************************************/
 
 #include "nf_elem.h"
 
-void nf_elem_randtest(nf_elem_t a, flint_rand_t state, 
-                                               mp_bitcnt_t bits, const nf_t nf)
+
+void _nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
-    if (nf->flag & NF_QUADRATIC)
-    {
-        fmpz_randtest(QNF_ELEM(a)->a, state, bits);
-        fmpz_randtest(QNF_ELEM(a)->b, state, bits);
-        fmpz_randtest(QNF_ELEM(a)->den, state, bits);
-    }
-    else
-    {
-        fmpq_poly_randtest(NF_ELEM(a), state, nf->pol->length - 1, bits);
-    }
+   fmpq_poly_t G, T;
+
+   fmpq_poly_init(G);
+   fmpq_poly_init(T);
+
+   fmpq_poly_xgcd(G, NF_ELEM(a), T, NF_ELEM(b), nf->pol);
+
+   fmpq_poly_clear(T);
+   fmpq_poly_clear(G);
 }
 
-void nf_elem_randtest_not_zero(nf_elem_t a, flint_rand_t state, 
-                                               mp_bitcnt_t bits, const nf_t nf)
+void nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
-   if (nf->flag & NF_QUADRATIC)
+   nf_elem_t t;
+   
+   if (a == b)
    {
-       do {
-          nf_elem_randtest(a, state, bits, nf);
-       } while (fmpz_is_zero(QNF_ELEM(a)->a) && fmpz_is_zero(QNF_ELEM(a)->b));
-   } else
-   {
-      do {
-          nf_elem_randtest(a, state, bits, nf);
-       } while (fmpq_poly_is_zero(NF_ELEM(a)));
+      nf_elem_init(t, nf);
+
+      _nf_elem_inv(t, b, nf);
+      fmpq_poly_swap(NF_ELEM(t), NF_ELEM(a));
+
+      nf_elem_clear(t, nf);
    }
+   else
+      _nf_elem_inv(a, b, nf);
 }
