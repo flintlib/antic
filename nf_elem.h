@@ -158,6 +158,10 @@ void _nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
 void nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
+void _nf_elem_div(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, const nf_t nf);
+
+void nf_elem_div(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, const nf_t nf);
+
 #ifdef __cplusplus
 }
 #endif
