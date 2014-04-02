@@ -37,8 +37,24 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
 
         if (n_randint(state, 2))
         {
+           fmpz_t d;
+           
            fmpz_randtest_not_zero(QNF_ELEM(a)->den, state, bits);
            fmpz_abs(QNF_ELEM(a)->den, QNF_ELEM(a)->den);
+
+           fmpz_init(d);
+           fmpz_gcd(d, QNF_ELEM(a)->a, QNF_ELEM(a)->b);
+           if (!fmpz_is_one(d))
+           {
+              fmpz_gcd(d, d, QNF_ELEM(a)->den);
+
+              if (!fmpz_is_one(d))
+              {
+                 fmpz_divexact(QNF_ELEM(a)->a, QNF_ELEM(a)->a, d);
+                 fmpz_divexact(QNF_ELEM(a)->b, QNF_ELEM(a)->b, d);
+                 fmpz_divexact(QNF_ELEM(a)->den, QNF_ELEM(a)->den, d);
+              }
+           }
         } else
            fmpz_one(QNF_ELEM(a)->den);
     }
