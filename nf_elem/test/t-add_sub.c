@@ -48,7 +48,7 @@ main(void)
     {
         fmpq_poly_t pol;
         nf_t nf;
-        nf_elem_t a, b, c;
+        nf_elem_t a, b, c, t;
 
         fmpq_poly_init(pol);
         fmpq_poly_randtest_not_zero(pol, state, 40, 200);
@@ -58,12 +58,13 @@ main(void)
         nf_elem_init(a, nf);
         nf_elem_init(b, nf);
         nf_elem_init(c, nf);
+        nf_elem_init(t, nf);
 
         nf_elem_randtest(b, state, 200, nf);
         nf_elem_randtest(c, state, 200, nf);
         
-        nf_elem_add(a, b, c, nf);
-        nf_elem_sub(a, a, c, nf);
+        nf_elem_add(t, b, c, nf);
+        nf_elem_sub(a, t, c, nf);
 
         result = (nf_elem_equal(a, b, nf));
         if (!result)
@@ -78,6 +79,7 @@ main(void)
         nf_elem_clear(a, nf);
         nf_elem_clear(b, nf);
         nf_elem_clear(c, nf);
+        nf_elem_clear(t, nf);
          
         nf_clear(nf);
 
