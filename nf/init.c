@@ -40,6 +40,9 @@ void nf_init(nf_t nf, fmpq_poly_t pol)
        nf->flag = NF_GENERIC;
     }
 
+    if (pol->length == 3) /* quadratic case */
+       nf->flag |= NF_QUADRATIC;
+
     if (pol->length <= NF_POWERS_CUTOFF && pol->length > 1) /* compute powers of generator mod pol */
     {
        if (nf->flag & NF_MONIC)

@@ -53,6 +53,7 @@ typedef union /* element in a number field (specified by an nf_t) */
 typedef nf_elem_struct nf_elem_t[1];
 
 #define NF_ELEM_NUMREF(xxx) fmpq_poly_numref((xxx)->elem)
+#define NF_ELEM_DENREF(xxx) fmpq_poly_denref((xxx)->elem)
 #define NF_ELEM(xxx) (xxx)->elem
 #define QNF_ELEM(xxx) (xxx)->qelem
 
@@ -111,35 +112,77 @@ void nf_elem_zero(nf_elem_t a, const nf_t nf)
 static __inline__
 void nf_elem_set(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
-   fmpq_poly_set(NF_ELEM(a), NF_ELEM(b));
+   if (nf->flag & NF_QUADRATIC)
+   {
+      fmpz_set(QNF_ELEM(a)->a, QNF_ELEM(b)->a);
+      fmpz_set(QNF_ELEM(a)->b, QNF_ELEM(b)->b);
+      fmpz_set(QNF_ELEM(a)->den, QNF_ELEM(b)->den);
+   } else
+      fmpq_poly_set(NF_ELEM(a), NF_ELEM(b));
 }
+
+static __inline__
+void nf_elem_swap(nf_elem_t a, nf_elem_t b, const nf_t nf)
+{
+   if (nf->flag & NF_QUADRATIC)
+   {
+      fmpz_swap(QNF_ELEM(a)->a, QNF_ELEM(b)->a);
+      fmpz_swap(QNF_ELEM(a)->b, QNF_ELEM(b)->b);
+      fmpz_swap(QNF_ELEM(a)->den, QNF_ELEM(b)->den);
+   } else
+      fmpq_poly_swap(NF_ELEM(a), NF_ELEM(b));
+}
+
+void _nf_elem_add_qf(nf_elem_t a, const nf_elem_t b, 
+                                   const nf_elem_t c, const nf_t nf, int can);
+
+void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
+                                   const nf_elem_t c, const nf_t nf, int can);
+
+void nf_elem_add_qf(nf_elem_t a, const nf_elem_t b, 
+                                            const nf_elem_t c, const nf_t nf);
+
+void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
+                                            const nf_elem_t c, const nf_t nf);
 
 static __inline__
 void _nf_elem_add(nf_elem_t a, const nf_elem_t b, 
                                               const nf_elem_t c, const nf_t nf)
 {
-   fmpq_poly_add_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 0);
+   if (nf->flag & NF_QUADRATIC)
+      _nf_elem_add_qf(a, b, c, nf, 0);
+   else
+      fmpq_poly_add_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 0);
 }
 
 static __inline__
 void _nf_elem_sub(nf_elem_t a, const nf_elem_t b, 
                                               const nf_elem_t c, const nf_t nf)
 {
-   fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 0);
+   if (nf->flag & NF_QUADRATIC)
+      _nf_elem_sub_qf(a, b, c, nf, 0);
+   else
+      fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 0);
 }
 
 static __inline__
 void nf_elem_add(nf_elem_t a, const nf_elem_t b, 
                                               const nf_elem_t c, const nf_t nf)
 {
-   fmpq_poly_add_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 1);
+   if (nf->flag & NF_QUADRATIC)
+      nf_elem_add_qf(a, b, c, nf);
+   else
+      fmpq_poly_add_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 1);
 }
 
 static __inline__
 void nf_elem_sub(nf_elem_t a, const nf_elem_t b, 
                                               const nf_elem_t c, const nf_t nf)
 {
-   fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 1);
+   if (nf->flag & NF_QUADRATIC)
+      nf_elem_sub_qf(a, b, c, nf);
+   else
+      fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 1);
 }
 
 void _nf_elem_mul(nf_elem_t a, const nf_elem_t b, 

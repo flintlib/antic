@@ -25,18 +25,17 @@
 
 #include "nf_elem.h"
 
-
 void _nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
-   fmpq_poly_t G, T;
+   fmpq_poly_t g, t;
 
-   fmpq_poly_init(G);
-   fmpq_poly_init(T);
+   fmpq_poly_init(g);
+   fmpq_poly_init(t);
 
-   fmpq_poly_xgcd(G, NF_ELEM(a), T, NF_ELEM(b), nf->pol);
+   fmpq_poly_xgcd(g, NF_ELEM(a), t, NF_ELEM(b), nf->pol);
 
-   fmpq_poly_clear(T);
-   fmpq_poly_clear(G);
+   fmpq_poly_clear(t);
+   fmpq_poly_clear(g);
 }
 
 void nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf)
