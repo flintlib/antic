@@ -128,7 +128,6 @@ void nf_elem_neg(nf_elem_t a, const nf_elem_t b, const nf_t nf)
    {
       fmpz_neg(QNF_ELEM(a)->a, QNF_ELEM(b)->a);
       fmpz_neg(QNF_ELEM(a)->b, QNF_ELEM(b)->b);
-      fmpz_neg(QNF_ELEM(a)->den, QNF_ELEM(b)->den);
    } else
       fmpq_poly_neg(NF_ELEM(a), NF_ELEM(b));
 }

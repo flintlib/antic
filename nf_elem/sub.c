@@ -66,6 +66,12 @@ void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
                fmpz_divexact(den3, den3, d);
             }
          }
+
+         if (fmpz_sgn(den3) < 0)
+         {
+            nf_elem_neg(a, a, nf);
+            fmpz_neg(den3, den3);
+         }
       }
 
       fmpz_clear(d);
