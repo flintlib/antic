@@ -144,18 +144,24 @@ void nf_elem_swap(nf_elem_t a, nf_elem_t b, const nf_t nf)
       fmpq_poly_swap(NF_ELEM(a), NF_ELEM(b));
 }
 
-void nf_elem_add_qf(nf_elem_t a, const nf_elem_t b, 
+void _nf_elem_add_qf(nf_elem_t a, const nf_elem_t b, 
                                    const nf_elem_t c, const nf_t nf, int can);
 
-void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
+void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
                                    const nf_elem_t c, const nf_t nf, int can);
+
+void nf_elem_add_qf(nf_elem_t a, const nf_elem_t b, 
+                                            const nf_elem_t c, const nf_t nf);
+
+void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
+                                            const nf_elem_t c, const nf_t nf);
 
 static __inline__
 void _nf_elem_add(nf_elem_t a, const nf_elem_t b, 
                                               const nf_elem_t c, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
-      nf_elem_add_qf(a, b, c, nf, 0);
+      _nf_elem_add_qf(a, b, c, nf, 0);
    else
       fmpq_poly_add_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 0);
 }
@@ -165,7 +171,7 @@ void _nf_elem_sub(nf_elem_t a, const nf_elem_t b,
                                               const nf_elem_t c, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
-      nf_elem_sub_qf(a, b, c, nf, 0);
+      _nf_elem_sub_qf(a, b, c, nf, 0);
    else
       fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 0);
 }
@@ -175,7 +181,7 @@ void nf_elem_add(nf_elem_t a, const nf_elem_t b,
                                               const nf_elem_t c, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
-      nf_elem_add_qf(a, b, c, nf, 1);
+      nf_elem_add_qf(a, b, c, nf);
    else
       fmpq_poly_add_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 1);
 }
@@ -185,7 +191,7 @@ void nf_elem_sub(nf_elem_t a, const nf_elem_t b,
                                               const nf_elem_t c, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
-      nf_elem_sub_qf(a, b, c, nf, 1);
+      nf_elem_sub_qf(a, b, c, nf);
    else
       fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 1);
 }

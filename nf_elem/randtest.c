@@ -36,8 +36,10 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
         fmpz_randtest(QNF_ELEM(a)->b, state, bits);
 
         if (n_randint(state, 2))
+        {
            fmpz_randtest_not_zero(QNF_ELEM(a)->den, state, bits);
-        else
+           fmpz_abs(QNF_ELEM(a)->den, QNF_ELEM(a)->den);
+        } else
            fmpz_one(QNF_ELEM(a)->den);
     }
     else

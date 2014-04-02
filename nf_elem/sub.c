@@ -26,7 +26,7 @@
 
 #include "nf_elem.h"
 
-void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
+void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
                                    const nf_elem_t c, const nf_t nf, int can)
 {
    fmpz_t d;
@@ -65,12 +65,6 @@ void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
                fmpz_divexact(b3, b3, d);
                fmpz_divexact(den3, den3, d);
             }
-         }
-
-         if (fmpz_sgn(den3) < 0)
-         {
-            nf_elem_neg(a, a, nf);
-            fmpz_neg(den3, den3);
          }
       }
 
@@ -139,4 +133,21 @@ void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
    }
 
    fmpz_clear(d);
+}
+
+void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
+                                              const nf_elem_t c, const nf_t nf)
+{
+   if (a == c)
+   {
+      nf_elem_t t;
+
+      nf_elem_init(t, nf);
+
+      _nf_elem_sub_qf(t, b, c, nf, 1);
+      nf_elem_swap(t, a, nf);
+
+      nf_elem_clear(t, nf);
+   } else
+      _nf_elem_sub_qf(a, b, c, nf, 1);
 }
