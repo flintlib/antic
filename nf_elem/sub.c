@@ -26,7 +26,7 @@
 
 #include "nf_elem.h"
 
-void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
+void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
                                    const nf_elem_t c, const nf_t nf, int can)
 {
    fmpz_t d;
@@ -46,15 +46,37 @@ void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
    fmpz_init(d);
    fmpz_one(d);
 
-   if (*den1 != WORD(1) && *den2 != WORD(1))
+   if (fmpz_equal(den1, den2))
    {
-      if (fmpz_equal(den1, den2))
-         fmpz_abs(d, den1);
-      else
-         fmpz_gcd(d, den1, den2);
+      fmpz_sub(a3, a1, a2);
+      fmpz_sub(b3, b1, b2);
+      fmpz_set(den3, den1);
+
+      if (can && !fmpz_is_one(den3))
+      {
+         fmpz_gcd(d, a3, b3);
+         if (!fmpz_is_one(d))
+         {
+            fmpz_gcd(d, d, den3);
+
+            if (!fmpz_is_one(d))
+            {
+               fmpz_divexact(a3, a3, d);
+               fmpz_divexact(b3, b3, d);
+               fmpz_divexact(den3, den3, d);
+            }
+         }
+      }
+
+      fmpz_clear(d);
+
+      return;
    }
 
-   if (*d == WORD(1))
+   if (!fmpz_is_one(den1) && !fmpz_is_one(den2))
+      fmpz_gcd(d, den1, den2);
+
+   if (fmpz_is_one(d))
    {
       fmpz_mul(a3, a1, den2);
       fmpz_mul(b3, b1, den2);
@@ -69,23 +91,15 @@ void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
       fmpz_init(den11);
       fmpz_init(den22);
       
-      if (fmpz_equal(den1, d))
-         fmpz_set_ui(den11, 1);
-      else
-         fmpz_divexact(den11, den1, d);
-      
-      if (fmpz_equal(den2, d))
-         fmpz_set_ui(den22, 1);
-      else
-         fmpz_divexact(den22, den2, d);
-        
-        
+      fmpz_divexact(den11, den1, d);   
+      fmpz_divexact(den22, den2, d);
+          
       fmpz_mul(a3, a1, den22);
       fmpz_mul(b3, b1, den22);
       fmpz_submul(a3, a2, den11);
       fmpz_submul(b3, b2, den11);
       
-      if (*a3 == WORD(0) && *b3 == WORD(0))
+      if (fmpz_is_zero(a3) && fmpz_is_zero(b3))
          fmpz_one(den3);
       else
       {
@@ -96,10 +110,10 @@ void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
             fmpz_init(e);
               
             fmpz_gcd(e, a3, b3);
-            if (*e != WORD(1))
+            if (!fmpz_is_one(e))
                fmpz_gcd(e, e, d);
             
-            if (*e == WORD(1))
+            if (fmpz_is_one(e))
                fmpz_mul(den3, den1, den22);
             else
             {
@@ -119,22 +133,4 @@ void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
    }
 
    fmpz_clear(d);
-}
-
-
-void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
-                                              const nf_elem_t c, const nf_t nf)
-{
-   if (a == b || a == c)
-   {
-      nf_elem_t t;
-
-      nf_elem_init(t, nf);
-
-      _nf_elem_sub_qf(t, b, c, nf, 1);
-      nf_elem_swap(t, a, nf);
-
-      nf_elem_clear(t, nf);
-   } else
-      _nf_elem_sub_qf(a, b, c, nf, 1);
 }

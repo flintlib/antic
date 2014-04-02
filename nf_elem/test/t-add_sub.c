@@ -83,7 +83,8 @@ main(void)
 
         fmpq_poly_clear(pol);
     }
-    
+    printf("done1\n");
+
     /* test aliasing a and b */
     for (i = 0; i < 1000 * flint_test_multiplier(); i++)
     {
@@ -125,6 +126,7 @@ main(void)
 
         fmpq_poly_clear(pol);
     }
+    printf("done2\n");
 
     /* test aliasing a and c */
     for (i = 0; i < 1000 * flint_test_multiplier(); i++)
