@@ -74,6 +74,15 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
 void nf_elem_randtest_not_zero(nf_elem_t a, flint_rand_t state, 
                                               mp_bitcnt_t bits, const nf_t nf);
 
+static __inline__
+void nf_elem_canonicalise(nf_elem_t a, const nf_t nf)
+{
+   if (nf->flag & NF_QUADRATIC)
+      _fmpq_poly_canonicalise(QNF_ELEM_NUMREF(a), QNF_ELEM_DENREF(a), 2);
+   else
+      fmpq_poly_canonicalise(NF_ELEM(a));
+}
+
 /******************************************************************************
 
     Comparison

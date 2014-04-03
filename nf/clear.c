@@ -33,7 +33,7 @@ void nf_clear(nf_t nf)
     if (!(nf->flag & NF_MONIC))
        fmpz_preinvn_clear(nf->pinv.qq);
 
-    if (nf->pol->length <= NF_POWERS_CUTOFF && nf->pol->length > 1)
+    if (nf->pol->length <= NF_POWERS_CUTOFF && nf->pol->length > 3)
     {
        if (nf->flag & NF_MONIC)
           _fmpz_poly_powers_clear(nf->powers.zz->powers, nf->powers.zz->len);

@@ -45,6 +45,11 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
     Generate a random number field element $a$ in the number field \code{nf}
     whose coefficients have up to the given number of bits.
 
+void nf_elem_canonicalise(nf_elem_t a, nf_t nf)
+
+    Canonicalise a number field element, i.e. reduce numerator and denominaator
+    to lowest terms. If the numerator is $0$, set the denominator to $1$.
+
 *******************************************************************************
 
     Comparison
