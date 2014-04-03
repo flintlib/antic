@@ -32,37 +32,33 @@ int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf)
       slong d, bits1, bits2;
       int res = 1;
 
-      const fmpz * a1 = QNF_ELEM_NUMREF(a);
-      const fmpz * b1 = a1 + 1;
-   
-      const fmpz * a2 = QNF_ELEM_NUMREF(b);
-      const fmpz * b2 = a2 + 1;
-
-      const fmpz * den1 = QNF_ELEM_DENREF(a);
-      const fmpz * den2 = QNF_ELEM_DENREF(b);
+      const fmpz * const anum = QNF_ELEM_NUMREF(a);
+      const fmpz * const bnum = QNF_ELEM_NUMREF(b);
+      const fmpz * const aden = QNF_ELEM_DENREF(a);
+      const fmpz * const bden = QNF_ELEM_DENREF(b);
 
       fmpz_t t1, t2;
 
-      if (fmpz_equal(den1, den2))
-         return fmpz_equal(a1, a2) && fmpz_equal(b1, b2);
+      if (fmpz_equal(aden, bden))
+         return fmpz_equal(anum, bnum) && fmpz_equal(anum + 1, bnum + 1);
       
-      d = fmpz_bits(den1) - fmpz_bits(den2) + 1;
+      d = fmpz_bits(aden) - fmpz_bits(bden) + 1;
       
-      bits1 = fmpz_bits(b1);
-      bits2 = fmpz_bits(b2);
+      bits1 = fmpz_bits(anum + 1);
+      bits2 = fmpz_bits(bnum + 1);
       if (!(bits1 == 0 && bits2 == 0) && (ulong) (bits1 - bits2 + d) > 2)
          return 0;
 
-      bits1 = fmpz_bits(a1);
-      bits2 = fmpz_bits(a2);
+      bits1 = fmpz_bits(anum);
+      bits2 = fmpz_bits(bnum);
       if (!(bits1 == 0 && bits2 == 0) && (ulong) (bits1 - bits2 + d) > 2)
          return 0;
 
       fmpz_init(t1);
       fmpz_init(t2);
 
-      fmpz_mul(t1, a1, den2);
-      fmpz_mul(t2, a2, den1);
+      fmpz_mul(t1, anum, bden);
+      fmpz_mul(t2, bnum, aden);
 
       if (!fmpz_equal(t1, t2))
       {
@@ -70,8 +66,8 @@ int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf)
          goto cleanup;
       }
 
-      fmpz_mul(t1, b1, den2);
-      fmpz_mul(t2, b2, den1);
+      fmpz_mul(t1, anum + 1, bden);
+      fmpz_mul(t2, bnum + 1, aden);
 
       if (!fmpz_equal(t1, t2))
       {

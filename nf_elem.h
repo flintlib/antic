@@ -85,9 +85,17 @@ int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
 int nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
 static __inline__
-int nf_elem_is_one(nf_elem_t a, const nf_t nf)
+int nf_elem_is_one(const nf_elem_t a, const nf_t nf)
 {
-   return fmpq_poly_is_one(a->elem);
+   if (nf->flag & NF_QUADRATIC)
+   {
+      const fmpz * const anum = QNF_ELEM_NUMREF(a);
+      const fmpz * const aden = QNF_ELEM_DENREF(a);
+      
+      return fmpz_is_one(anum) && fmpz_is_zero(anum + 1) 
+          && fmpz_is_one(aden);
+   } else
+      return fmpq_poly_is_one(a->elem);
 }
 
 /******************************************************************************
@@ -107,7 +115,31 @@ void nf_elem_print(const nf_elem_t a, const nf_t nf);
 static __inline__
 void nf_elem_zero(nf_elem_t a, const nf_t nf)
 {
-   fmpq_poly_zero(NF_ELEM(a));
+   if (nf->flag & NF_QUADRATIC)
+   {
+      fmpz * const anum = QNF_ELEM_NUMREF(a);
+      fmpz * const aden = QNF_ELEM_DENREF(a);
+      
+      fmpz_zero(anum);
+      fmpz_zero(anum + 1);
+      fmpz_one(aden);
+   } else
+      fmpq_poly_zero(NF_ELEM(a));
+}
+
+static __inline__
+void nf_elem_one(nf_elem_t a, const nf_t nf)
+{
+   if (nf->flag & NF_QUADRATIC)
+   {
+      fmpz * const anum = QNF_ELEM_NUMREF(a);
+      fmpz * const aden = QNF_ELEM_DENREF(a);
+      
+      fmpz_one(anum);
+      fmpz_zero(anum + 1);
+      fmpz_one(aden);
+   } else
+      fmpq_poly_one(NF_ELEM(a));
 }
 
 static __inline__
@@ -115,8 +147,14 @@ void nf_elem_set(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
    {
-      _fmpz_vec_set(QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(b), 2);
-      fmpz_set(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b));
+      fmpz * const anum = QNF_ELEM_NUMREF(a);
+      fmpz * const aden = QNF_ELEM_DENREF(a);  
+      const fmpz * const bnum = QNF_ELEM_NUMREF(b);
+      const fmpz * const bden = QNF_ELEM_DENREF(b);
+      
+      fmpz_set(anum, bnum);
+      fmpz_set(anum + 1, bnum + 1);
+      fmpz_set(aden, bden);
    } else
       fmpq_poly_set(NF_ELEM(a), NF_ELEM(b));
 }
@@ -125,8 +163,16 @@ static __inline__
 void nf_elem_neg(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
-      _fmpz_vec_neg(QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(a), 2);
-   else
+   {
+      fmpz * const anum = QNF_ELEM_NUMREF(a);
+      fmpz * const aden = QNF_ELEM_DENREF(a);  
+      const fmpz * const bnum = QNF_ELEM_NUMREF(b);
+      const fmpz * const bden = QNF_ELEM_DENREF(b);
+      
+      fmpz_neg(anum, bnum);
+      fmpz_neg(anum + 1, bnum + 1);
+      fmpz_set(aden, bden);
+   } else
       fmpq_poly_neg(NF_ELEM(a), NF_ELEM(b));
 }
 
@@ -135,8 +181,14 @@ void nf_elem_swap(nf_elem_t a, nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
    {
-      _fmpz_vec_swap(QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(b), 2);
-      fmpz_swap(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b));
+      fmpz * const anum = QNF_ELEM_NUMREF(a);
+      fmpz * const aden = QNF_ELEM_DENREF(a);  
+      fmpz * const bnum = QNF_ELEM_NUMREF(b);
+      fmpz * const bden = QNF_ELEM_DENREF(b);
+      
+      fmpz_swap(anum, bnum);
+      fmpz_swap(anum + 1, bnum + 1);
+      fmpz_swap(aden, bden);
    } else
       fmpq_poly_swap(NF_ELEM(a), NF_ELEM(b));
 }

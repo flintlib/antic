@@ -83,6 +83,10 @@ void nf_elem_zero(nf_elem_t a, const nf_t nf)
 
    Set the given number field element to zero.
 
+void nf_elem_one(nf_elem_t a, const nf_t nf)
+
+   Set the given number field element to one.
+
 void nf_elem_set(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
     Set the number field element $a$ to equal the number field element $b$,

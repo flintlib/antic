@@ -29,12 +29,15 @@ void nf_elem_print(const nf_elem_t a, const nf_t nf)
 {
     if (nf->flag & NF_QUADRATIC)
     {
+        const fmpz * const anum = QNF_ELEM_NUMREF(a);
+        const fmpz * const aden = QNF_ELEM_DENREF(a);
+        
         flint_printf("(");
-        fmpz_print(QNF_ELEM_NUMREF(a));
+        fmpz_print(anum + 1);
         flint_printf(" ");
-        fmpz_print(QNF_ELEM_NUMREF(a) + 1);
+        fmpz_print(anum);
         flint_printf(" ");
-        fmpz_print(QNF_ELEM(a)->den);
+        fmpz_print(aden);
         flint_printf(")");
     }
     else if (nf->flag & NF_MONIC)

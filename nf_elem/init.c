@@ -30,10 +30,13 @@ void nf_elem_init(nf_elem_t a, const nf_t nf)
 {
     if (nf->flag & NF_QUADRATIC)
     {
-        fmpz_init(QNF_ELEM_NUMREF(a));
-        fmpz_init(QNF_ELEM_NUMREF(a) + 1);
-        fmpz_init(QNF_ELEM_NUMREF(a) + 2);
-        fmpz_init(QNF_ELEM_DENREF(a));
+        fmpz * const anum = QNF_ELEM_NUMREF(a);
+        fmpz * const aden = QNF_ELEM_DENREF(a);
+
+        fmpz_init(anum);
+        fmpz_init(anum + 1);
+        fmpz_init(anum + 2);
+        fmpz_init(aden);
     }
     else
     {

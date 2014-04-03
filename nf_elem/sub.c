@@ -31,39 +31,36 @@ void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
 {
    fmpz_t d;
 
-   const fmpz * a1 = QNF_ELEM_NUMREF(b);
-   const fmpz * b1 = a1 + 1;
-   const fmpz * den1 = QNF_ELEM_DENREF(b);
+   const fmpz * const bnum = QNF_ELEM_NUMREF(b);
+   const fmpz * const bden = QNF_ELEM_DENREF(b);
    
-   const fmpz * a2 = QNF_ELEM_NUMREF(c);
-   const fmpz * b2 = a2 + 1;
-   const fmpz * den2 = QNF_ELEM_DENREF(c);
+   const fmpz * const cnum = QNF_ELEM_NUMREF(c);
+   const fmpz * const cden = QNF_ELEM_DENREF(c);
    
-   fmpz * a3 = QNF_ELEM_NUMREF(a);
-   fmpz * b3 = a3 + 1;
-   fmpz * den3 = QNF_ELEM_DENREF(a);
-   
+   fmpz * const anum = QNF_ELEM_NUMREF(a);
+   fmpz * const aden = QNF_ELEM_DENREF(a);
+
    fmpz_init(d);
    fmpz_one(d);
 
-   if (fmpz_equal(den1, den2))
+   if (fmpz_equal(bden, cden))
    {
-      fmpz_sub(a3, a1, a2);
-      fmpz_sub(b3, b1, b2);
-      fmpz_set(den3, den1);
+      fmpz_sub(anum, bnum, cnum);
+      fmpz_sub(anum + 1, bnum + 1, cnum + 1);
+      fmpz_set(aden, bden);
 
-      if (can && !fmpz_is_one(den3))
+      if (can && !fmpz_is_one(aden))
       {
-         fmpz_gcd(d, a3, b3);
+         fmpz_gcd(d, anum, anum + 1);
          if (!fmpz_is_one(d))
          {
-            fmpz_gcd(d, d, den3);
+            fmpz_gcd(d, d, aden);
 
             if (!fmpz_is_one(d))
             {
-               fmpz_divexact(a3, a3, d);
-               fmpz_divexact(b3, b3, d);
-               fmpz_divexact(den3, den3, d);
+               fmpz_divexact(anum, anum, d);
+               fmpz_divexact(anum + 1, anum + 1, d);
+               fmpz_divexact(aden, aden, d);
             }
          }
       }
@@ -73,34 +70,34 @@ void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
       return;
    }
 
-   if (!fmpz_is_one(den1) && !fmpz_is_one(den2))
-      fmpz_gcd(d, den1, den2);
+   if (!fmpz_is_one(bden) && !fmpz_is_one(cden))
+      fmpz_gcd(d, bden, cden);
 
    if (fmpz_is_one(d))
    {
-      fmpz_mul(a3, a1, den2);
-      fmpz_mul(b3, b1, den2);
-      fmpz_submul(a3, a2, den1);
-      fmpz_submul(b3, b2, den1);
-      fmpz_mul(den3, den1, den2);
+      fmpz_mul(anum, bnum, cden);
+      fmpz_mul(anum + 1, bnum + 1, cden);
+      fmpz_submul(anum, cnum, bden);
+      fmpz_submul(anum + 1, cnum + 1, bden);
+      fmpz_mul(aden, bden, cden);
    } else
    {
-      fmpz_t den11;
-      fmpz_t den22;
+      fmpz_t bden1;
+      fmpz_t cden1;
       
-      fmpz_init(den11);
-      fmpz_init(den22);
+      fmpz_init(bden1);
+      fmpz_init(cden1);
       
-      fmpz_divexact(den11, den1, d);   
-      fmpz_divexact(den22, den2, d);
-          
-      fmpz_mul(a3, a1, den22);
-      fmpz_mul(b3, b1, den22);
-      fmpz_submul(a3, a2, den11);
-      fmpz_submul(b3, b2, den11);
+      fmpz_divexact(bden1, bden, d);
+      fmpz_divexact(cden1, cden, d);
+        
+      fmpz_mul(anum, bnum, cden1);
+      fmpz_mul(anum + 1, bnum + 1, cden1);
+      fmpz_submul(anum, cnum, bden1);
+      fmpz_submul(anum + 1, cnum + 1, bden1);
       
-      if (fmpz_is_zero(a3) && fmpz_is_zero(b3))
-         fmpz_one(den3);
+      if (fmpz_is_zero(anum) && fmpz_is_zero(anum + 1))
+         fmpz_one(aden);
       else
       {
          if (can)
@@ -109,27 +106,27 @@ void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
             
             fmpz_init(e);
               
-            fmpz_gcd(e, a3, b3);
+            fmpz_gcd(e, anum, anum + 1);
             if (!fmpz_is_one(e))
                fmpz_gcd(e, e, d);
             
             if (fmpz_is_one(e))
-               fmpz_mul(den3, den1, den22);
+               fmpz_mul(aden, bden, cden1);
             else
             {
-                fmpz_divexact(a3, a3, e);
-                fmpz_divexact(b3, b3, e);
-                fmpz_divexact(den11, den1, e);
-                fmpz_mul(den3, den11, den22);
+                fmpz_divexact(anum, anum, e);
+                fmpz_divexact(anum + 1, anum + 1, e);
+                fmpz_divexact(bden1, bden, e);
+                fmpz_mul(aden, bden1, cden1);
             }
             
             fmpz_clear(e);
          } else
-            fmpz_mul(den3, den1, den22);
+            fmpz_mul(aden, bden, cden1);
       }
 
-      fmpz_clear(den11);
-      fmpz_clear(den22);
+      fmpz_clear(bden1);
+      fmpz_clear(cden1);
    }
 
    fmpz_clear(d);

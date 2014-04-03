@@ -30,10 +30,13 @@ void nf_elem_clear(nf_elem_t a, const nf_t nf)
 {
     if (nf->flag & NF_QUADRATIC)
     {
-        fmpz_clear(QNF_ELEM_NUMREF(a));
-        fmpz_clear(QNF_ELEM_NUMREF(a) + 1);
-        fmpz_clear(QNF_ELEM_NUMREF(a) + 2);
-        fmpz_clear(QNF_ELEM_DENREF(a));
+        fmpz * const anum = QNF_ELEM_NUMREF(a);
+        fmpz * const aden = QNF_ELEM_DENREF(a);
+
+        fmpz_clear(anum);
+        fmpz_clear(anum + 1);
+        fmpz_clear(anum + 2);
+        fmpz_clear(aden);
     }
     else
     {
