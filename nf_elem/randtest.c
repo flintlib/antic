@@ -20,7 +20,7 @@
 /******************************************************************************
 
     Copyright (C) 2013 Fredrik Johansson
-    Copyright (C) 2013 William Hart
+    Copyright (C) 2013, 2014 William Hart
 
 ******************************************************************************/
 
@@ -32,31 +32,30 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
 {
     if (nf->flag & NF_QUADRATIC)
     {
-        fmpz_randtest(QNF_ELEM(a)->a, state, bits);
-        fmpz_randtest(QNF_ELEM(a)->b, state, bits);
+        fmpz_randtest(QNF_ELEM_NUMREF(a), state, bits);
+        fmpz_randtest(QNF_ELEM_NUMREF(a) + 1, state, bits);
 
         if (n_randint(state, 2))
         {
            fmpz_t d;
            
-           fmpz_randtest_not_zero(QNF_ELEM(a)->den, state, bits);
-           fmpz_abs(QNF_ELEM(a)->den, QNF_ELEM(a)->den);
+           fmpz_randtest_not_zero(QNF_ELEM_DENREF(a), state, bits);
+           fmpz_abs(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(a));
 
            fmpz_init(d);
-           fmpz_gcd(d, QNF_ELEM(a)->a, QNF_ELEM(a)->b);
+           fmpz_gcd(d, QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(a) + 1);
            if (!fmpz_is_one(d))
            {
-              fmpz_gcd(d, d, QNF_ELEM(a)->den);
+              fmpz_gcd(d, d, QNF_ELEM_DENREF(a));
 
               if (!fmpz_is_one(d))
               {
-                 fmpz_divexact(QNF_ELEM(a)->a, QNF_ELEM(a)->a, d);
-                 fmpz_divexact(QNF_ELEM(a)->b, QNF_ELEM(a)->b, d);
-                 fmpz_divexact(QNF_ELEM(a)->den, QNF_ELEM(a)->den, d);
+                 _fmpz_vec_scalar_divexact_fmpz(QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(a), 2, d);
+                 fmpz_divexact(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(a), d);
               }
            }
         } else
-           fmpz_one(QNF_ELEM(a)->den);
+           fmpz_one(QNF_ELEM_DENREF(a));
     }
     else
     {
@@ -71,7 +70,7 @@ void nf_elem_randtest_not_zero(nf_elem_t a, flint_rand_t state,
    {
        do {
           nf_elem_randtest(a, state, bits, nf);
-       } while (fmpz_is_zero(QNF_ELEM(a)->a) && fmpz_is_zero(QNF_ELEM(a)->b));
+       } while (fmpz_is_zero(QNF_ELEM_NUMREF(a)) && fmpz_is_zero(QNF_ELEM_NUMREF(a) + 1));
    } else
    {
       do {

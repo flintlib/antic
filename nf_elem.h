@@ -37,8 +37,7 @@
 
 typedef struct /* element of a quadratic number field */
 {
-   fmpz_t a;
-   fmpz_t b;
+   fmpz num[3];
    fmpz_t den;
 } qnf_elem_struct;
 
@@ -54,6 +53,8 @@ typedef nf_elem_struct nf_elem_t[1];
 
 #define NF_ELEM_NUMREF(xxx) fmpq_poly_numref((xxx)->elem)
 #define NF_ELEM_DENREF(xxx) fmpq_poly_denref((xxx)->elem)
+#define QNF_ELEM_NUMREF(xxx) ((xxx)->qelem->num)
+#define QNF_ELEM_DENREF(xxx) ((xxx)->qelem->den)
 #define NF_ELEM(xxx) (xxx)->elem
 #define QNF_ELEM(xxx) (xxx)->qelem
 
@@ -114,9 +115,8 @@ void nf_elem_set(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
    {
-      fmpz_set(QNF_ELEM(a)->a, QNF_ELEM(b)->a);
-      fmpz_set(QNF_ELEM(a)->b, QNF_ELEM(b)->b);
-      fmpz_set(QNF_ELEM(a)->den, QNF_ELEM(b)->den);
+      _fmpz_vec_set(QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(b), 2);
+      fmpz_set(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b));
    } else
       fmpq_poly_set(NF_ELEM(a), NF_ELEM(b));
 }
@@ -125,10 +125,8 @@ static __inline__
 void nf_elem_neg(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
-   {
-      fmpz_neg(QNF_ELEM(a)->a, QNF_ELEM(b)->a);
-      fmpz_neg(QNF_ELEM(a)->b, QNF_ELEM(b)->b);
-   } else
+      _fmpz_vec_neg(QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(a), 2);
+   else
       fmpq_poly_neg(NF_ELEM(a), NF_ELEM(b));
 }
 
@@ -137,9 +135,8 @@ void nf_elem_swap(nf_elem_t a, nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
    {
-      fmpz_swap(QNF_ELEM(a)->a, QNF_ELEM(b)->a);
-      fmpz_swap(QNF_ELEM(a)->b, QNF_ELEM(b)->b);
-      fmpz_swap(QNF_ELEM(a)->den, QNF_ELEM(b)->den);
+      _fmpz_vec_swap(QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(b), 2);
+      fmpz_swap(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b));
    } else
       fmpq_poly_swap(NF_ELEM(a), NF_ELEM(b));
 }

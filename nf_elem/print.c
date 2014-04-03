@@ -30,9 +30,9 @@ void nf_elem_print(const nf_elem_t a, const nf_t nf)
     if (nf->flag & NF_QUADRATIC)
     {
         flint_printf("(");
-        fmpz_print(QNF_ELEM(a)->a);
+        fmpz_print(QNF_ELEM_NUMREF(a));
         flint_printf(" ");
-        fmpz_print(QNF_ELEM(a)->b);
+        fmpz_print(QNF_ELEM_NUMREF(a) + 1);
         flint_printf(" ");
         fmpz_print(QNF_ELEM(a)->den);
         flint_printf(")");

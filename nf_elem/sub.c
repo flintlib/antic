@@ -31,17 +31,17 @@ void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
 {
    fmpz_t d;
 
-   const fmpz * a1 = QNF_ELEM(b)->a;
-   const fmpz * b1 = QNF_ELEM(b)->b;
-   const fmpz * den1 = QNF_ELEM(b)->den;
+   const fmpz * a1 = QNF_ELEM_NUMREF(b);
+   const fmpz * b1 = a1 + 1;
+   const fmpz * den1 = QNF_ELEM_DENREF(b);
    
-   const fmpz * a2 = QNF_ELEM(c)->a;
-   const fmpz * b2 = QNF_ELEM(c)->b;
-   const fmpz * den2 = QNF_ELEM(c)->den;
+   const fmpz * a2 = QNF_ELEM_NUMREF(c);
+   const fmpz * b2 = a2 + 1;
+   const fmpz * den2 = QNF_ELEM_DENREF(c);
    
-   fmpz * a3 = QNF_ELEM(a)->a;
-   fmpz * b3 = QNF_ELEM(a)->b;
-   fmpz * den3 = QNF_ELEM(a)->den;
+   fmpz * a3 = QNF_ELEM_NUMREF(a);
+   fmpz * b3 = a3 + 1;
+   fmpz * den3 = QNF_ELEM_DENREF(a);
    
    fmpz_init(d);
    fmpz_one(d);

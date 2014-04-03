@@ -32,14 +32,14 @@ int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf)
       slong d, bits1, bits2;
       int res = 1;
 
-      const fmpz * a1 = QNF_ELEM(a)->a;
-      const fmpz * b1 = QNF_ELEM(a)->b;
+      const fmpz * a1 = QNF_ELEM_NUMREF(a);
+      const fmpz * b1 = a1 + 1;
    
-      const fmpz * a2 = QNF_ELEM(b)->a;
-      const fmpz * b2 = QNF_ELEM(b)->b;
+      const fmpz * a2 = QNF_ELEM_NUMREF(b);
+      const fmpz * b2 = a2 + 1;
 
-      const fmpz * den1 = QNF_ELEM(a)->den;
-      const fmpz * den2 = QNF_ELEM(b)->den;
+      const fmpz * den1 = QNF_ELEM_DENREF(a);
+      const fmpz * den2 = QNF_ELEM_DENREF(b);
 
       fmpz_t t1, t2;
 
@@ -147,13 +147,13 @@ int nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_QUADRATIC)
    {
-      if (!fmpz_equal(QNF_ELEM(a)->den, QNF_ELEM(b)->den))
+      if (!fmpz_equal(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b)))
          return 0;
 
-      if (!fmpz_equal(QNF_ELEM(a)->a, QNF_ELEM(b)->a))
+      if (!fmpz_equal(QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(b)))
          return 0;
 
-      if (!fmpz_equal(QNF_ELEM(a)->b, QNF_ELEM(b)->b))
+      if (!fmpz_equal(QNF_ELEM_NUMREF(a) + 1, QNF_ELEM_NUMREF(b) + 1))
          return 0;
 
       return 1;

@@ -20,6 +20,7 @@
 /******************************************************************************
 
     Copyright (C) 2013 Fredrik Johansson
+    Copyright (C) 2014 William Hart
 
 ******************************************************************************/
 
@@ -29,9 +30,10 @@ void nf_elem_clear(nf_elem_t a, const nf_t nf)
 {
     if (nf->flag & NF_QUADRATIC)
     {
-        fmpz_clear(QNF_ELEM(a)->a);
-        fmpz_clear(QNF_ELEM(a)->b);
-        fmpz_clear(QNF_ELEM(a)->den);
+        fmpz_clear(QNF_ELEM_NUMREF(a));
+        fmpz_clear(QNF_ELEM_NUMREF(a) + 1);
+        fmpz_clear(QNF_ELEM_NUMREF(a) + 2);
+        fmpz_clear(QNF_ELEM_DENREF(a));
     }
     else
     {
