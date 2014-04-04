@@ -50,6 +50,18 @@ void nf_elem_canonicalise(nf_elem_t a, nf_t nf)
     Canonicalise a number field element, i.e. reduce numerator and denominaator
     to lowest terms. If the numerator is $0$, set the denominator to $1$.
 
+int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf)
+
+    Whilst the defining polynomial for a number field should by definition be
+    irreducible, it is not enforced. Thus in test code, it is convenient to be
+    able to check that a given number field element is invertible modulo the
+    defining polynomial of the number field. This function does precisely this.
+
+    If $a$ is invertible modulo the defining polynomial of \code{nf} the value
+    $1$ is returned, otherwise $0$ is returned.
+
+    The function is only intended to be used in test code.
+
 *******************************************************************************
 
     Comparison

@@ -83,6 +83,8 @@ void nf_elem_canonicalise(nf_elem_t a, const nf_t nf)
       fmpq_poly_canonicalise(NF_ELEM(a));
 }
 
+int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf);
+
 /******************************************************************************
 
     Comparison

@@ -25,51 +25,39 @@
 
 #include "nf_elem.h"
 
-void _nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf)
+int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf)
 {
+   int res;
+      
    if (nf->flag & NF_QUADRATIC)
    {
-      fmpz * const anum = QNF_ELEM_NUMREF(a);
-      fmpz * const aden = QNF_ELEM_DENREF(a);
-      const fmpz * const bnum = QNF_ELEM_NUMREF(b);
-      const fmpz * const bden = QNF_ELEM_DENREF(b);
-      fmpz * t = _fmpz_vec_init(6);
+      const fmpz * const anum = QNF_ELEM_NUMREF(a);
+      fmpz * t = _fmpz_vec_init(3);
       slong len = 2;
 
-      while (len > 0 && fmpz_is_zero(bnum + len - 1))
+      while (len > 0 && fmpz_is_zero(anum + len - 1))
          len--;
 
-      _fmpq_poly_xgcd(t + 3, t + 5, t, t + 2, anum, aden,
-             fmpq_poly_numref(nf->pol), fmpq_poly_denref(nf->pol), 3, bnum, bden, len);
+      _fmpq_poly_gcd(t, t + 2, 
+          fmpq_poly_numref(nf->pol), 3,
+          anum, len);
+      
+      while (len > 0 && fmpz_is_zero(t + len - 1))
+         len--;
+      
+      res = len == 1 && fmpz_is_one(t);
 
-      _fmpz_vec_clear(t, 6);
+      _fmpz_vec_clear(t, 3);
    } else
    {
-      fmpq_poly_t g, t;
-
+      fmpq_poly_t g;
+      
       fmpq_poly_init(g);
-      fmpq_poly_init(t);
+      fmpq_poly_gcd(g, NF_ELEM(a), nf->pol);
+      res = fmpq_poly_is_one(g);
 
-      fmpq_poly_xgcd(g, NF_ELEM(a), t, NF_ELEM(b), nf->pol);
-
-      fmpq_poly_clear(t);
       fmpq_poly_clear(g);
    }
-}
-
-void nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf)
-{
-   nf_elem_t t;
-   
-   if (a == b)
-   {
-      nf_elem_init(t, nf);
-
-      _nf_elem_inv(t, b, nf);
-      nf_elem_swap(t, a, nf);
-
-      nf_elem_clear(t, nf);
-   }
-   else
-      _nf_elem_inv(a, b, nf);
+      
+   return res;
 }

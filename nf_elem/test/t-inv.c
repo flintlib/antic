@@ -44,13 +44,12 @@ main(void)
     flint_randinit(state);
 
     /* test a*^-1 = 1 */
-    /*for (i = 0; i < 10*flint_test_multiplier(); i++)
+    for (i = 0; i < 10*flint_test_multiplier(); i++)
     {
-        fmpq_poly_t g, pol;
+        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, ainv, p1;
 
-        fmpq_poly_init(g);
         fmpq_poly_init(pol);
         do {
            fmpq_poly_randtest_not_zero(pol, state, 25, 100);
@@ -64,8 +63,7 @@ main(void)
         
         do {
            nf_elem_randtest_not_zero(a, state, 100, nf);
-           fmpq_poly_gcd(g, NF_ELEM(a), pol);
-        } while (!fmpq_poly_is_one(g));
+        } while (!_nf_elem_invertible_check(a, nf));
         
         nf_elem_inv(ainv, a, nf);
         nf_elem_mul(p1, ainv, a, nf);
@@ -86,18 +84,16 @@ main(void)
          
         nf_clear(nf);
 
-        fmpq_poly_clear(g);
         fmpq_poly_clear(pol);
-    }*/
+    }
     
     /* test aliasing a and b */
-    /*for (i = 0; i < 10 * flint_test_multiplier(); i++)
+    for (i = 0; i < 10 * flint_test_multiplier(); i++)
     {
-        fmpq_poly_t g, pol;
+        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, b;
 
-        fmpq_poly_init(g);
         fmpq_poly_init(pol);
 
         do {
@@ -111,8 +107,7 @@ main(void)
         
         do {
            nf_elem_randtest_not_zero(b, state, 100, nf);
-           fmpq_poly_gcd(g, NF_ELEM(b), pol);
-        } while (!fmpq_poly_is_one(g));
+        } while (!_nf_elem_invertible_check(b, nf));
         
         nf_elem_inv(a, b, nf);
         nf_elem_inv(b, b, nf);
@@ -131,9 +126,8 @@ main(void)
          
         nf_clear(nf);
 
-        fmpq_poly_clear(g);
         fmpq_poly_clear(pol);
-    }*/
+    }
 
     flint_randclear(state);
     flint_cleanup();

@@ -46,11 +46,10 @@ main(void)
     /* test a*^-1 = 1 */
     for (i = 0; i < 10*flint_test_multiplier(); i++)
     {
-        fmpq_poly_t g, pol;
+        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, b, c;
 
-        fmpq_poly_init(g);
         fmpq_poly_init(pol);
         do {
            fmpq_poly_randtest_not_zero(pol, state, 25, 100);
@@ -64,8 +63,7 @@ main(void)
         
         do {
            nf_elem_randtest_not_zero(a, state, 100, nf);
-           fmpq_poly_gcd(g, NF_ELEM(a), pol);
-        } while (!fmpq_poly_is_one(g));
+        } while (!_nf_elem_invertible_check(a, nf));
         nf_elem_randtest(b, state, 100, nf);
            
         nf_elem_div(c, b, a, nf);
@@ -87,18 +85,16 @@ main(void)
          
         nf_clear(nf);
 
-        fmpq_poly_clear(g);
         fmpq_poly_clear(pol);
     }
     
     /* test aliasing a and b */
     for (i = 0; i < 10 * flint_test_multiplier(); i++)
     {
-        fmpq_poly_t pol, g;
+        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, b, c;
 
-        fmpq_poly_init(g);
         fmpq_poly_init(pol);
         do {
            fmpq_poly_randtest_not_zero(pol, state, 25, 100);
@@ -113,8 +109,7 @@ main(void)
         nf_elem_randtest(b, state, 100, nf);
         do {
            nf_elem_randtest_not_zero(c, state, 100, nf);
-           fmpq_poly_gcd(g, NF_ELEM(c), pol);
-        } while (!fmpq_poly_is_one(g));
+        } while (!_nf_elem_invertible_check(c, nf));
         
         nf_elem_div(a, b, c, nf);
         nf_elem_div(b, b, c, nf);
@@ -134,18 +129,16 @@ main(void)
          
         nf_clear(nf);
 
-        fmpq_poly_clear(g);
         fmpq_poly_clear(pol);
     }
 
     /* test aliasing a and c */
     for (i = 0; i < 10 * flint_test_multiplier(); i++)
     {
-        fmpq_poly_t g, pol;
+        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, b, c;
 
-        fmpq_poly_init(g);
         fmpq_poly_init(pol);
         do {
            fmpq_poly_randtest_not_zero(pol, state, 25, 100);
@@ -161,8 +154,7 @@ main(void)
         
         do {
            nf_elem_randtest_not_zero(c, state, 100, nf);
-           fmpq_poly_gcd(g, NF_ELEM(c), pol);
-        } while (!fmpq_poly_is_one(g));
+        } while (!_nf_elem_invertible_check(c, nf));
         
         nf_elem_div(a, b, c, nf);
         nf_elem_div(c, b, c, nf);
@@ -182,7 +174,6 @@ main(void)
          
         nf_clear(nf);
 
-        fmpq_poly_clear(g);
         fmpq_poly_clear(pol);
     }
 

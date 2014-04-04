@@ -48,12 +48,12 @@ void nf_elem_div(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, const nf_t n
       nf_elem_init(t, nf);
 
       _nf_elem_div(t, b, c, nf);
-      fmpq_poly_swap(NF_ELEM(t), NF_ELEM(a));
+      nf_elem_swap(t, a, nf);
 
       nf_elem_clear(t, nf);
    }
    else
       _nf_elem_div(a, b, c, nf);
 
-   fmpq_poly_canonicalise(NF_ELEM(a));
+   nf_elem_canonicalise(a, nf);
 }
