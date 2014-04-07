@@ -175,19 +175,26 @@ void nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
 {
    nf_elem_t t;
    
-   if ((a == b || a == c) && !(nf->flag & NF_LINEAR))
-   {
-      nf_elem_init(t, nf);
-
-      _nf_elem_mul_red(t, b, c, nf, red);
-      nf_elem_swap(t, a, nf);
-
-      nf_elem_clear(t, nf);
-   }
+   if (nf->flag & NF_LINEAR)
+      _fmpq_mul(LNF_ELEM_NUMREF(a), LNF_ELEM_DENREF(a), 
+                LNF_ELEM_NUMREF(b), LNF_ELEM_DENREF(b),
+                LNF_ELEM_NUMREF(c), LNF_ELEM_DENREF(c));
    else
-      _nf_elem_mul_red(a, b, c, nf, red);
+   {
+      if (a == b || a == c)
+      {
+         nf_elem_init(t, nf);
 
-   nf_elem_canonicalise(a, nf);
+         _nf_elem_mul_red(t, b, c, nf, red);
+         nf_elem_swap(t, a, nf);
+
+         nf_elem_clear(t, nf);
+      }
+      else
+         _nf_elem_mul_red(a, b, c, nf, red);
+
+      nf_elem_canonicalise(a, nf);
+   }
 }
 
 void nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
