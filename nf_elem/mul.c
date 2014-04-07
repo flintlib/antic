@@ -28,7 +28,19 @@
 void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
                                      const nf_elem_t c, const nf_t nf, int red)
 {
-   if (nf->flag & NF_QUADRATIC)
+   if (nf->flag & NF_LINEAR)
+   {
+      const fmpz * const bnum = LNF_ELEM_NUMREF(b);
+      const fmpz * const bden = LNF_ELEM_DENREF(b);
+      const fmpz * const cnum = LNF_ELEM_NUMREF(c);
+      const fmpz * const cden = LNF_ELEM_DENREF(c);
+      fmpz * const anum = LNF_ELEM_NUMREF(a);
+      fmpz * const aden = LNF_ELEM_DENREF(a);
+      
+      fmpz_mul(anum, bnum, cnum);
+      
+      fmpz_mul(aden, bden, cden);
+   } else if (nf->flag & NF_QUADRATIC)
    {
       const fmpz * const bnum = QNF_ELEM_NUMREF(b);
       const fmpz * const bden = QNF_ELEM_DENREF(b);
@@ -163,7 +175,7 @@ void nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
 {
    nf_elem_t t;
    
-   if (a == b || a == c)
+   if ((a == b || a == c) && !(nf->flag & NF_LINEAR))
    {
       nf_elem_init(t, nf);
 

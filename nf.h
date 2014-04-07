@@ -46,7 +46,7 @@ typedef struct {
       fmpq_poly_powers_precomp_t qq; 
       fmpz_poly_powers_precomp_t zz;
    } powers;
-   ulong flag;       /* 1 = pol monic over ZZ, 2 = quadratic field */
+   ulong flag;       /* 1 = pol monic over ZZ, 2, = linear, 4 = quadratic field */
 } nf_struct;
 
 typedef nf_struct nf_t[1];
@@ -55,7 +55,8 @@ typedef nf_struct nf_t[1];
 
 #define NF_GENERIC 0
 #define NF_MONIC 1
-#define NF_QUADRATIC 2
+#define NF_LINEAR 2
+#define NF_QUADRATIC 4
 
 /******************************************************************************
 

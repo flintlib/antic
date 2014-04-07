@@ -51,7 +51,9 @@ main(void)
         nf_elem_t a, b, c, t;
 
         fmpq_poly_init(pol);
-        fmpq_poly_randtest_not_zero(pol, state, 40, 200);
+        do {
+           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
+        } while (fmpq_poly_degree(pol) < 1);
 
         nf_init(nf, pol);
 
@@ -94,7 +96,9 @@ main(void)
         nf_elem_t a, b, c, t;
 
         fmpq_poly_init(pol);
-        fmpq_poly_randtest_not_zero(pol, state, 3, 200);
+        do {
+           fmpq_poly_randtest_not_zero(pol, state, 3, 200);
+        } while (fmpq_poly_degree(pol) < 1);
 
         nf_init(nf, pol);
 
@@ -140,7 +144,9 @@ main(void)
         nf_elem_t a, b, c;
 
         fmpq_poly_init(pol);
-        fmpq_poly_randtest_not_zero(pol, state, 40, 200);
+        do {
+           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
+        } while (fmpq_poly_degree(pol) < 1);
 
         nf_init(nf, pol);
 
@@ -182,7 +188,9 @@ main(void)
         nf_elem_t a, b, c;
 
         fmpq_poly_init(pol);
-        fmpq_poly_randtest_not_zero(pol, state, 40, 200);
+        do {
+           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
+        } while (fmpq_poly_degree(pol) < 1);
 
         nf_init(nf, pol);
 

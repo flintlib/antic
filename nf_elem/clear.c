@@ -28,7 +28,11 @@
 
 void nf_elem_clear(nf_elem_t a, const nf_t nf)
 {
-    if (nf->flag & NF_QUADRATIC)
+    if (nf->flag & NF_LINEAR)
+    {
+        fmpz_clear(LNF_ELEM_NUMREF(a));
+        fmpz_clear(LNF_ELEM_DENREF(a));
+    } else if (nf->flag & NF_QUADRATIC)
     {
         fmpz * const anum = QNF_ELEM_NUMREF(a);
         fmpz * const aden = QNF_ELEM_DENREF(a);

@@ -27,7 +27,42 @@
 
 int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
-   if (nf->flag & NF_QUADRATIC)
+   if (nf->flag & NF_LINEAR)
+   {
+      slong d, bits1, bits2;
+      int res = 1;
+
+      const fmpz * const anum = LNF_ELEM_NUMREF(a);
+      const fmpz * const bnum = LNF_ELEM_NUMREF(b);
+      const fmpz * const aden = LNF_ELEM_DENREF(a);
+      const fmpz * const bden = LNF_ELEM_DENREF(b);
+
+      fmpz_t t1, t2;
+
+      if (fmpz_equal(aden, bden))
+         return fmpz_equal(anum, bnum);
+      
+      d = fmpz_bits(aden) - fmpz_bits(bden) + 1;
+      
+      bits1 = fmpz_bits(anum);
+      bits2 = fmpz_bits(bnum);
+      if (!(bits1 == 0 && bits2 == 0) && (ulong) (bits1 - bits2 + d) > 2)
+         return 0;
+
+      fmpz_init(t1);
+      fmpz_init(t2);
+
+      fmpz_mul(t1, anum, bden);
+      fmpz_mul(t2, bnum, aden);
+
+      if (!fmpz_equal(t1, t2))
+         res = 0;
+
+      fmpz_clear(t1);
+      fmpz_clear(t2);
+
+      return res;
+   } else if (nf->flag & NF_QUADRATIC)
    {
       slong d, bits1, bits2;
       int res = 1;
@@ -141,7 +176,16 @@ cleanup:
 
 int nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
-   if (nf->flag & NF_QUADRATIC)
+   if (nf->flag & NF_LINEAR)
+   {
+      if (!fmpz_equal(LNF_ELEM_DENREF(a), LNF_ELEM_DENREF(b)))
+         return 0;
+
+      if (!fmpz_equal(LNF_ELEM_NUMREF(a), LNF_ELEM_NUMREF(b)))
+         return 0;
+
+      return 1;
+   } else if (nf->flag & NF_QUADRATIC)
    {
       if (!fmpz_equal(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b)))
          return 0;

@@ -27,7 +27,14 @@
 
 void nf_elem_print(const nf_elem_t a, const nf_t nf)
 {
-    if (nf->flag & NF_QUADRATIC)
+    if (nf->flag & NF_LINEAR)
+    {
+        flint_printf("(");
+        fmpz_print(LNF_ELEM_NUMREF(a));
+        flint_printf(" ");
+        fmpz_print(LNF_ELEM_DENREF(a));
+        flint_printf(")");        
+    } else if (nf->flag & NF_QUADRATIC)
     {
         const fmpz * const anum = QNF_ELEM_NUMREF(a);
         const fmpz * const aden = QNF_ELEM_DENREF(a);
@@ -39,8 +46,7 @@ void nf_elem_print(const nf_elem_t a, const nf_t nf)
         flint_printf(" ");
         fmpz_print(aden);
         flint_printf(")");
-    }
-    else if (nf->flag & NF_MONIC)
+    } else if (nf->flag & NF_MONIC)
     {
        _fmpz_poly_fprint_pretty(stdout, NF_ELEM_NUMREF(a), NF_ELEM(a)->length, "x");
     } else

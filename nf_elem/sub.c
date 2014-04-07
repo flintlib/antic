@@ -20,11 +20,79 @@
 /******************************************************************************
 
     Copyright (C) 2010 Sebastian Pancratz
+    Copyright (C) 2011 Fredrik Johansson
     Copyright (C) 2014 William Hart
 
 ******************************************************************************/
 
 #include "nf_elem.h"
+
+void _nf_elem_sub_lf(nf_elem_t a, const nf_elem_t b, 
+                                   const nf_elem_t c, const nf_t nf, int can)
+{
+   const fmpz * const p = LNF_ELEM_NUMREF(b);
+   const fmpz * const q = LNF_ELEM_DENREF(b);
+   const fmpz * const r = LNF_ELEM_NUMREF(c);
+   const fmpz * const s = LNF_ELEM_DENREF(c);
+   fmpz * const rnum = LNF_ELEM_NUMREF(a);
+   fmpz * const rden = LNF_ELEM_DENREF(a);
+   fmpz_t t;
+
+   if (can)
+      _fmpq_sub(rnum, rden, p, q, r, s);
+   else
+   {
+      /* Same denominator */
+      if (fmpz_equal(q, s))
+      {
+         fmpz_sub(rnum, p, r);
+         fmpz_set(rden, q);
+
+         return;
+      }
+
+      /* p/q is an integer */
+      if (fmpz_is_one(q))
+      {
+         fmpz_init(t);
+
+         fmpz_mul(t, p, s);
+         fmpz_sub(rnum, t, r);
+         fmpz_set(rden, s);
+
+         fmpz_clear(t);
+
+         return;
+      }
+
+      /* r/s is an integer */
+      if (fmpz_is_one(s))
+      {
+         fmpz_init(t);
+
+         fmpz_mul(t, r, q);
+         fmpz_sub(rnum, t, p);
+         fmpz_set(rden, q);
+
+         fmpz_clear(t);
+
+         return;
+      }
+
+      /*
+         We want to compute p/q - r/s which is (p*s - q*r, q*s).
+      */
+
+      fmpz_init(t);
+
+      fmpz_mul(t, q, r);
+      fmpz_mul(rnum, p, s);
+      fmpz_sub(rnum, rnum, t);
+      fmpz_mul(rden, q, s);
+
+      fmpz_clear(t);
+   }
+}
 
 void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
                                    const nf_elem_t c, const nf_t nf, int can)

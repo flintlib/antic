@@ -51,7 +51,9 @@ main(void)
         nf_elem_t a, b;
 
         fmpq_poly_init(pol);
-        fmpq_poly_randtest_not_zero(pol, state, 40, 200);
+        do {
+           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
+        } while (fmpq_poly_degree(pol) < 1);
 
         nf_init(nf, pol);
 
@@ -87,7 +89,9 @@ main(void)
         nf_elem_t a;
 
         fmpq_poly_init(pol);
-        fmpq_poly_randtest_not_zero(pol, state, 40, 200);
+        do {
+           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
+        } while (fmpq_poly_degree(pol) < 1);
 
         nf_init(nf, pol);
 

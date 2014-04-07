@@ -40,9 +40,15 @@ void nf_init(nf_t nf, fmpq_poly_t pol)
        nf->flag = NF_GENERIC;
     }
 
-    if (pol->length == 3) /* quadratic case */
+    if (pol->length < 2)
+    {
+       flint_printf("Exception (nf_init). Degree must be at least 1.\n");
+       abort();
+    } else if (pol->length == 2) /* linear case */
+       nf->flag |= NF_LINEAR;
+    else if (pol->length == 3) /* quadratic case */
        nf->flag |= NF_QUADRATIC;
-    else if (pol->length <= NF_POWERS_CUTOFF && pol->length > 3) /* compute powers of generator mod pol */
+    else if (pol->length <= NF_POWERS_CUTOFF) /* compute powers of generator mod pol */
     {
        if (nf->flag & NF_MONIC)
        {

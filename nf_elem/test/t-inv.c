@@ -64,7 +64,7 @@ main(void)
         do {
            nf_elem_randtest_not_zero(a, state, 100, nf);
         } while (!_nf_elem_invertible_check(a, nf));
-        
+
         nf_elem_inv(ainv, a, nf);
         nf_elem_mul(p1, ainv, a, nf);
         

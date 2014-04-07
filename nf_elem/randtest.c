@@ -30,7 +30,19 @@
 void nf_elem_randtest(nf_elem_t a, flint_rand_t state, 
                                                mp_bitcnt_t bits, const nf_t nf)
 {
-    if (nf->flag & NF_QUADRATIC)
+    if (nf->flag & NF_LINEAR)
+    {
+        fmpz_randtest(LNF_ELEM_NUMREF(a), state, bits);
+
+        if (n_randint(state, 2))
+        {
+           fmpz_randtest_not_zero(LNF_ELEM_DENREF(a), state, bits);
+           fmpz_abs(LNF_ELEM_DENREF(a), LNF_ELEM_DENREF(a));
+
+           _fmpq_canonicalise(LNF_ELEM_NUMREF(a), LNF_ELEM_DENREF(a));
+        } else
+           fmpz_one(LNF_ELEM_DENREF(a));
+    } else if (nf->flag & NF_QUADRATIC)
     {
         fmpz_randtest(QNF_ELEM_NUMREF(a), state, bits);
         fmpz_randtest(QNF_ELEM_NUMREF(a) + 1, state, bits);
@@ -66,7 +78,12 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
 void nf_elem_randtest_not_zero(nf_elem_t a, flint_rand_t state, 
                                                mp_bitcnt_t bits, const nf_t nf)
 {
-   if (nf->flag & NF_QUADRATIC)
+   if (nf->flag & NF_LINEAR)
+   {
+       do {
+          nf_elem_randtest(a, state, bits, nf);
+       } while (fmpz_is_zero(QNF_ELEM_NUMREF(a)));
+   } else if (nf->flag & NF_QUADRATIC)
    {
        do {
           nf_elem_randtest(a, state, bits, nf);

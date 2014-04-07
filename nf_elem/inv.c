@@ -27,7 +27,11 @@
 
 void _nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
-   if (nf->flag & NF_QUADRATIC)
+   if (nf->flag & NF_LINEAR)
+   {
+      fmpz_set(LNF_ELEM_NUMREF(a), LNF_ELEM_DENREF(b));
+      fmpz_set(LNF_ELEM_DENREF(a), LNF_ELEM_NUMREF(b));
+   } else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
       fmpz * const aden = QNF_ELEM_DENREF(a);
