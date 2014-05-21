@@ -25,6 +25,8 @@ nf_elem
 
 * add nf_elem_print_pretty ?
 
+* special powering code for quadratic fields
+
 nf
 --
 
