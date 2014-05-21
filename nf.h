@@ -50,9 +50,10 @@ typedef struct {
       fmpz_poly_powers_precomp_t zz;
    } powers;
    ulong flag;       /* 1 = pol monic over ZZ, 2 = linear, 4 = quadratic field */
+   /* the following in cubic case only */
    acb_ptr roots;  /* numerical approximations of polynomial roots */
    slong roots_prec; /* precision of roots */
-   acb_mat_t V; /* V*[a0, a1, a2]~ = conjugates of alpha if alpha = a0 + a1*x + ... */
+   acb_mat_t V; /* V*[a0, a1, a2]~ = conjugates of alpha if alpha = a0 + a1*x + a2*x^2 */
    acb_mat_t Vinv; /* inverse of V */
    slong Vprec; /* precision of V */
 } nf_struct;
