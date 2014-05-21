@@ -49,12 +49,12 @@ typedef struct {
       fmpq_poly_powers_precomp_t qq; 
       fmpz_poly_powers_precomp_t zz;
    } powers;
-   ulong flag;       /* 1 = pol monic over ZZ, 2, = linear, 4 = quadratic field */
+   ulong flag;       /* 1 = pol monic over ZZ, 2 = linear, 4 = quadratic field */
    acb_ptr roots;  /* numerical approximations of polynomial roots */
    slong roots_prec; /* precision of roots */
-   acb_mat_t V;
-   acb_mat_t Vinv;
-   slong Vprec;
+   acb_mat_t V; /* V*[a0, a1, a2]~ = conjugates of alpha if alpha = a0 + a1*x + ... */
+   acb_mat_t Vinv; /* inverse of V */
+   slong Vprec; /* precision of V */
 } nf_struct;
 
 typedef nf_struct nf_t[1];

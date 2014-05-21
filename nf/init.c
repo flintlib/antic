@@ -69,6 +69,6 @@ void nf_init(nf_t nf, fmpq_poly_t pol)
    nf->Vprec = 0;
 
    if (pol->length == 4)
-      nf_compute_roots(nf, 128);
+      nf_compute_roots(nf, 128); /* compute roots to this precision */
 }
 
