@@ -121,6 +121,8 @@ void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
             {
                fmpz * q = _fmpz_vec_init(plen - len + 1);
                fmpz * r = _fmpz_vec_init(plen);
+               slong i;
+               
                _fmpz_vec_set(r, NF_ELEM_NUMREF(a), plen);
 
                _fmpz_poly_divrem(q, NF_ELEM_NUMREF(a), r, plen, 
@@ -129,7 +131,8 @@ void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
                _fmpz_vec_clear(r, plen);
                _fmpz_vec_clear(q, plen - len + 1);
           
-               NF_ELEM(a)->length = len - 1;
+               for (i = len - 2; i >= 0 && fmpz_is_zero(NF_ELEM_NUMREF(a) + i); i--);
+               NF_ELEM(a)->length = i + 1;      
             }
          }
          else
@@ -147,7 +150,7 @@ void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
                _fmpq_poly_normalise(NF_ELEM(a));
             } else
             {
-               fmpq_poly_init2(t, plen);
+               fmpq_poly_init2(t, 2*len - 3);
         
                _fmpq_poly_rem(t->coeffs, t->den,
                   NF_ELEM(a)->coeffs, NF_ELEM(a)->den, plen, 
