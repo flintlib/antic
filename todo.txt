@@ -24,3 +24,8 @@ nf_elem
 * fix nf_elem_print to print consistent format
 
 * add nf_elem_print_pretty ?
+
+nf
+--
+
+* do we need the denominator in the defining poly for the number field
