@@ -110,6 +110,21 @@ int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
 int nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
 static __inline__
+int nf_elem_is_zero(const nf_elem_t a, const nf_t nf)
+{
+   if (nf->flag & NF_LINEAR)
+   {
+      return fmpz_is_zero(LNF_ELEM_NUMREF(a));
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+      const fmpz * const anum = QNF_ELEM_NUMREF(a);
+      
+      return fmpz_is_zero(anum) && fmpz_is_zero(anum + 1);
+   } else
+      return fmpq_poly_is_zero(a->elem);
+}
+
+static __inline__
 int nf_elem_is_one(const nf_elem_t a, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
@@ -317,6 +332,10 @@ void nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 void _nf_elem_div(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, const nf_t nf);
 
 void nf_elem_div(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, const nf_t nf);
+
+void _nf_elem_pow(nf_elem_t res, const nf_elem_t b, ulong e, const nf_t nf);
+
+void nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t nf);
 
 #ifdef __cplusplus
 }
