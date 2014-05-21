@@ -32,6 +32,8 @@
 #include "fmpz_poly.h"
 #include "fmpq_poly.h"
 #include "acb.h"
+#include "acb_poly.h"
+#include "acb_mat.h"
 
 #ifdef __cplusplus
  extern "C" {
@@ -50,6 +52,9 @@ typedef struct {
    ulong flag;       /* 1 = pol monic over ZZ, 2, = linear, 4 = quadratic field */
    acb_ptr roots;  /* numerical approximations of polynomial roots */
    slong roots_prec; /* precision of roots */
+   acb_mat_t V;
+   acb_mat_t Vinv;
+   slong Vprec;
 } nf_struct;
 
 typedef nf_struct nf_t[1];

@@ -24,7 +24,6 @@
 ******************************************************************************/
 
 #include "nf.h"
-#include "acb_poly.h"
 
 #define DEBUG 0
 
@@ -53,7 +52,6 @@ _nf_compute_roots(acb_ptr roots, const fmpz_poly_t poly,
     deg = poly->length - 1;
 
     acb_poly_init(cpoly);
-    roots = _acb_vec_init(deg);
 
     for (prec = initial_prec; ; prec *= 2)
     {
@@ -81,7 +79,6 @@ _nf_compute_roots(acb_ptr roots, const fmpz_poly_t poly,
 #endif
 
     acb_poly_clear(cpoly);
-    _acb_vec_clear(roots, deg);
 }
 
 void
@@ -98,11 +95,48 @@ nf_compute_roots(nf_t nf, slong prec)
     }
     else
     {
+        slong i, deg;
+        int success;
+
+        deg = fmpz_poly_degree(t);
+
         if (nf->roots == NULL)
-            nf->roots = _acb_vec_init(fmpz_poly_degree(t));
+        {
+            nf->roots = _acb_vec_init(deg);
+            acb_mat_init(nf->V, deg, deg);
+            acb_mat_init(nf->Vinv, deg, deg);
+        }
 
         _nf_compute_roots(nf->roots, t, 32, prec);
         nf->roots_prec = prec;
+
+        for (i = 0; i < deg; i++)
+        {
+#if DEBUG
+            printf("root %ld: ", i); acb_printd(nf->roots + i, 15); printf("\n");
+#endif
+            _acb_vec_set_powers(nf->V->rows[i], nf->roots + i, deg, prec);
+        }
+
+#if DEBUG
+        printf("V:\n");
+        acb_mat_printd(nf->V, 15); printf("\n\n");
+#endif
+
+        success = acb_mat_inv(nf->Vinv, nf->V, prec);
+
+#if DEBUG
+        printf("Vinv:\n");
+        acb_mat_printd(nf->Vinv, 15); printf("\n\n");
+#endif
+
+        if (!success)
+        {
+            printf("nf_compute_roots: failed to invert matrix!\n");
+            abort();
+        }
+
+        nf->Vprec = prec;
     }
 
     fmpz_poly_clear(t);

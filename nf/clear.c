@@ -29,7 +29,11 @@
 void nf_clear(nf_t nf)
 {
     if (nf->roots != NULL)
+    {
         _acb_vec_clear(nf->roots, fmpq_poly_degree(nf->pol));
+        acb_mat_clear(nf->V);
+        acb_mat_clear(nf->Vinv);
+    }
 
     fmpq_poly_clear(nf->pol);
 
