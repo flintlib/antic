@@ -63,5 +63,11 @@ void nf_init(nf_t nf, fmpq_poly_t pol)
           nf->powers.qq->len = pol->length;
        }
    }
+
+   nf->roots = NULL;
+   nf->roots_prec = 0;
+
+   if (pol->length == 4)
+      nf_compute_roots(nf, 128);
 }
 

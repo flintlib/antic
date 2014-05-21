@@ -39,3 +39,21 @@ void nf_clear(nf_t nf)
     Release resources used by a number field object. The object will need
     initialisation again before it can be used.
 
+*******************************************************************************
+
+    Roots
+
+*******************************************************************************
+
+void _nf_compute_roots(acb_ptr roots, const fmpz_poly_t poly,
+        slong initial_prec, slong target_prec)
+
+    Given a squarefree polynomial, computes numerical approximations of
+    all its complex roots with error at most $2^{-\text{target_prec}}$.
+    The precision is repeatedly doubled until convergence, starting
+    with initial_prec bits.
+
+void nf_compute_roots(nf_t nf, slong prec)
+
+    Refines the roots of the number field to error at most $2^{-\text{prec}}$.
+
