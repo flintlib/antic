@@ -54,7 +54,7 @@ main(void)
 
         fmpq_poly_init(pol);
         do {
-           fmpq_poly_randtest_not_zero(pol, state, 4, 20);
+           fmpq_poly_randtest_not_zero(pol, state, 4, 100);
         } while (fmpq_poly_degree(pol) != 3
            || !_fmpz_poly_is_squarefree(fmpq_poly_numref(pol), 4));
 
@@ -68,8 +68,8 @@ main(void)
         nf_elem_approx_init(b2, nf);
         nf_elem_approx_init(c2, nf);
 
-        nf_elem_randtest(a, state, 20, nf);
-        nf_elem_randtest(b, state, 20, nf);
+        nf_elem_randtest(a, state, 100, nf);
+        nf_elem_randtest(b, state, 100, nf);
         
         nf_elem_approx_set_nf_elem(a2, a, nf);
         nf_elem_approx_set_nf_elem(b2, b, nf);

@@ -34,6 +34,7 @@
 #include "fmpq_poly.h"
 #include "nf.h"
 #include "nf_elem.h"
+#include "nf_elem_approx.h"
 
 #define BITS 450
 
@@ -86,8 +87,9 @@ void sample(void * arg, ulong count)
 
    fmpq_poly_t pol;
    nf_t nf;
-   nf_elem_t a, b, c;
-           
+   nf_elem_t a, b;
+   nf_elem_approx_t a2, b2, c2;
+
    fmpq_poly_init(pol);
         
    for (i = 0; i < count; i++)
@@ -103,8 +105,11 @@ void sample(void * arg, ulong count)
        
       nf_elem_init(a, nf);
       nf_elem_init(b, nf);
-      nf_elem_init(c, nf);
-        
+ 
+      nf_elem_approx_init(a2, nf);
+      nf_elem_approx_init(b2, nf);
+      nf_elem_approx_init(c2, nf);
+
       random_nf_elem(a, state, nf);
       random_nf_elem(b, state, nf);
       if (monic)
@@ -113,17 +118,23 @@ void sample(void * arg, ulong count)
          fmpz_one(fmpq_poly_denref(NF_ELEM(b)));
       }
 	
+      nf_elem_approx_set_nf_elem(a2, a, nf);
+      nf_elem_approx_set_nf_elem(b2, b, nf);
+
       prof_start();
       for (j = 0; j < scale; j++)
       {
-         nf_elem_mul(c, a, b, nf);
+         nf_elem_approx_mul(c2, a2, b2, nf);
       }
 	   prof_stop();
    }
   
+   nf_elem_approx_clear(a2, nf);
+   nf_elem_approx_clear(b2, nf);
+   nf_elem_approx_clear(c2, nf);
+
    nf_elem_clear(a, nf);
    nf_elem_clear(b, nf);
-   nf_elem_clear(c, nf);
         
    nf_clear(nf);
 
@@ -138,7 +149,7 @@ int main(void)
    info_t info;
    slong k, scale;
 
-   printf("Number field element multiplication\n");
+   printf("Number field element approx multiplication\n");
    flint_printf("bits = %ld\n", BITS);
 
    /*for (k = 4; k <= 1000; k = (slong) ceil(1.1*k))*/
@@ -163,7 +174,7 @@ int main(void)
      
      prof_repeat(&min, &max, sample, (void *) &info);
          
-      flint_printf("monic: length %wd, min %.3e ms, max %.3e ms\n", 
+     flint_printf("monic: length %wd, min %.3e ms, max %.3e ms\n", 
            info.length,
 		   ((min/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400.0,
            ((max/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400.0
