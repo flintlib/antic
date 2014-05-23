@@ -49,6 +49,17 @@ _nf_compute_roots(acb_ptr roots, const fmpz_poly_t poly,
     slong prec, deg, isolated, maxiter;
     acb_poly_t cpoly;
 
+    if (fmpz_is_zero(fmpz_poly_get_coeff_ptr(poly, 0)))
+    {
+        fmpz_poly_t t;
+        fmpz_poly_init(t);
+        fmpz_poly_shift_right(t, poly, 1);
+        acb_zero(roots);
+        _nf_compute_roots(roots + 1, t, initial_prec, target_prec);
+        fmpz_poly_clear(t);
+        return;
+    }
+
     deg = poly->length - 1;
 
     acb_poly_init(cpoly);
