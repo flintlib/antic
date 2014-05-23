@@ -141,7 +141,7 @@ int main(void)
    printf("Number field element multiplication\n");
    flint_printf("bits = %ld\n", BITS);
 
-   for (k = 4; k <= 1000; k = (slong) ceil(1.1*k))
+   /*for (k = 4; k <= 1000; k = (slong) ceil(1.1*k))*/
    {
       info.length = k;
       info.monic = 0;

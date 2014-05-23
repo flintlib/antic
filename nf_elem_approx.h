@@ -50,6 +50,7 @@ typedef struct
 typedef nf_elem_approx_struct nf_elem_approx_t[1];
 
 /*
+   NF_ELEM,
    NF_ELEM_NUMREF and
    NF_ELEM_DENREF also work on an nf_elem_approx_t
 */
@@ -70,11 +71,16 @@ void nf_elem_approx_clear(nf_elem_approx_t a, const nf_t nf);
 
 ******************************************************************************/
 
+void nf_elem_approx_to_approx(nf_elem_approx_t a, const nf_t nf);
+
+void nf_elem_approx_to_exact(nf_elem_approx_t a, const nf_t nf);
+
 void nf_elem_approx_set_nf_elem(nf_elem_approx_t a, 
                                              const nf_elem_t b, const nf_t nf);
 
-void nf_elem_approx_get_nf_elem(nf_elem_t a, 
-                                      const nf_elem_approx_t b, const nf_t nf);
+void nf_elem_approx_get_nf_elem(nf_elem_t a,
+                                            nf_elem_approx_t b, const nf_t nf);
+
 
 /******************************************************************************
 

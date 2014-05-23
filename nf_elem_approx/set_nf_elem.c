@@ -25,30 +25,10 @@
 
 #include "nf_elem_approx.h"
 
-void nf_elem_approx_mul(nf_elem_approx_t a, nf_elem_approx_t b, 
-                                            nf_elem_approx_t c, const nf_t nf)
+void nf_elem_approx_set_nf_elem(nf_elem_approx_t a, 
+                                             const nf_elem_t b, const nf_t nf)
 {
-   slong i, deg = fmpq_poly_degree(nf->pol);
-   fmpz_t pow;
-
-   fmpz_mul(NF_ELEM_DENREF(a), 
-      NF_ELEM_DENREF(b), NF_ELEM_DENREF(c));
-   
-   for (i = 0; i < deg; i++)
-      acb_mul(a->conj + i, b->conj + i, c->conj + i, nf->Vprec);
-
-   fmpz * lead = fmpq_poly_numref(nf->pol) + deg;
-
-   if (!fmpz_is_one(lead)) /* non-monic defining poly */
-   {
-      fmpz_init(pow);
-      fmpz_pow_ui(pow, lead, deg - 1);
-
-      fmpz_mul(NF_ELEM_DENREF(a), NF_ELEM_DENREF(a), pow);
-
-      for (i = 0; i < deg; i++)
-         acb_mul_fmpz(a->conj + i, a->conj + i, pow, nf->Vprec);
-
-      fmpz_clear(pow);
-   } 
+   fmpq_poly_set(NF_ELEM(a), NF_ELEM(b));
+   nf_elem_approx_to_approx(a, nf);
+   a->exact = 1;
 }

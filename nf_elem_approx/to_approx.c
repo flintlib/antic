@@ -25,30 +25,30 @@
 
 #include "nf_elem_approx.h"
 
-void nf_elem_approx_mul(nf_elem_approx_t a, nf_elem_approx_t b, 
-                                            nf_elem_approx_t c, const nf_t nf)
+void __to_approx(acb_ptr b, const fmpz * a, const nf_t nf)
 {
-   slong i, deg = fmpq_poly_degree(nf->pol);
-   fmpz_t pow;
+    acb_mat_t A, B;
+    slong i, n, prec;
 
-   fmpz_mul(NF_ELEM_DENREF(a), 
-      NF_ELEM_DENREF(b), NF_ELEM_DENREF(c));
-   
-   for (i = 0; i < deg; i++)
-      acb_mul(a->conj + i, b->conj + i, c->conj + i, nf->Vprec);
+    n = acb_mat_nrows(nf->V);
+    prec = nf->Vprec;
 
-   fmpz * lead = fmpq_poly_numref(nf->pol) + deg;
+    acb_mat_init(A, n, 1);
+    acb_mat_init(B, n, 1);
 
-   if (!fmpz_is_one(lead)) /* non-monic defining poly */
-   {
-      fmpz_init(pow);
-      fmpz_pow_ui(pow, lead, deg - 1);
+    for (i = 0; i < n; i++)
+        acb_set_round_fmpz(acb_mat_entry(A, i, 0), a + i, prec);
 
-      fmpz_mul(NF_ELEM_DENREF(a), NF_ELEM_DENREF(a), pow);
+    acb_mat_mul(B, nf->V, A, prec);
 
-      for (i = 0; i < deg; i++)
-         acb_mul_fmpz(a->conj + i, a->conj + i, pow, nf->Vprec);
+    for (i = 0; i < n; i++)
+        acb_set(b + i, acb_mat_entry(B, i, 0));
 
-      fmpz_clear(pow);
-   } 
+    acb_mat_clear(A);
+    acb_mat_clear(B);
+}
+
+void nf_elem_approx_to_approx(nf_elem_approx_t a, const nf_t nf)
+{
+   __to_approx(a->conj, NF_ELEM_NUMREF(a), nf);
 }

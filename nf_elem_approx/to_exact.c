@@ -25,30 +25,41 @@
 
 #include "nf_elem_approx.h"
 
-void nf_elem_approx_mul(nf_elem_approx_t a, nf_elem_approx_t b, 
-                                            nf_elem_approx_t c, const nf_t nf)
+void __to_exact(fmpz * a, acb_srcptr b, const nf_t nf)
 {
-   slong i, deg = fmpq_poly_degree(nf->pol);
-   fmpz_t pow;
+    acb_mat_t A, B;
+    slong i, n, prec;
 
-   fmpz_mul(NF_ELEM_DENREF(a), 
-      NF_ELEM_DENREF(b), NF_ELEM_DENREF(c));
-   
-   for (i = 0; i < deg; i++)
-      acb_mul(a->conj + i, b->conj + i, c->conj + i, nf->Vprec);
+    n = fmpq_poly_degree(nf->pol);
+    prec = nf->Vprec;
 
-   fmpz * lead = fmpq_poly_numref(nf->pol) + deg;
+    acb_mat_init(A, n, 1);
+    acb_mat_init(B, n, 1);
 
-   if (!fmpz_is_one(lead)) /* non-monic defining poly */
-   {
-      fmpz_init(pow);
-      fmpz_pow_ui(pow, lead, deg - 1);
+    for (i = 0; i < n; i++)
+        acb_set(acb_mat_entry(B, i, 0), b + i);
 
-      fmpz_mul(NF_ELEM_DENREF(a), NF_ELEM_DENREF(a), pow);
+    acb_mat_mul(A, nf->Vinv, B, prec);
 
-      for (i = 0; i < deg; i++)
-         acb_mul_fmpz(a->conj + i, a->conj + i, pow, nf->Vprec);
+    for (i = 0; i < n; i++)
+    {
+        if (!arb_contains_zero(acb_imagref(acb_mat_entry(A, i, 0))) ||
+            !arb_get_unique_fmpz(a + i, acb_realref(acb_mat_entry(A, i, 0))))
+        {
+            printf("a most grave fault happened! the precision had insufficient greatness to facilitate an unambiguous retrieval of exact information\n");
+            fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
+            abort();
+        }
+    }
 
-      fmpz_clear(pow);
-   } 
+    acb_mat_clear(A);
+    acb_mat_clear(B);
+}
+
+void nf_elem_approx_to_exact(nf_elem_approx_t a, const nf_t nf)
+{
+   __to_exact(NF_ELEM_NUMREF(a), a->conj, nf);
+   _fmpq_poly_set_length(NF_ELEM(a), fmpq_poly_degree(nf->pol));
+   _fmpq_poly_normalise(NF_ELEM(a));
+   a->exact = 1;
 }
