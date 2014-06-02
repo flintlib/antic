@@ -30,6 +30,7 @@ void nf_elem_approx_mul(nf_elem_approx_t a, nf_elem_approx_t b,
 {
    slong i, deg = fmpq_poly_degree(nf->pol);
    fmpz_t pow;
+   fmpz * lead;
 
    fmpz_mul(NF_ELEM_DENREF(a), 
       NF_ELEM_DENREF(b), NF_ELEM_DENREF(c));
@@ -37,7 +38,7 @@ void nf_elem_approx_mul(nf_elem_approx_t a, nf_elem_approx_t b,
    for (i = 0; i < deg; i++)
       acb_mul(a->conj + i, b->conj + i, c->conj + i, nf->Vprec);
 
-   fmpz * lead = fmpq_poly_numref(nf->pol) + deg;
+   lead = fmpq_poly_numref(nf->pol) + deg;
 
    if (!fmpz_is_one(lead)) /* non-monic defining poly */
    {

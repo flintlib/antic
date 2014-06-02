@@ -35,7 +35,7 @@
 #include "nf.h"
 #include "nf_elem.h"
 
-#define BITS 450
+#define BITS 230
 
 typedef struct
 {

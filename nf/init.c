@@ -28,6 +28,7 @@
 
 void nf_init(nf_t nf, fmpq_poly_t pol)
 {
+    slong i, j;
     fmpq_poly_init(nf->pol);
     fmpq_poly_set(nf->pol, pol);
 
@@ -69,6 +70,24 @@ void nf_init(nf_t nf, fmpq_poly_t pol)
    nf->Vprec = 0;
 
    if (pol->length == 4)
-      nf_compute_roots(nf, 1024); /* compute roots to this precision */
+   {
+      nf_compute_roots(nf, 2048); /* compute roots to this precision */
+
+      for (i = 0; i < 3; i++)
+      {
+         for (j = 0; j < 3; j++)
+         {
+            acb_set_round(acb_mat_entry(nf->V, i, j), acb_mat_entry(nf->V, i, j), 1024);
+            acb_set_round(acb_mat_entry(nf->Vinv, i, j), acb_mat_entry(nf->Vinv, i, j), 1024);
+         }
+      }
+
+      for (i = 0; i < 3; i++)
+         acb_set_round(nf->roots + i, nf->roots + i, 1024);
+
+      nf->roots_prec = 1024;
+      nf->Vprec = 1024;
+   }
+
 }
 

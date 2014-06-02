@@ -36,7 +36,7 @@
 #include "nf_elem.h"
 #include "nf_elem_approx.h"
 
-#define BITS 450
+#define BITS 230
 
 typedef struct
 {
