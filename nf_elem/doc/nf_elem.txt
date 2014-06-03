@@ -203,7 +203,17 @@ void _nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t nf)
     
     Assumes that $a \neq 0$ and $e > 1$. Does not support aliasing.
 
-void fmpz_poly_pow_binexp(fmpz_poly_t res, const fmpz_poly_t poly, ulong e)
+void nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t nf);
 
     Set \code{res} = \code{a^e} using the binary exponentiation algorithm.  
     If $e$ is zero, returns one, so that in particular \code{0^0 = 1}.
+
+void _nf_elem_norm(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf)
+
+    Set \code{{rnum, rden}} to the absolute norm of the given number field
+    element $a$.
+
+void nf_elem_norm(fmpq_t res, const nf_elem_t a, const nf_t nf)
+
+    Set \code{res} to the absolute norm of the given number field
+    element $a$.

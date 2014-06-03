@@ -337,6 +337,10 @@ void _nf_elem_pow(nf_elem_t res, const nf_elem_t b, ulong e, const nf_t nf);
 
 void nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t nf);
 
+void _nf_elem_norm(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf);
+
+void nf_elem_norm(fmpq_t res, const nf_elem_t a, const nf_t nf);
+
 #ifdef __cplusplus
 }
 #endif
