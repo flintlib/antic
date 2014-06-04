@@ -84,10 +84,10 @@ main(void)
            printf("a = "); nf_elem_print(a, nf); printf("\n");
            printf("b = "); nf_elem_print(b, nf); printf("\n");
            printf("c = "); nf_elem_print(c, nf); printf("\n");
-           printf("norm(a) = "); fmpq_print(atrace); printf("\n");
-           printf("norm(b) = "); fmpq_print(btrace); printf("\n");
-           printf("norm(a*b) = "); fmpq_print(ctrace); printf("\n");
-           printf("norm(a)*norm(b) = "); fmpq_print(ctrace); printf("\n");
+           printf("trace(a) = "); fmpq_print(atrace); printf("\n");
+           printf("trace(b) = "); fmpq_print(btrace); printf("\n");
+           printf("trace(a + b) = "); fmpq_print(ctrace); printf("\n");
+           printf("trace(a) + trace(b) = "); fmpq_print(ctrace); printf("\n");
            abort();
         }
 
