@@ -28,6 +28,15 @@
 
 void nf_clear(nf_t nf)
 {
+    slong i, len;
+    
+    if (nf->flag & NF_LINEAR)
+       len = 2;
+    else if (nf->flag & NF_QUADRATIC)
+       len = 3;
+    else
+       len = nf->pol->length - 1;
+
     fmpq_poly_clear(nf->pol);
 
     if (!(nf->flag & NF_MONIC))
@@ -40,5 +49,10 @@ void nf_clear(nf_t nf)
        else
           _fmpq_poly_powers_clear(nf->powers.qq->powers, nf->powers.qq->len);
     }
+
+    for (i = 0; i < len; i++)
+       fmpq_clear(nf->traces + i);
+
+    flint_free(nf->traces);
 }
 

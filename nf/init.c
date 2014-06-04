@@ -28,40 +28,87 @@
 
 void nf_init(nf_t nf, fmpq_poly_t pol)
 {
+    slong i, j;
+    slong len = pol->length, deg = len - 1;
+
+    fmpz * lead = fmpq_poly_numref(pol) + len - 1;
+
     fmpq_poly_init(nf->pol);
     fmpq_poly_set(nf->pol, pol);
 
+    /**** Set up precomputed inverse of leading coeff of f(x) ****/
+
     if (fmpz_is_one(fmpq_poly_denref(pol)) /* denominator is one and numerator is monic */
-     && fmpz_is_one(fmpq_poly_numref(pol) + pol->length - 1))
+     && fmpz_is_one(lead))
        nf->flag = NF_MONIC;
     else
     {
-       fmpz_preinvn_init(nf->pinv.qq, fmpq_poly_numref(pol) + pol->length - 1);
+       fmpz_preinvn_init(nf->pinv.qq, lead);
        nf->flag = NF_GENERIC;
     }
 
-    if (pol->length < 2)
+    /**** Set up precomputed powers x^i mod f(x) ****/
+
+    if (len < 2)
     {
        flint_printf("Exception (nf_init). Degree must be at least 1.\n");
        abort();
-    } else if (pol->length == 2) /* linear case */
+    } else if (len == 2) /* linear case */
        nf->flag |= NF_LINEAR;
-    else if (pol->length == 3) /* quadratic case */
+    else if (len == 3) /* quadratic case */
        nf->flag |= NF_QUADRATIC;
-    else if (pol->length <= NF_POWERS_CUTOFF) /* compute powers of generator mod pol */
+    else if (len <= NF_POWERS_CUTOFF) /* compute powers of generator mod pol */
     {
        if (nf->flag & NF_MONIC)
        {
           nf->powers.zz->powers = _fmpz_poly_powers_precompute(fmpq_poly_numref(pol), 
-                                       pol->length);
-          nf->powers.zz->len = pol->length;
+                                       len);
+          nf->powers.zz->len = len;
        }
        else
        {
           nf->powers.qq->powers = _fmpq_poly_powers_precompute(fmpq_poly_numref(pol), 
-                                       fmpq_poly_denref(pol), pol->length);
-          nf->powers.qq->len = pol->length;
+                                       fmpq_poly_denref(pol), len);
+          nf->powers.qq->len = len;
        }
    }
+
+   /**** Set up precomputed traces S_k = \sum _i theta_i^k for roots theta_i of f(x) ****/
+
+   /* 
+      Uses the recursive formula from pp. 163 of "A Course in Computational Algebraic 
+      Number Theory" by Henri Cohen
+   */
+
+   /* 
+      TODO: this is currently **very** expensive, due to powers of the leading
+      coefficient in the denominator of the traces.
+   */
+   nf->traces = flint_malloc(sizeof(fmpq)*len);
+
+   fmpq_init(nf->traces);
+   
+   for (i = 1; i < len; i++)
+   {
+      fmpq_init(nf->traces + i);
+      fmpz_mul_si(fmpq_numref(nf->traces + i), 
+         fmpq_poly_numref(pol) + deg - i, i); 
+      
+      for (j = i - 1; j >= 1; j--)
+      {
+         fmpz_mul(fmpq_numref(nf->traces + i), fmpq_numref(nf->traces + i), 
+            lead);
+         fmpz_addmul(fmpq_numref(nf->traces + i), 
+            fmpq_poly_numref(pol) + deg - j, fmpq_numref(nf->traces + i - j));
+      }
+      
+      fmpz_mul(fmpq_denref(nf->traces + i), fmpq_denref(nf->traces + i - 1),
+         lead);
+
+      fmpz_neg(fmpq_numref(nf->traces + i), fmpq_numref(nf->traces + i));
+   }
+
+   for (i = 1; i < len; i++)
+      fmpq_canonicalise(nf->traces + i);
 }
 
