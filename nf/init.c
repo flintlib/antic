@@ -31,7 +31,7 @@ void nf_init(nf_t nf, fmpq_poly_t pol)
     slong i, j;
     slong len = pol->length, deg = len - 1;
 
-    fmpz * lead = fmpq_poly_numref(pol) + len - 1;
+    fmpz * pow, * lead = fmpq_poly_numref(pol) + len - 1;
 
     fmpq_poly_init(nf->pol);
     fmpq_poly_set(nf->pol, pol);
@@ -80,35 +80,34 @@ void nf_init(nf_t nf, fmpq_poly_t pol)
       Number Theory" by Henri Cohen
    */
 
-   /* 
-      TODO: this is currently **very** expensive, due to powers of the leading
-      coefficient in the denominator of the traces.
-   */
-   nf->traces = flint_malloc(sizeof(fmpq)*len);
+  fmpq_poly_init2(nf->traces, deg);
+   pow = fmpq_poly_denref(nf->traces);
 
-   fmpq_init(nf->traces);
-   
-   for (i = 1; i < len; i++)
+   for (i = 1; i < deg; i++)
    {
-      fmpq_init(nf->traces + i);
-      fmpz_mul_si(fmpq_numref(nf->traces + i), 
+      fmpz_mul_si(fmpq_poly_numref(nf->traces) + i, 
          fmpq_poly_numref(pol) + deg - i, i); 
       
       for (j = i - 1; j >= 1; j--)
       {
-         fmpz_mul(fmpq_numref(nf->traces + i), fmpq_numref(nf->traces + i), 
-            lead);
-         fmpz_addmul(fmpq_numref(nf->traces + i), 
-            fmpq_poly_numref(pol) + deg - j, fmpq_numref(nf->traces + i - j));
+         fmpz_mul(fmpq_poly_numref(nf->traces) + i, 
+            fmpq_poly_numref(nf->traces) + i, lead);
+         fmpz_addmul(fmpq_poly_numref(nf->traces) + i, 
+            fmpq_poly_numref(pol) + deg - j, 
+            fmpq_poly_numref(nf->traces) + i - j);
       }
       
-      fmpz_mul(fmpq_denref(nf->traces + i), fmpq_denref(nf->traces + i - 1),
-         lead);
-
-      fmpz_neg(fmpq_numref(nf->traces + i), fmpq_numref(nf->traces + i));
+      fmpz_neg(fmpq_poly_numref(nf->traces) + i, 
+         fmpq_poly_numref(nf->traces) + i);
    }
 
-   for (i = 1; i < len; i++)
-      fmpq_canonicalise(nf->traces + i);
+   for (i = 1; i < deg; i++)
+   {
+      fmpz_mul(fmpq_poly_numref(nf->traces) + deg - i,
+         fmpq_poly_numref(nf->traces) + deg - i, pow);
+      fmpz_mul(pow, pow, lead);
+   }
+
+   fmpz_mul_si(fmpq_poly_numref(nf->traces), pow, deg);
 }
 

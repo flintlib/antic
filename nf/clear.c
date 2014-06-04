@@ -50,9 +50,6 @@ void nf_clear(nf_t nf)
           _fmpq_poly_powers_clear(nf->powers.qq->powers, nf->powers.qq->len);
     }
 
-    for (i = 0; i < len; i++)
-       fmpq_clear(nf->traces + i);
-
-    flint_free(nf->traces);
+    fmpq_poly_clear(nf->traces);
 }
 

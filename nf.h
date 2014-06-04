@@ -46,7 +46,7 @@ typedef struct {
       fmpq_poly_powers_precomp_t qq; 
       fmpz_poly_powers_precomp_t zz;
    } powers;
-   fmpq * traces; /* S_k = sum_i \theta_i^k for k = 1, 2, ..., (n-1) */
+   fmpq_poly_t traces; /* S_k = sum_i \theta_i^k for k = 0, 1, 2, ..., (n-1) */
    ulong flag;       /* 1 = pol monic over ZZ, 2, = linear, 4 = quadratic field */
 } nf_struct;
 
