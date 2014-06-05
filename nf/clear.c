@@ -28,15 +28,6 @@
 
 void nf_clear(nf_t nf)
 {
-    slong i, len;
-    
-    if (nf->flag & NF_LINEAR)
-       len = 2;
-    else if (nf->flag & NF_QUADRATIC)
-       len = 3;
-    else
-       len = nf->pol->length - 1;
-
     fmpq_poly_clear(nf->pol);
 
     if (!(nf->flag & NF_MONIC))
