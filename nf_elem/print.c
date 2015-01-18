@@ -20,38 +20,53 @@
 /******************************************************************************
 
     Copyright (C) 2013 Fredrik Johansson
+    Copyright (C) 2015 William Hart
 
 ******************************************************************************/
 
 #include "nf_elem.h"
 
-void nf_elem_print(const nf_elem_t a, const nf_t nf)
+void nf_elem_print_pretty(const nf_elem_t a, const nf_t nf, const char * var)
 {
     if (nf->flag & NF_LINEAR)
     {
-        flint_printf("(");
-        fmpz_print(LNF_ELEM_NUMREF(a));
-        flint_printf(" ");
-        fmpz_print(LNF_ELEM_DENREF(a));
-        flint_printf(")");        
+        const fmpz * const den = LNF_ELEM_DENREF(a);
+		fmpz_print(LNF_ELEM_NUMREF(a));
+        if (!fmpz_is_one(den))
+		{
+		   flint_printf("/");
+		   fmpz_print(LNF_ELEM_DENREF(a));
+		}       
     } else if (nf->flag & NF_QUADRATIC)
     {
         const fmpz * const anum = QNF_ELEM_NUMREF(a);
         const fmpz * const aden = QNF_ELEM_DENREF(a);
-        
-        flint_printf("(");
-        fmpz_print(anum + 1);
-        flint_printf(" ");
+        int den1 = fmpz_is_one(aden);
+		int lead0 = fmpz_is_zero(anum + 1);
+		
+        if (!den1 && !lead0)
+		   flint_printf("(");
+        if (!lead0)
+		{
+		   fmpz_print(anum + 1);
+		   flint_printf("*%s", var);
+		   if (fmpz_sgn(anum) >= 0)
+		   printf("+");
+		}
         fmpz_print(anum);
-        flint_printf(" ");
-        fmpz_print(aden);
-        flint_printf(")");
+        if (!den1 && !lead0)
+		   flint_printf(")");
+        if (!den1)
+		{
+		   flint_printf("/");
+		   fmpz_print(aden);
+		}
     } else if (nf->flag & NF_MONIC)
     {
-       _fmpz_poly_fprint_pretty(stdout, NF_ELEM_NUMREF(a), NF_ELEM(a)->length, "x");
+       _fmpz_poly_fprint_pretty(stdout, NF_ELEM_NUMREF(a), NF_ELEM(a)->length, var);
     } else
     {
-        fmpq_poly_print_pretty(NF_ELEM(a), "x");
+        fmpq_poly_print_pretty(NF_ELEM(a), var);
     }
 }
 

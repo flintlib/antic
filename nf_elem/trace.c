@@ -71,8 +71,7 @@ void _nf_elem_trace(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf)
       const fmpz * const tden = fmpq_poly_denref(nf->traces);
       
       slong alen = NF_ELEM(a)->length;
-      fmpz * coeffs = nf->pol->coeffs;
-
+      
       if (alen == 0)
       {
          fmpz_zero(rnum);

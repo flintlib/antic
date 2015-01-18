@@ -26,7 +26,7 @@
 #ifndef NF_H
 #define NF_H
 
-#include <mpir.h>
+#include "gmp.h"
 #include "flint.h"
 #include "fmpz.h"
 #include "fmpz_poly.h"
@@ -65,11 +65,11 @@ typedef nf_struct nf_t[1];
 
 ******************************************************************************/
 
-void nf_init(nf_t nf, fmpq_poly_t pol);
+FLINT_DLL void nf_init(nf_t nf, fmpq_poly_t pol);
 
-void nf_clear(nf_t nf);
+FLINT_DLL void nf_clear(nf_t nf);
 
-void nf_print(const nf_t nf);
+FLINT_DLL void nf_print(const nf_t nf);
 
 #ifdef __cplusplus
 }
