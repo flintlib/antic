@@ -32,7 +32,9 @@ void nf_elem_si_sub(nf_elem_t a, slong c, const nf_elem_t b, const nf_t nf)
       fmpz * den = LNF_ELEM_DENREF(a);
 	  fmpz * num = LNF_ELEM_NUMREF(a);
 	  
-      fmpz_neg(num, num);
+      nf_elem_set(a, b, nf);
+	  
+	  fmpz_neg(num, num);
 	  if (c >= 0)
 	     fmpz_addmul_ui(num, den, c);
 	  else
@@ -42,8 +44,10 @@ void nf_elem_si_sub(nf_elem_t a, slong c, const nf_elem_t b, const nf_t nf)
    else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * den = QNF_ELEM_DENREF(a);
-	  fmpz * num = QNF_ELEM_NUMREF(a);
+	  fmpz * num = QNF_ELEM_NUMREF(a); 
 	  slong len = 2;
+	  
+	  nf_elem_set(a, b, nf);
 	  
 	  while (len != 0 && fmpz_is_zero(num + len - 1))
 	     len--;
@@ -56,6 +60,6 @@ void nf_elem_si_sub(nf_elem_t a, slong c, const nf_elem_t b, const nf_t nf)
 	  _fmpq_poly_canonicalise(num, den, len);
    } else
    {
-      fmpq_poly_si_sub(NF_ELEM(a), c, NF_ELEM(a));
+      fmpq_poly_si_sub(NF_ELEM(a), c, NF_ELEM(b));
    }
 }

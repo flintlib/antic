@@ -32,27 +32,26 @@ void nf_elem_scalar_mul_si(nf_elem_t a, const nf_elem_t b,
    {
       fmpz * den = LNF_ELEM_DENREF(a);
 	  fmpz * num = LNF_ELEM_NUMREF(a);
+	  const fmpz * const den2 = LNF_ELEM_DENREF(b);
+	  const fmpz * const num2 = LNF_ELEM_NUMREF(b);
 	  
-      if (!fmpz_is_zero(num))
-	  {
-	     fmpz_mul_si(num, num, c);
-		 _fmpq_canonicalise(num, den);
-	  }
+      fmpz_mul_si(num, num2, c);
+      fmpz_set(den, den2);
+	  _fmpq_canonicalise(num, den);
    }
    else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * den = QNF_ELEM_DENREF(a);
 	  fmpz * num = QNF_ELEM_NUMREF(a);
-	  slong len = 2;
+	  const fmpz * const den2 = LNF_ELEM_DENREF(b);
+	  const fmpz * const num2 = LNF_ELEM_NUMREF(b);
 	  
-	  while (len != 0 && fmpz_is_zero(num + len - 1))
-	     len--;
-	  
-      _fmpz_vec_scalar_mul_si(num, num, len, c);
-	  _fmpq_poly_canonicalise(num, den, len);
+      _fmpz_vec_scalar_mul_si(num, num2, 2, c);
+	  fmpz_set(den, den2);
+	  _fmpq_poly_canonicalise(num, den, 2);
    } else
    {
-      fmpq_poly_scalar_mul_si(NF_ELEM(a), NF_ELEM(a), c);
+      fmpq_poly_scalar_mul_si(NF_ELEM(a), NF_ELEM(b), c);
    }
 
 }

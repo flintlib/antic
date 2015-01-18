@@ -32,26 +32,24 @@ void nf_elem_scalar_div_fmpq(nf_elem_t a, const nf_elem_t b,
    {
       fmpz * den = LNF_ELEM_DENREF(a);
 	  fmpz * num = LNF_ELEM_NUMREF(a);
+	  const fmpz * const den2 = LNF_ELEM_DENREF(b);
+	  const fmpz * const num2 = LNF_ELEM_NUMREF(b);
 	  
-      if (!fmpz_is_zero(num))
-	     _fmpq_mul(num, den, num, den, fmpq_denref(c), fmpq_numref(c));
+      _fmpq_mul(num, den, num2, den2, fmpq_denref(c), fmpq_numref(c));
    }
    else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * den = QNF_ELEM_DENREF(a);
 	  fmpz * num = QNF_ELEM_NUMREF(a);
-	  slong len = 2;
+	  const fmpz * const den2 = LNF_ELEM_DENREF(b);
+	  const fmpz * const num2 = LNF_ELEM_NUMREF(b);
 	  
-	  while (len != 0 && fmpz_is_zero(num + len - 1))
-	     len--;
-	  
-      if (len > 0)
-	     _fmpq_poly_scalar_div_fmpq(num, den, 
-		                       num, den, len, fmpq_numref(c), fmpq_denref(c));
+	 _fmpq_poly_scalar_div_fmpq(num, den, 
+		                       num2, den2, 2, fmpq_numref(c), fmpq_denref(c));
    } else
    {
       fmpq_poly_scalar_div_fmpq(NF_ELEM(a), 
-	                            NF_ELEM(a), c);
+	                            NF_ELEM(b), c);
    }
 
 }

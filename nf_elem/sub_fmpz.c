@@ -31,14 +31,18 @@ void nf_elem_sub_fmpz(nf_elem_t a, const nf_elem_t b, fmpz_t c, const nf_t nf)
    {
       fmpz * den = LNF_ELEM_DENREF(a);
 	  fmpz * num = LNF_ELEM_NUMREF(a);
+	  const fmpz * const den2 = LNF_ELEM_DENREF(b);
+	  const fmpz * const num2 = LNF_ELEM_NUMREF(b);
 	  
-      _fmpq_sub_fmpz(num, den, num, den, c);
+      _fmpq_sub_fmpz(num, den, num2, den2, c);
    }
    else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * den = QNF_ELEM_DENREF(a);
 	  fmpz * num = QNF_ELEM_NUMREF(a);
 	  slong len = 2;
+	  
+	  nf_elem_set(a, b, nf);
 	  
 	  while (len != 0 && fmpz_is_zero(num + len - 1))
 	     len--;
@@ -47,6 +51,6 @@ void nf_elem_sub_fmpz(nf_elem_t a, const nf_elem_t b, fmpz_t c, const nf_t nf)
 	  _fmpq_poly_canonicalise(num, den, len);
    } else
    {
-      fmpq_poly_sub_fmpz(NF_ELEM(a), NF_ELEM(a), c);
+      fmpq_poly_sub_fmpz(NF_ELEM(a), NF_ELEM(b), c);
    }
 }

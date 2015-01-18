@@ -31,16 +31,20 @@ void nf_elem_fmpq_sub(nf_elem_t a, fmpq_t c, const nf_elem_t b, const nf_t nf)
    {
       fmpz * den = LNF_ELEM_DENREF(a);
 	  fmpz * num = LNF_ELEM_NUMREF(a);
+	  const fmpz * const den2 = LNF_ELEM_DENREF(b);
+	  const fmpz * const num2 = LNF_ELEM_NUMREF(b);
 	  
-      _fmpq_sub(num, den, fmpq_numref(c), fmpq_denref(c), num, den);
+      _fmpq_sub(num, den, fmpq_numref(c), fmpq_denref(c), num2, den2);
    }
    else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * den = QNF_ELEM_DENREF(a);
 	  fmpz * num = QNF_ELEM_NUMREF(a);
+	  const fmpz * const den2 = QNF_ELEM_DENREF(b);
+	  const fmpz * const num2 = QNF_ELEM_NUMREF(b);
 	  slong len = 2;
 	  
-	  while (len != 0 && fmpz_is_zero(num + len - 1))
+	  while (len != 0 && fmpz_is_zero(num2 + len - 1))
 	     len--;
 	  
       if (len == 0)
@@ -48,13 +52,15 @@ void nf_elem_fmpq_sub(nf_elem_t a, fmpq_t c, const nf_elem_t b, const nf_t nf)
 	     fmpz_set(num, fmpq_numref(c));
 		 fmpz_set(den, fmpq_denref(c));
 	  } else if (len == 1)
-	     _fmpq_sub(num, den, fmpq_numref(c), fmpq_denref(c), num, den);
+	     _fmpq_sub(num, den, fmpq_numref(c), fmpq_denref(c), num2, den2);
 	  else
 	  {
 	     /* fast path */
-		 if (fmpz_equal(fmpq_denref(c), den))
-		    fmpz_sub(num, fmpq_numref(c), num);
-		 else /* slow path */
+		 if (fmpz_equal(fmpq_denref(c), den2))
+		 {
+    		fmpz_sub(num, fmpq_numref(c), num2);
+			fmpz_set(den, den2);
+		 } else /* slow path */
 		 {
 		    fmpz_t d1, d2, g;
 			
@@ -62,7 +68,9 @@ void nf_elem_fmpq_sub(nf_elem_t a, fmpq_t c, const nf_elem_t b, const nf_t nf)
 			fmpz_init(d2);
 			fmpz_init(g);
 			
-			fmpz_gcd(g, fmpq_denref(c), den);
+			nf_elem_set(a, b, nf);
+	  
+	        fmpz_gcd(g, fmpq_denref(c), den);
 			fmpz_divexact(d1, fmpq_denref(c), g);
 			fmpz_divexact(d2, den, g);
 			
@@ -82,6 +90,6 @@ void nf_elem_fmpq_sub(nf_elem_t a, fmpq_t c, const nf_elem_t b, const nf_t nf)
 	  }
    } else
    {
-      fmpq_poly_fmpq_sub(NF_ELEM(a), c, NF_ELEM(a));
+      fmpq_poly_fmpq_sub(NF_ELEM(a), c, NF_ELEM(b));
    }
 }
