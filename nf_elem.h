@@ -224,7 +224,7 @@ char * nf_elem_get_str_pretty(const nf_elem_t a,
 
 /******************************************************************************
 
-    Arithmetic
+    Element creation
 
 ******************************************************************************/
 
@@ -281,6 +281,104 @@ void nf_elem_gen(nf_elem_t a, const nf_t nf)
    } else
       fmpq_poly_set_coeff_ui(NF_ELEM(a), 1, 1);
 }
+
+NF_ELEM_INLINE
+void nf_elem_set_si(nf_elem_t a, slong c, const nf_t nf)
+{
+   if (nf->flag & NF_LINEAR)
+   {
+      fmpz_set_si(LNF_ELEM_NUMREF(a), c);
+      fmpz_one(LNF_ELEM_DENREF(a));
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+      fmpz * const anum = QNF_ELEM_NUMREF(a);
+      
+      fmpz_set_si(anum, c);
+      fmpz_zero(anum + 1);
+      fmpz_one(QNF_ELEM_DENREF(a));
+   } else
+      fmpq_poly_set_si(NF_ELEM(a), c);
+}
+
+NF_ELEM_INLINE
+void nf_elem_set_fmpz(nf_elem_t a, const fmpz_t c, const nf_t nf)
+{
+   if (nf->flag & NF_LINEAR)
+   {
+      fmpz_set(LNF_ELEM_NUMREF(a), c);
+      fmpz_one(LNF_ELEM_DENREF(a));
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+      fmpz * const anum = QNF_ELEM_NUMREF(a);
+      
+      fmpz_set(anum, c);
+      fmpz_zero(anum + 1);
+      fmpz_one(QNF_ELEM_DENREF(a));
+   } else
+      fmpq_poly_set_fmpz(NF_ELEM(a), c);
+}
+
+NF_ELEM_INLINE
+void nf_elem_set_fmpq(nf_elem_t a, const fmpq_t c, const nf_t nf)
+{
+   if (nf->flag & NF_LINEAR)
+   {
+      fmpz_set(LNF_ELEM_NUMREF(a), fmpq_numref(c));
+      fmpz_set(LNF_ELEM_DENREF(a), fmpq_denref(c));
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+      fmpz * const anum = QNF_ELEM_NUMREF(a);
+      
+      fmpz_set(anum, fmpq_numref(c));
+      fmpz_zero(anum + 1);
+      fmpz_set(QNF_ELEM_DENREF(a), fmpq_denref(c));
+   } else
+      fmpq_poly_set_fmpq(NF_ELEM(a), c);
+}
+
+NF_ELEM_INLINE
+void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
+{
+   if (nf->flag & NF_LINEAR)
+   {
+      if (pol->length == 0)
+	  {
+	     fmpz_zero(LNF_ELEM_NUMREF(a));
+		 fmpz_one(LNF_ELEM_DENREF(a));
+	  } else
+	  {
+	     fmpz_set(LNF_ELEM_NUMREF(a), fmpq_poly_numref(pol));
+         fmpz_set(LNF_ELEM_DENREF(a), fmpq_poly_denref(pol));
+	  }
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+      fmpz * const anum = QNF_ELEM_NUMREF(a);
+      
+      if (pol->length == 0)
+	  {
+	     fmpz_zero(anum);
+		 fmpz_zero(anum + 1);
+		 fmpz_one(QNF_ELEM_DENREF(a));
+	  } else if (pol->length == 1)
+	  {
+		 fmpz_zero(anum + 1);
+		 fmpz_set(anum, fmpq_poly_numref(pol));
+		 fmpz_set(QNF_ELEM_DENREF(a), fmpq_poly_denref(pol));
+	  } else
+	  {
+	     fmpz_set(anum, fmpq_poly_numref(pol));
+	     fmpz_set(anum + 1, fmpq_poly_numref(pol) + 1);
+         fmpz_set(QNF_ELEM_DENREF(a), fmpq_poly_denref(pol));
+	  }
+   } else
+      fmpq_poly_set(NF_ELEM(a), pol);
+}
+
+/******************************************************************************
+
+    Arithmetic
+
+******************************************************************************/
 
 NF_ELEM_INLINE
 void nf_elem_set(nf_elem_t a, const nf_elem_t b, const nf_t nf)
