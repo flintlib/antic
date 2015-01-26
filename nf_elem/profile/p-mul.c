@@ -154,8 +154,8 @@ int main(void)
       
       flint_printf("length %wd, min %.3e ms, max %.3e ms\n", 
            info.length,
-		   ((min/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400.0,
-           ((max/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400.0
+		   (min/scale)/1000.0,
+           (max/scale)/1000.0
 	     );
 
      info.monic = 1;
@@ -164,8 +164,8 @@ int main(void)
          
       flint_printf("length %wd, min %.3e ms, max %.3e ms\n", 
            info.length,
-		   ((min/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400.0,
-           ((max/(double)FLINT_CLOCK_SCALE_FACTOR)/scale)/2400.0
+		   (min/scale)/1000.0,
+           (max/scale)/1000.0
 	     );
    }
 
