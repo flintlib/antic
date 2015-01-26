@@ -148,22 +148,20 @@ int main(void)
       
       prof_repeat(&min, &max, sample, (void *) &info);
       
-      flint_printf("%lf\n", (double)FLINT_CLOCK_SCALE_FACTOR);
-	  flint_printf("min = %lf\n", min);
-	  flint_printf("generic: length %wd, min %.3e ms, max %.3e ms\n", 
+      flint_printf("generic: length %wd, min %.3e us, max %.3e us\n", 
            info.length,
-		   (min/scale)/1000.0,
-           (max/scale)/1000.0
+		   (min/scale),
+           (max/scale)
 	     );
 
-     info.monic = 1;
+      info.monic = 1;
      
-     prof_repeat(&min, &max, sample, (void *) &info);
+      prof_repeat(&min, &max, sample, (void *) &info);
          
-      flint_printf("monic: length %wd, min %.3e ms, max %.3e ms\n", 
+      flint_printf("monic  : length %wd, min %.3e us, max %.3e us\n", 
            info.length,
-		   (min/scale)/1000.0,
-           (max/scale)/1000.0
+		   (min/scale),
+           (max/scale)
 	     );
    }
 

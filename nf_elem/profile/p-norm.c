@@ -77,9 +77,9 @@ void sample(void * arg, ulong count)
    int monic = info->monic;
    int scale;
    
-   scale = 1000;
-   if (length >= 50) scale = 100;
-   if (length >= 500) scale = 40;
+   scale = 100;
+   if (length >= 50) scale = 10;
+   if (length >= 500) scale = 4;
    
    flint_rand_t state;
    flint_randinit(state);
@@ -142,26 +142,26 @@ int main(void)
       info.length = k;
       info.monic = 0;
 
-      scale = 1000;
-      if (k >= 50) scale = 100;
-      if (k >= 500) scale = 40;
+      scale = 100;
+      if (k >= 50) scale = 10;
+      if (k >= 500) scale = 4;
       
       prof_repeat(&min, &max, sample, (void *) &info);
       
-      flint_printf("generic: length %wd, min %.3e ms, max %.3e ms\n", 
+      flint_printf("generic: length %wd, min %.3e us, max %.3e us\n", 
            info.length,
-		   (min/scale)/1000.0,
-           (max/scale)/1000.0
+		   (min/scale),
+           (max/scale)
 	     );
 
      info.monic = 1;
      
      prof_repeat(&min, &max, sample, (void *) &info);
          
-      flint_printf("monic: length %wd, min %.3e ms, max %.3e ms\n", 
+      flint_printf("monic  : length %wd, min %.3e us, max %.3e us\n", 
            info.length,
-		   (min/scale)/1000.0,
-           (max/scale)/1000.0
+		   (min/scale),
+           (max/scale)
 	     );
    }
 

@@ -32,7 +32,7 @@ Usage: run magma with the -b flag to prevent the start up banner, i.e.
 target_name := "NFElemNorm";
 target_description := "MAGMA number field norm over various degree";
 
-BITS := 230;        // bits per coefficient
+BITS := 10;        // bits per coefficient
 ratio := 1.1;      // ratio between consecutive lengths
 monic := false;    // monic integral case or generic rational case
 

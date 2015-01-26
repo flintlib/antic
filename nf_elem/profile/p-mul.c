@@ -152,20 +152,20 @@ int main(void)
       
       prof_repeat(&min, &max, sample, (void *) &info);
       
-      flint_printf("length %wd, min %.3e ms, max %.3e ms\n", 
+      flint_printf("length %wd, min %.3e us, max %.3e us\n", 
            info.length,
-		   (min/scale)/1000.0,
-           (max/scale)/1000.0
+		   (min/scale),
+           (max/scale)
 	     );
 
      info.monic = 1;
      
      prof_repeat(&min, &max, sample, (void *) &info);
          
-      flint_printf("length %wd, min %.3e ms, max %.3e ms\n", 
+      flint_printf("length %wd, min %.3e us, max %.3e us\n", 
            info.length,
-		   (min/scale)/1000.0,
-           (max/scale)/1000.0
+		   (min/scale),
+           (max/scale)
 	     );
    }
 
