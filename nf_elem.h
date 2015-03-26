@@ -35,6 +35,7 @@
 #include "gmp.h"
 #include "flint.h"
 #include "fmpq_poly.h"
+#include "fmpz_mat.h"
 #include "nf.h"
 
 #ifdef __cplusplus
@@ -374,6 +375,51 @@ void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
       fmpq_poly_set(NF_ELEM(a), pol);
 }
 
+/******************************************************************************
+
+    Conversion
+
+******************************************************************************/
+NF_ELEM_INLINE
+void nf_elem_get_den(fmpz * d, const nf_elem_t b, const nf_t nf)
+{
+   if (nf->flag & NF_LINEAR)
+   {
+     fmpz_set(d, LNF_ELEM_DENREF(b));
+   } else if (nf->flag & NF_QUADRATIC)
+   {  
+     fmpz_set(d, QNF_ELEM_DENREF(b));
+   } else
+   {
+     fmpz_set(d, NF_ELEM_DENREF(b));
+   }
+}
+
+FLINT_DLL 
+void nf_elem_from_mat_row(nf_elem_t b, const fmpz_mat_t M, const fmpz * d, const int i, const nf_t nf);
+
+FLINT_DLL 
+void _nf_elem_to_mat_row(fmpz_mat_t M, fmpz * d, const int i, const nf_elem_t b, const nf_t nf);
+
+NF_ELEM_INLINE
+void nf_elem_to_mat_row(fmpz_mat_t M, fmpz * d, const int i, const nf_elem_t b, const nf_t nf)
+{
+  if (nf->flag & NF_LINEAR)
+  {
+    fmpz_set(d, LNF_ELEM_DENREF(b));
+    fmpz_set(fmpz_mat_entry(M, i, 0), LNF_ELEM_NUMREF(b));
+  } else if (nf->flag & NF_QUADRATIC)
+  {
+    const fmpz * const bnum = QNF_ELEM_NUMREF(b);
+    fmpz_set(d, QNF_ELEM_DENREF(b));
+    fmpz_set(fmpz_mat_entry(M, i, 0), bnum);
+    fmpz_set(fmpz_mat_entry(M, i, 1), bnum + 1);
+  } else
+  {
+    fmpz_set(d, NF_ELEM_DENREF(b));
+    _nf_elem_to_mat_row(M, d, i, b, nf);
+  }
+}
 /******************************************************************************
 
     Arithmetic
