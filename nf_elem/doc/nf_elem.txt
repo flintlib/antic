@@ -47,7 +47,7 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
 
 void nf_elem_canonicalise(nf_elem_t a, nf_t nf)
 
-    Canonicalise a number field element, i.e. reduce numerator and denominaator
+    Canonicalise a number field element, i.e. reduce numerator and denominator
     to lowest terms. If the numerator is $0$, set the denominator to $1$.
 
 int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf)
@@ -227,3 +227,12 @@ void nf_elem_trace(fmpq_t res, const nf_elem_t a, const nf_t nf)
 
     Set \code{res} to the absolute trace of the given number field
     element $a$.
+
+void nf_elem_from_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf)
+
+    Set $b$ to be the element where the coefficients are in the row $i$ of the matrix $M$.
+    Leaves the denominator undefined/ unchanged.
+
+void nf_elem_to_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf)
+    Set the row $i$ of the matrix $M$ to the coefficients of the element $b$.
+    Ignores the denominator.

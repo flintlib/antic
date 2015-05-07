@@ -28,23 +28,19 @@
 
 #include "nf_elem.h"
 
-void _nf_elem_to_mat_row(fmpz_mat_t M, fmpz * d, const int i, const nf_elem_t b, const nf_t nf)
+void nf_elem_to_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf)
 {
   if (nf->flag & NF_LINEAR)
   {
-    fmpz_set(d, LNF_ELEM_DENREF(b));
     fmpz_set(fmpz_mat_entry(M, i, 0), LNF_ELEM_NUMREF(b));
   } else if (nf->flag & NF_QUADRATIC)
   {
     const fmpz * const bnum = QNF_ELEM_NUMREF(b);
-    fmpz_set(d, QNF_ELEM_DENREF(b));
     fmpz_set(fmpz_mat_entry(M, i, 0), bnum);
     fmpz_set(fmpz_mat_entry(M, i, 1), bnum + 1);
   } else
   {
     int j;
-    fmpz_set(d, NF_ELEM_DENREF(b));
-
     for (j=0; j< NF_ELEM(b)->length; j++) 
     {
       fmpz_set(fmpz_mat_entry(M, i, j), NF_ELEM_NUMREF(b) + j);

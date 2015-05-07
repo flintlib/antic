@@ -29,22 +29,19 @@
 #include "nf_elem.h"
 #include "fmpq_poly.h"
 
-void nf_elem_from_mat_row(nf_elem_t b, const fmpz_mat_t M, const fmpz * d, const int i, const nf_t nf)
+void nf_elem_from_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf)
 {
   if (nf->flag & NF_LINEAR)
   {
-    fmpz_set(LNF_ELEM_DENREF(b), d);
     fmpz_set(LNF_ELEM_NUMREF(b), fmpz_mat_entry(M, i, 0));
   } else if (nf->flag & NF_QUADRATIC)
   {
     fmpz * const bnum = QNF_ELEM_NUMREF(b);
-    fmpz_set(QNF_ELEM_DENREF(b), d);
     fmpz_set(bnum, fmpz_mat_entry(M, i, 0));
     fmpz_set(bnum + 1, fmpz_mat_entry(M, i, 1));
   } else
   {
     int j;
-    fmpz_set(NF_ELEM_DENREF(b), d);
     for (j=nf->pol->length-2; j>=0; j--)
       if (!fmpz_is_zero(fmpz_mat_entry(M, i, j)))
         break;
