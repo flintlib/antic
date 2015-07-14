@@ -615,6 +615,10 @@ FLINT_DLL void _nf_elem_norm(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const 
 
 FLINT_DLL void nf_elem_norm(fmpq_t res, const nf_elem_t a, const nf_t nf);
 
+FLINT_DLL void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong num_primes);
+
+FLINT_DLL void nf_elem_norm_div(fmpq_t res, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong num_primes);
+
 FLINT_DLL void _nf_elem_trace(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, 
                                                                 const nf_t nf);
 
