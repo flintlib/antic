@@ -76,9 +76,9 @@ main(void)
         if (!result)
         {
            printf("FAIL:\n");
-           printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("p1 = "); nf_elem_print(p1, nf); printf("\n");
-           printf("p2 = "); nf_elem_print(p2, nf); printf("\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("p1 = "); nf_elem_print_pretty(p1, nf, "x"); printf("\n");
+           printf("p2 = "); nf_elem_print_pretty(p2, nf, "x"); printf("\n");
            flint_printf("exp = %w\n", exp);
            abort();
         }
@@ -123,9 +123,9 @@ main(void)
         if (!result)
         {
            printf("FAIL:\n");
-           printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("p1 = "); nf_elem_print(p1, nf); printf("\n");
-           printf("p2 = "); nf_elem_print(p2, nf); printf("\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("p1 = "); nf_elem_print_pretty(p1, nf, "x"); printf("\n");
+           printf("p2 = "); nf_elem_print_pretty(p2, nf, "x"); printf("\n");
            flint_printf("exp = %w\n", exp);
            abort();
         }

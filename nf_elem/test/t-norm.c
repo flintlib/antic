@@ -81,9 +81,9 @@ main(void)
         {
            printf("FAIL:\n");
            printf("nf->pol = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
-           printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("b = "); nf_elem_print(b, nf); printf("\n");
-           printf("c = "); nf_elem_print(c, nf); printf("\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
            printf("norm(a) = "); fmpq_print(anorm); printf("\n");
            printf("norm(b) = "); fmpq_print(bnorm); printf("\n");
            printf("norm(a*b) = "); fmpq_print(cnorm); printf("\n");

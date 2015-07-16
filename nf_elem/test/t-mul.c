@@ -80,9 +80,9 @@ main(void)
         if (!result)
         {
            printf("FAIL:\n");
-           printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("b = "); nf_elem_print(b, nf); printf("\n");
-           printf("c = "); nf_elem_print(c, nf); printf("\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
            printf("s = "); nf_elem_print(s, nf); printf("\n");
            printf("p = "); nf_elem_print(p, nf); printf("\n");
            printf("p1 = "); nf_elem_print(p1, nf); printf("\n");
@@ -131,9 +131,9 @@ main(void)
         if (!result)
         {
            printf("FAIL:\n");
-           printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("b = "); nf_elem_print(b, nf); printf("\n");
-           printf("c = "); nf_elem_print(c, nf); printf("\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
            abort();
         }
 
@@ -174,9 +174,9 @@ main(void)
         if (!result)
         {
            printf("FAIL:\n");
-           printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("b = "); nf_elem_print(b, nf); printf("\n");
-           printf("c = "); nf_elem_print(c, nf); printf("\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
            abort();
         }
 
