@@ -83,10 +83,10 @@ main(void)
            printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
            printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
            printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
-           printf("s = "); nf_elem_print(s, nf); printf("\n");
-           printf("p = "); nf_elem_print(p, nf); printf("\n");
-           printf("p1 = "); nf_elem_print(p1, nf); printf("\n");
-           printf("p2 = "); nf_elem_print(p2, nf); printf("\n");
+           printf("s = "); nf_elem_print_pretty(s, nf, "x"); printf("\n");
+           printf("p = "); nf_elem_print_pretty(p, nf, "x"); printf("\n");
+           printf("p1 = "); nf_elem_print_pretty(p1, nf, "x"); printf("\n");
+           printf("p2 = "); nf_elem_print_pretty(p2, nf, "x"); printf("\n");
            abort();
         }
 
