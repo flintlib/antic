@@ -31,11 +31,58 @@
 #include "mpn_extras.h"
 
 
+static mp_limb_t * prime_array = (void*)0;
+static slong num_primes = 0, space = 0;
+
+static void assure_primes(slong np)
+{
+  slong i;
+  mp_limb_t p;
+  mp_bitcnt_t pbits;
+
+  np += 5; 
+  if (num_primes >= np)
+    return;
+  
+  if (np >= space) {
+    mp_limb_t * new_array = malloc(2*np*sizeof(mp_limb_t));
+    if (!new_array) {
+      printf("no memory\n");
+      exit(-1);
+    }
+    if (num_primes) {
+      for(i=0; i<num_primes; i++)
+        new_array[i] = prime_array[i];
+      free(prime_array);
+      prime_array = new_array;
+    } else {
+      /* set size of first prime */
+      prime_array = new_array;
+      pbits = FLINT_BITS - 1;
+      p = (UWORD(1)<<pbits);
+      prime_array[0] = n_nextprime(p, 0);
+    }
+    prime_array = new_array;
+    space = 2*np;
+  }
+
+  for(i=num_primes; i<np; i++)
+    prime_array[i] = n_nextprime(prime_array[i-1], 0);
+
+  num_primes = np;
+}
+
+static mp_limb_t nth_prime(slong i)
+{
+  if (i>=num_primes)
+    assure_primes(i+5);
+  return prime_array[i];
+}
+
 void _fmpz_poly_resultant_modular_div(fmpz_t res, const fmpz * poly1, slong len1, 
                                         const fmpz * poly2, slong len2, const fmpz_t divisor, slong num_primes)
 {
-    mp_bitcnt_t pbits; 
-    slong i;
+    slong i, pc;
     fmpz_comb_t comb;
     fmpz_comb_temp_t comb_temp;
     fmpz_t ac, bc, l, modulus, div;
@@ -53,6 +100,8 @@ void _fmpz_poly_resultant_modular_div(fmpz_t res, const fmpz * poly1, slong len1
         return;
     }
     
+    assure_primes(num_primes);
+
     fmpz_init(ac);
     fmpz_init(bc);
     
@@ -92,10 +141,6 @@ void _fmpz_poly_resultant_modular_div(fmpz_t res, const fmpz * poly1, slong len1
     lead_B = B + len2 - 1;
     fmpz_mul(l, lead_A, lead_B);
 
-    /* set size of first prime */
-    pbits = FLINT_BITS - 1;
-    p = (UWORD(1)<<pbits);
-
     parr = _nmod_vec_init(num_primes);
     rarr = _nmod_vec_init(num_primes);
 
@@ -106,11 +151,13 @@ void _fmpz_poly_resultant_modular_div(fmpz_t res, const fmpz * poly1, slong len1
     /* make space for polynomials mod p */
     a = _nmod_vec_init(len1);
     b = _nmod_vec_init(len2);
+
+    pc = 0;
     
     for (i = 0; i< num_primes; )
     {
         /* get new prime and initialise modulus */
-        p = n_nextprime(p, 0);
+        p = nth_prime(pc++);
         if (fmpz_fdiv_ui(l, p) == 0) 
             continue;
         d = fmpz_fdiv_ui(div, p);
