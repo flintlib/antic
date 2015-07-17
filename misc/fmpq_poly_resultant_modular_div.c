@@ -65,7 +65,7 @@ void _fmpq_poly_resultant_div(fmpz_t rnum, fmpz_t rden,
     }
     else  /* len1 >= len2 >= 2 */
     {
-        fmpz_t c1, c2;
+        fmpz_t c1, c2, t;
         fmpz *prim1, *prim2, *g;
         slong lenG = len2;
 
@@ -77,7 +77,6 @@ void _fmpq_poly_resultant_div(fmpz_t rnum, fmpz_t rden,
 
         prim1 = _fmpz_vec_init(len1);
         prim2 = _fmpz_vec_init(len2);
-        g     = _fmpz_vec_init(len2);
 
         _fmpz_vec_scalar_divexact_fmpz(prim1, poly1, len1, c1);
         _fmpz_vec_scalar_divexact_fmpz(prim2, poly2, len2, c2);
@@ -101,53 +100,40 @@ void _fmpq_poly_resultant_div(fmpz_t rnum, fmpz_t rden,
         }
 
 
-        _fmpz_poly_gcd(g, prim1, len1, prim2, len2);
-        FMPZ_VEC_NORM(g, lenG);
+        _fmpz_poly_resultant_modular_div(rnum, prim1, len1, prim2, len2, div, num_primes);
 
-        if (lenG > 1)
+        fmpz_init(t);
+        if (!fmpz_is_one(c1))
         {
-            fmpz_zero(rnum);
-            fmpz_one(rden);
+            fmpz_pow_ui(t, c1, len2 - 1);
+            fmpz_mul(rnum, rnum, t);
         }
-        else  /* prim1, prim2 are coprime */
+        if (!fmpz_is_one(c2))
         {
-            fmpz_t t;
+            fmpz_pow_ui(t, c2, len1 - 1);
+            fmpz_mul(rnum, rnum, t);
+        }
 
-            fmpz_init(t);
-            _fmpz_poly_resultant_modular_div(rnum, prim1, len1, prim2, len2, div, num_primes);
-
-            if (!fmpz_is_one(c1))
-            {
-                fmpz_pow_ui(t, c1, len2 - 1);
-                fmpz_mul(rnum, rnum, t);
-            }
-            if (!fmpz_is_one(c2))
-            {
-                fmpz_pow_ui(t, c2, len1 - 1);
-                fmpz_mul(rnum, rnum, t);
-            }
-
-            if (fmpz_is_one(den1))
-            {
-                if (fmpz_is_one(den2))
-                    fmpz_one(rden);
-                else
-                    fmpz_pow_ui(rden, den2, len1 - 1);
-            }
+        if (fmpz_is_one(den1))
+        {
+            if (fmpz_is_one(den2))
+                fmpz_one(rden);
+            else
+                fmpz_pow_ui(rden, den2, len1 - 1);
+        }
+        else
+        {
+            if (fmpz_is_one(den2))
+                fmpz_pow_ui(rden, den1, len2 - 1);
             else
             {
-                if (fmpz_is_one(den2))
-                    fmpz_pow_ui(rden, den1, len2 - 1);
-                else
-                {
-                    fmpz_pow_ui(rden, den1, len2 - 1);
-                    fmpz_pow_ui(t,    den2, len1 - 1);
-                    fmpz_mul(rden, rden, t);
-                }
+                fmpz_pow_ui(rden, den1, len2 - 1);
+                fmpz_pow_ui(t,    den2, len1 - 1);
+                fmpz_mul(rden, rden, t);
             }
-            _fmpq_canonicalise(rnum, rden);
-            fmpz_clear(t);
         }
+        _fmpq_canonicalise(rnum, rden);
+        fmpz_clear(t);
 
         fmpz_clear(c1);
         fmpz_clear(c2);
@@ -155,7 +141,6 @@ void _fmpq_poly_resultant_div(fmpz_t rnum, fmpz_t rden,
         fmpz_clear(l);
         _fmpz_vec_clear(prim1, len1);
         _fmpz_vec_clear(prim2, len2);
-        _fmpz_vec_clear(g, len2);
     }
 }
 
