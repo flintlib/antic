@@ -53,6 +53,10 @@ FLINT_DLL void _fmpq_poly_resultant_div(fmpz_t rnum, fmpz_t rden,
 
 FLINT_DLL void fmpq_poly_resultant_div(fmpq_t r, const fmpq_poly_t f, const fmpq_poly_t g, const fmpz_t divisor, slong num_primes);
 
+FLINT_DLL slong _nmod_mat_howell(nmod_mat_t A)
+
+FLINT_DLL slong _fmpz_mat_howell(fmpz_mat_t A, fmpz_t mod)
+
 #ifdef __cplusplus
 }
 #endif
