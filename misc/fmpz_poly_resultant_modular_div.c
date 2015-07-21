@@ -61,6 +61,7 @@ static void assure_primes(slong np)
       pbits = FLINT_BITS - 1;
       p = (UWORD(1)<<pbits);
       prime_array[0] = n_nextprime(p, 0);
+      num_primes = 1;
     }
     prime_array = new_array;
     space = 2*np;
