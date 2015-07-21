@@ -35,6 +35,7 @@
 #include "gmp.h"
 #include "flint.h"
 #include "fmpq_poly.h"
+#include "fmpz_mat.h"
 #include "nf.h"
 
 #ifdef __cplusplus
@@ -376,6 +377,18 @@ void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
 
 /******************************************************************************
 
+    Conversion
+
+******************************************************************************/
+
+FLINT_DLL 
+void nf_elem_from_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf);
+
+FLINT_DLL 
+void nf_elem_to_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf);
+
+/******************************************************************************
+ 
     Basic arithmetic
 
 ******************************************************************************/
@@ -601,6 +614,10 @@ FLINT_DLL void nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t
 FLINT_DLL void _nf_elem_norm(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf);
 
 FLINT_DLL void nf_elem_norm(fmpq_t res, const nf_elem_t a, const nf_t nf);
+
+FLINT_DLL void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong num_primes);
+
+FLINT_DLL void nf_elem_norm_div(fmpq_t res, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong num_primes);
 
 FLINT_DLL void _nf_elem_trace(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, 
                                                                 const nf_t nf);

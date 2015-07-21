@@ -19,41 +19,34 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2015 William Hart
+    Copyright (C) 2010 Sebastian Pancratz
+    Copyright (C) 2011 Fredrik Johansson
+    Copyright (C) 2014 William Hart
+    Copyright (C) 2015 Claus Fieker
 
 ******************************************************************************/
 
-#define NF_ELEM_INLINES_C
-
 #include "nf_elem.h"
+#include "fmpq_poly.h"
 
-NF_ELEM_INLINE
-void nf_elem_get_den(fmpz * d, const nf_elem_t b, const nf_t nf)
+void nf_elem_from_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf)
 {
-   if (nf->flag & NF_LINEAR)
-   {
-     fmpz_set(d, LNF_ELEM_DENREF(b));
-   } else if (nf->flag & NF_QUADRATIC)
-   {  
-     fmpz_set(d, QNF_ELEM_DENREF(b));
-   } else
-   {
-     fmpz_set(d, NF_ELEM_DENREF(b));
-   }
+  if (nf->flag & NF_LINEAR)
+  {
+    fmpz_set(LNF_ELEM_NUMREF(b), fmpz_mat_entry(M, i, 0));
+  } else if (nf->flag & NF_QUADRATIC)
+  {
+    fmpz * const bnum = QNF_ELEM_NUMREF(b);
+    fmpz_set(bnum, fmpz_mat_entry(M, i, 0));
+    fmpz_set(bnum + 1, fmpz_mat_entry(M, i, 1));
+  } else
+  {
+    int j;
+    for (j=nf->pol->length-2; j>=0; j--)
+      if (!fmpz_is_zero(fmpz_mat_entry(M, i, j)))
+        break;
+    _fmpq_poly_set_length(NF_ELEM(b), j+1);
+    for (; j>=0; j--)
+      fmpq_poly_set_coeff_fmpz(NF_ELEM(b),  j, fmpz_mat_entry(M, i, j));
+  }
 }
-
-NF_ELEM_INLINE
-void nf_elem_set_den(nf_elem_t b, fmpz * d, const nf_t nf)
-{
-   if (nf->flag & NF_LINEAR)
-   {
-     fmpz_set(LNF_ELEM_DENREF(b), d);
-   } else if (nf->flag & NF_QUADRATIC)
-   {  
-     fmpz_set(QNF_ELEM_DENREF(b), d);
-   } else
-   {
-     fmpz_set(NF_ELEM_DENREF(b), d);
-   }
-}
-
