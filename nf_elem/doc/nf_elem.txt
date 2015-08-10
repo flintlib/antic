@@ -64,6 +64,41 @@ int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf)
 
 *******************************************************************************
 
+    Conversion
+
+*******************************************************************************
+
+void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i,
+                                                                 const nf_t nf)
+
+    Set $b$ to the element whose numerator is specified by row $i$ of the 
+    matrix $M$. Column $0$ of the matrix corresponds to the constant
+    coefficient of the number field element. Sets the denominator to 1.
+
+void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b,
+                                                                const nf_t nf)
+
+    Set the row $i$ of the matrix $M$ to the coefficients of the numerator of
+    the element $b$. Column $0$ of the matrix corresponds to the constant
+    coefficient of the number field element. Ignores the denominator.
+
+*******************************************************************************
+
+    Basic manipulation
+
+*******************************************************************************
+
+void nf_elem_set_den(nf_elem_t b, fmpz_t d, const nf_t nf)
+
+    Set the denominator of the \code{nf_elem_t b} to the given integer $d$.
+    Assumes $d > 0$.
+
+void nf_elem_get_den(fmpz_t d, const nf_elem_t b, const nf_t nf)
+
+    Set $d$ to the denominator of the \code{nf_elem_t b}.
+
+*******************************************************************************
+
     Comparison
 
 *******************************************************************************
@@ -228,11 +263,3 @@ void nf_elem_trace(fmpq_t res, const nf_elem_t a, const nf_t nf)
     Set \code{res} to the absolute trace of the given number field
     element $a$.
 
-void nf_elem_from_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf)
-
-    Set $b$ to be the element where the coefficients are in the row $i$ of the matrix $M$.
-    Leaves the denominator undefined/ unchanged.
-
-void nf_elem_to_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf)
-    Set the row $i$ of the matrix $M$ to the coefficients of the element $b$.
-    Ignores the denominator.

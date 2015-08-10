@@ -28,26 +28,26 @@
 
 #include "nf_elem.h"
 
-void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf)
+void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const slong i, const nf_elem_t b, const nf_t nf)
 {
-  if (nf->flag & NF_LINEAR)
-  {
-    fmpz_set(fmpz_mat_entry(M, i, 0), LNF_ELEM_NUMREF(b));
-  } else if (nf->flag & NF_QUADRATIC)
-  {
-    const fmpz * const bnum = QNF_ELEM_NUMREF(b);
-    fmpz_set(fmpz_mat_entry(M, i, 0), bnum);
-    fmpz_set(fmpz_mat_entry(M, i, 1), bnum + 1);
-  } else
-  {
-    int j;
-    for (j=0; j< NF_ELEM(b)->length; j++) 
-    {
-      fmpz_set(fmpz_mat_entry(M, i, j), NF_ELEM_NUMREF(b) + j);
-    }
-    for (; j< nf->pol->length-1; j++)
-    {
-      fmpz_zero(fmpz_mat_entry(M, i, j));
-    }
-  }
+   if (nf->flag & NF_LINEAR)
+   {
+      fmpz_set(fmpz_mat_entry(M, i, 0), LNF_ELEM_NUMREF(b));
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+      const fmpz * const bnum = QNF_ELEM_NUMREF(b);
+      fmpz_set(fmpz_mat_entry(M, i, 0), bnum);
+      fmpz_set(fmpz_mat_entry(M, i, 1), bnum + 1);
+   } else
+   {
+      slong j;
+      for (j = 0; j < NF_ELEM(b)->length; j++) 
+      {
+         fmpz_set(fmpz_mat_entry(M, i, j), NF_ELEM_NUMREF(b) + j);
+      }
+      for ( ; j < nf->pol->length - 1; j++)
+      {
+         fmpz_zero(fmpz_mat_entry(M, i, j));
+      }
+   }
 }

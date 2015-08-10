@@ -35,6 +35,7 @@
 #include "gmp.h"
 #include "flint.h"
 #include "fmpq_poly.h"
+#include "fmpz_mat.h"
 #include "nf.h"
 
 #ifdef __cplusplus
@@ -381,10 +382,12 @@ void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
 ******************************************************************************/
 
 FLINT_DLL 
-void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf);
+void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, 
+                                                 const slong i, const nf_t nf);
 
 FLINT_DLL 
-void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf);
+void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const slong i, 
+                                             const nf_elem_t b, const nf_t nf);
 
 /******************************************************************************
  
@@ -393,7 +396,7 @@ void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, cons
 ******************************************************************************/
 
 NF_ELEM_INLINE
-void nf_elem_get_den(fmpz * d, const nf_elem_t b, const nf_t nf)
+void nf_elem_get_den(fmpz_t d, const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
    {
@@ -408,7 +411,7 @@ void nf_elem_get_den(fmpz * d, const nf_elem_t b, const nf_t nf)
 }
 
 NF_ELEM_INLINE
-void nf_elem_set_den(nf_elem_t b, fmpz * d, const nf_t nf)
+void nf_elem_set_den(nf_elem_t b, fmpz_t d, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
    {
