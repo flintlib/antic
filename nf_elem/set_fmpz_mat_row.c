@@ -29,7 +29,7 @@
 #include "nf_elem.h"
 #include "fmpq_poly.h"
 
-void nf_elem_from_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf)
+void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf)
 {
   if (nf->flag & NF_LINEAR)
   {

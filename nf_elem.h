@@ -381,10 +381,10 @@ void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
 ******************************************************************************/
 
 FLINT_DLL 
-void nf_elem_from_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf);
+void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf);
 
 FLINT_DLL 
-void nf_elem_to_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf);
+void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf);
 
 /******************************************************************************
  

@@ -28,7 +28,7 @@
 
 #include "nf_elem.h"
 
-void nf_elem_to_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf)
+void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf)
 {
   if (nf->flag & NF_LINEAR)
   {
