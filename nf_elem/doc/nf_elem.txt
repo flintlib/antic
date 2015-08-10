@@ -69,18 +69,18 @@ int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf)
 *******************************************************************************
 
 void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i,
-                                                                 const nf_t nf)
+                                                     fmpz_t den, const nf_t nf)
 
-    Set $b$ to the element whose numerator is specified by row $i$ of the 
-    matrix $M$. Column $0$ of the matrix corresponds to the constant
-    coefficient of the number field element. Sets the denominator to 1.
+    Set $b$ to the element specified by row $i$ of the matrix $M$ and with the
+    given denominator $d$. Column $0$ of the matrix corresponds to the constant
+    coefficient of the number field element.
 
-void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b,
-                                                                const nf_t nf)
+void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const int i, fmpz_t den, 
+                                              const nf_elem_t b, const nf_t nf)
 
     Set the row $i$ of the matrix $M$ to the coefficients of the numerator of
-    the element $b$. Column $0$ of the matrix corresponds to the constant
-    coefficient of the number field element. Ignores the denominator.
+    the element $b$ and $d$ to the denominator of $b$. Column $0$ of the matrix
+    corresponds to the constant coefficient of the number field element.
 
 *******************************************************************************
 

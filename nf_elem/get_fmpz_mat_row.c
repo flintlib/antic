@@ -28,16 +28,19 @@
 
 #include "nf_elem.h"
 
-void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const slong i, const nf_elem_t b, const nf_t nf)
+void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const slong i, fmpz_t den, 
+                                              const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
    {
       fmpz_set(fmpz_mat_entry(M, i, 0), LNF_ELEM_NUMREF(b));
+      fmpz_set(den, LNF_ELEM_DENREF(b));
    } else if (nf->flag & NF_QUADRATIC)
    {
       const fmpz * const bnum = QNF_ELEM_NUMREF(b);
       fmpz_set(fmpz_mat_entry(M, i, 0), bnum);
       fmpz_set(fmpz_mat_entry(M, i, 1), bnum + 1);
+      fmpz_set(den, QNF_ELEM_DENREF(b));
    } else
    {
       slong j;
@@ -49,5 +52,6 @@ void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const slong i, const nf_elem_t b, co
       {
          fmpz_zero(fmpz_mat_entry(M, i, j));
       }
+      fmpz_set(den, NF_ELEM_DENREF(b));
    }
 }
