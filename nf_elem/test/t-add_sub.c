@@ -72,9 +72,9 @@ main(void)
         if (!result)
         {
            printf("FAIL:\n");
-           printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("b = "); nf_elem_print(b, nf); printf("\n");
-           printf("c = "); nf_elem_print(c, nf); printf("\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
            abort();
         }
 
@@ -120,9 +120,9 @@ main(void)
         if (!result)
         {
            printf("FAIL:\n");
-           printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("b = "); nf_elem_print(b, nf); printf("\n");
-           printf("c = "); nf_elem_print(c, nf); printf("\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
            abort();
         }
 
@@ -165,9 +165,9 @@ main(void)
         if (!result)
         {
            printf("FAIL:\n");
-           printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("b = "); nf_elem_print(b, nf); printf("\n");
-           printf("c = "); nf_elem_print(c, nf); printf("\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
            abort();
         }
 
@@ -209,9 +209,9 @@ main(void)
         if (!result)
         {
            printf("FAIL:\n");
-           printf("a = "); nf_elem_print(a, nf); printf("\n");
-           printf("b = "); nf_elem_print(b, nf); printf("\n");
-           printf("c = "); nf_elem_print(c, nf); printf("\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
            abort();
         }
 
