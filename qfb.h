@@ -26,7 +26,7 @@
 #ifndef QFB_H
 #define QFB_H
 
-#include <mpir.h>
+#include <gmp.h>
 #include "flint.h"
 #include "fmpz.h"
 
