@@ -27,7 +27,6 @@
 
 #include "nf_elem.h"
 
-NF_ELEM_INLINE
 void nf_elem_get_den(fmpz * d, const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
