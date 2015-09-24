@@ -19,7 +19,7 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2014 William Hart
+    Copyright (C) 2013 William Hart
 
 ******************************************************************************/
 
@@ -38,73 +38,55 @@ main(void)
     int i, result;
     flint_rand_t state;
 
-    flint_printf("trace....");
+    flint_printf("init/clear....");
     fflush(stdout);
 
     flint_randinit(state);
 
-    /* test trace(a + b) = trace(a) + trace(b) */
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         fmpq_poly_t pol;
         nf_t nf;
-        nf_elem_t a, b, c;
-        fmpq_t atrace, btrace, ctrace, ctrace2;
+        nf_elem_t a;
+        fmpz_t d, d2;
 
         fmpq_poly_init(pol);
         do {
-           fmpq_poly_randtest_not_zero(pol, state, 25, 200);
+           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
         } while (fmpq_poly_degree(pol) < 1);
-        
+
+        fmpz_init(d);
+        fmpz_init(d2);
         nf_init(nf, pol);
-        
+
         nf_elem_init(a, nf);
-        nf_elem_init(b, nf);
-        nf_elem_init(c, nf);
-        
-        fmpq_init(atrace);
-        fmpq_init(btrace);
-        fmpq_init(ctrace);
-        fmpq_init(ctrace);
-
         nf_elem_randtest(a, state, 200, nf);
-        nf_elem_randtest(b, state, 200, nf);
         
-        nf_elem_add(c, a, b, nf);
-        nf_elem_trace(atrace, a, nf);
-        nf_elem_trace(btrace, b, nf);
-        nf_elem_trace(ctrace, c, nf);
-        fmpq_add(ctrace2, atrace, btrace);
+        fmpz_randtest_not_zero(d, state, 200);
 
-        result = (fmpq_equal(ctrace, ctrace2));
+        nf_elem_set_den(a, d, nf);
+        nf_elem_get_den(d2, a, nf);
+
+        result = fmpz_equal(d, d2);
         if (!result)
         {
-           printf("FAIL:\n");
-           printf("nf->pol = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
-           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
-           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
-           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
-           printf("trace(a) = "); fmpq_print(atrace); printf("\n");
-           printf("trace(b) = "); fmpq_print(btrace); printf("\n");
-           printf("trace(a + b) = "); fmpq_print(ctrace); printf("\n");
-           printf("trace(a) + trace(b) = "); fmpq_print(ctrace); printf("\n");
-           abort();
+            flint_printf("FAIL:\n");
+            flint_printf("d = "); fmpz_print(d); printf("\n");
+            flint_printf("d2 = "); fmpz_print(d2); printf("\n");
+            flint_printf("a = "); nf_elem_print_pretty(a, nf, "x");
+            abort();
         }
 
-        fmpq_clear(atrace);
-        fmpq_clear(btrace);
-        fmpq_clear(ctrace);
-        fmpq_clear(ctrace);
-
         nf_elem_clear(a, nf);
-        nf_elem_clear(b, nf);
-        nf_elem_clear(c, nf);
-         
+        
         nf_clear(nf);
+
+        fmpz_clear(d);
+        fmpz_clear(d2);
 
         fmpq_poly_clear(pol);
     }
-    
+
     flint_randclear(state);
     flint_cleanup();
     flint_printf("PASS\n");

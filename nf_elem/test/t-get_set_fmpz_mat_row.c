@@ -19,7 +19,7 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2014 William Hart
+    Copyright (C) 2013 William Hart
 
 ******************************************************************************/
 
@@ -38,73 +38,64 @@ main(void)
     int i, result;
     flint_rand_t state;
 
-    flint_printf("trace....");
+    flint_printf("init/clear....");
     fflush(stdout);
 
     flint_randinit(state);
 
-    /* test trace(a + b) = trace(a) + trace(b) */
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         fmpq_poly_t pol;
         nf_t nf;
-        nf_elem_t a, b, c;
-        fmpq_t atrace, btrace, ctrace, ctrace2;
+        nf_elem_t a, b;
+        fmpz_mat_t mat;
+        slong rows, j;
+        fmpz_t d;
 
         fmpq_poly_init(pol);
         do {
-           fmpq_poly_randtest_not_zero(pol, state, 25, 200);
+           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
         } while (fmpq_poly_degree(pol) < 1);
-        
+
         nf_init(nf, pol);
-        
+
+        rows = n_randint(state, 100) + 1;
+        j = n_randint(state, rows);
+        fmpz_mat_init(mat, rows, fmpq_poly_degree(pol));
+
         nf_elem_init(a, nf);
         nf_elem_init(b, nf);
-        nf_elem_init(c, nf);
-        
-        fmpq_init(atrace);
-        fmpq_init(btrace);
-        fmpq_init(ctrace);
-        fmpq_init(ctrace);
 
         nf_elem_randtest(a, state, 200, nf);
-        nf_elem_randtest(b, state, 200, nf);
-        
-        nf_elem_add(c, a, b, nf);
-        nf_elem_trace(atrace, a, nf);
-        nf_elem_trace(btrace, b, nf);
-        nf_elem_trace(ctrace, c, nf);
-        fmpq_add(ctrace2, atrace, btrace);
 
-        result = (fmpq_equal(ctrace, ctrace2));
+        fmpz_init(d);
+        
+        nf_elem_get_fmpz_mat_row(mat, j, d, a, nf);
+        nf_elem_set_fmpz_mat_row(b, mat, j, d, nf);
+
+        result = nf_elem_equal(a, b, nf);
         if (!result)
         {
-           printf("FAIL:\n");
-           printf("nf->pol = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
-           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
-           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
-           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
-           printf("trace(a) = "); fmpq_print(atrace); printf("\n");
-           printf("trace(b) = "); fmpq_print(btrace); printf("\n");
-           printf("trace(a + b) = "); fmpq_print(ctrace); printf("\n");
-           printf("trace(a) + trace(b) = "); fmpq_print(ctrace); printf("\n");
+           flint_printf("FAIL:\n");
+           flint_printf("rows = %wd, cols = %wd, j = %wd\n", rows, fmpq_poly_degree(pol), j);
+           flint_printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           flint_printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+           flint_printf("d = "); fmpz_print(d); printf("\n");
            abort();
         }
 
-        fmpq_clear(atrace);
-        fmpq_clear(btrace);
-        fmpq_clear(ctrace);
-        fmpq_clear(ctrace);
-
         nf_elem_clear(a, nf);
         nf_elem_clear(b, nf);
-        nf_elem_clear(c, nf);
-         
+        
+        fmpz_mat_clear(mat);
+
+        fmpz_clear(d);
+
         nf_clear(nf);
 
         fmpq_poly_clear(pol);
     }
-    
+
     flint_randclear(state);
     flint_cleanup();
     flint_printf("PASS\n");

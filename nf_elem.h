@@ -104,6 +104,8 @@ void nf_elem_canonicalise(nf_elem_t a, const nf_t nf)
       fmpq_poly_canonicalise(NF_ELEM(a));
 }
 
+void nf_elem_reduce(nf_elem_t a, const nf_t nf);
+
 FLINT_DLL int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf);
 
 /******************************************************************************
@@ -382,14 +384,16 @@ void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
 ******************************************************************************/
 
 FLINT_DLL 
-void nf_elem_from_mat_row(nf_elem_t b, const fmpz_mat_t M, const int i, const nf_t nf);
+void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, 
+                                     const slong i, fmpz_t den, const nf_t nf);
 
 FLINT_DLL 
-void nf_elem_to_mat_row(fmpz_mat_t M, const int i, const nf_elem_t b, const nf_t nf);
+void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const slong i, fmpz_t den, 
+                                             const nf_elem_t b, const nf_t nf);
 
 /******************************************************************************
  
-    Basic arithmetic
+    Basic manipulation 
 
 ******************************************************************************/
 
