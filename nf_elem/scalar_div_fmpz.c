@@ -43,8 +43,8 @@ void nf_elem_scalar_div_fmpz(nf_elem_t a, const nf_elem_t b,
    {
       fmpz * den = QNF_ELEM_DENREF(a);
 	  fmpz * num = QNF_ELEM_NUMREF(a);
-	  const fmpz * const den2 = LNF_ELEM_DENREF(b);
-	  const fmpz * const num2 = LNF_ELEM_NUMREF(b);
+	  const fmpz * const den2 = QNF_ELEM_DENREF(b);
+	  const fmpz * const num2 = QNF_ELEM_NUMREF(b);
 	  
       fmpz_mul(den, den2, c);
 	  _fmpz_vec_set(num, num2, 2);

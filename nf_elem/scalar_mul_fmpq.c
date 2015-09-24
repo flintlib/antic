@@ -41,8 +41,8 @@ void nf_elem_scalar_mul_fmpq(nf_elem_t a, const nf_elem_t b,
    {
       fmpz * den = QNF_ELEM_DENREF(a);
 	  fmpz * num = QNF_ELEM_NUMREF(a);
-	  const fmpz * const den2 = LNF_ELEM_DENREF(b);
-	  const fmpz * const num2 = LNF_ELEM_NUMREF(b);
+	  const fmpz * const den2 = QNF_ELEM_DENREF(b);
+	  const fmpz * const num2 = QNF_ELEM_NUMREF(b);
 	  
 	  _fmpq_poly_scalar_mul_fmpq(num, den, 
 		                       num2, den2, 2, fmpq_numref(c), fmpq_denref(c));
