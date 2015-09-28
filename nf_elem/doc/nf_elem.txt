@@ -82,6 +82,17 @@ void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const int i, fmpz_t den,
     the element $b$ and $d$ to the denominator of $b$. Column $0$ of the matrix
     corresponds to the constant coefficient of the number field element.
 
+void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
+
+
+    Set $a$ to the element corresponding to the polynomial \code{pol}.
+
+void nf_elem_get_fmpq_poly(fmpq_poly_t pol, const nf_elem_t a, const nf_t nf)
+
+
+    Set \code{pol} to a polynomial corresponding to $a$, reduced modulo the
+    defining polynomial of \code{nf}.
+
 *******************************************************************************
 
     Basic manipulation
