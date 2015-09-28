@@ -383,6 +383,7 @@ void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
 
 ******************************************************************************/
 
+FLINT_DLL 
 void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, 
                                      const slong i, fmpz_t den, const nf_t nf);
 
@@ -395,36 +396,6 @@ void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const slong i, fmpz_t den,
     Basic manipulation 
 
 ******************************************************************************/
-
-NF_ELEM_INLINE
-void nf_elem_get_den(fmpz_t d, const nf_elem_t b, const nf_t nf)
-{
-   if (nf->flag & NF_LINEAR)
-   {
-     fmpz_set(d, LNF_ELEM_DENREF(b));
-   } else if (nf->flag & NF_QUADRATIC)
-   {
-     fmpz_set(d, QNF_ELEM_DENREF(b));
-   } else
-   {
-     fmpz_set(d, NF_ELEM_DENREF(b));
-   }
-}
-
-NF_ELEM_INLINE
-void nf_elem_set_den(nf_elem_t b, fmpz_t d, const nf_t nf)
-{
-   if (nf->flag & NF_LINEAR)
-   {
-     fmpz_set(LNF_ELEM_DENREF(b), d);
-   } else if (nf->flag & NF_QUADRATIC)
-   {
-     fmpz_set(QNF_ELEM_DENREF(b), d);
-   } else
-   {
-     fmpz_set(NF_ELEM_DENREF(b), d);
-   }
-}
 
 NF_ELEM_INLINE
 void nf_elem_get_coeff_fmpq(fmpq_t a, const nf_elem_t b, 
