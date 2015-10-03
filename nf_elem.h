@@ -383,13 +383,34 @@ void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
 
 ******************************************************************************/
 
-FLINT_DLL 
 void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, 
                                      const slong i, fmpz_t den, const nf_t nf);
 
 FLINT_DLL 
 void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const slong i, fmpz_t den, 
                                              const nf_elem_t b, const nf_t nf);
+
+NF_ELEM_INLINE
+void nf_elem_get_fmpq_poly(fmpq_poly_t pol, const nf_elem_t a, const nf_t nf)
+{
+    if (nf->flag & NF_LINEAR)
+    {
+        fmpq_poly_set_fmpz(pol, LNF_ELEM_NUMREF(a));
+        fmpz_set(fmpq_poly_denref(pol), LNF_ELEM_DENREF(a));
+    } else if (nf->flag & NF_QUADRATIC)
+    {
+        const fmpz * const anum = QNF_ELEM_NUMREF(a);
+
+        fmpq_poly_fit_length(pol, 2);
+        _fmpq_poly_set_length(pol, 2);
+        _fmpz_vec_set(pol->coeffs, anum, 2);
+        _fmpq_poly_normalise(pol);
+        fmpz_set(pol->den, QNF_ELEM_DENREF(a));
+    } else
+    {
+        fmpq_poly_set(pol, NF_ELEM(a));
+    }
+}
 
 /******************************************************************************
  
