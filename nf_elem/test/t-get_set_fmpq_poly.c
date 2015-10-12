@@ -38,7 +38,7 @@ main(void)
     int i, result;
     flint_rand_t state;
 
-    flint_printf("get/set den....");
+    flint_printf("get/set fmpq_poly....");
     fflush(stdout);
 
     flint_randinit(state);
@@ -46,34 +46,36 @@ main(void)
     for (i = 0; i < 100 * flint_test_multiplier(); i++)
     {
         fmpq_poly_t pol;
+        fmpq_poly_t f;
+        fmpq_poly_t g;
         nf_t nf;
         nf_elem_t a;
-        fmpz_t d, d2;
 
         fmpq_poly_init(pol);
+        fmpq_poly_init(f);
+        fmpq_poly_init(g);
+
         do {
            fmpq_poly_randtest_not_zero(pol, state, 40, 200);
         } while (fmpq_poly_degree(pol) < 1);
 
-        fmpz_init(d);
-        fmpz_init(d2);
         nf_init(nf, pol);
 
+        fmpq_poly_randtest(f, state, fmpq_poly_degree(pol) - 1, 200);
+
         nf_elem_init(a, nf);
-        nf_elem_randtest(a, state, 200, nf);
+        nf_elem_set_fmpq_poly(a, f, nf);
+        nf_elem_get_fmpq_poly(g, a, nf);
         
-        fmpz_randtest_not_zero(d, state, 200);
-
-        nf_elem_set_den(a, d, nf);
-        nf_elem_get_den(d2, a, nf);
-
-        result = fmpz_equal(d, d2);
+        result = fmpq_poly_equal(f, g);
         if (!result)
         {
             flint_printf("FAIL:\n");
-            flint_printf("d = "); fmpz_print(d); printf("\n");
-            flint_printf("d2 = "); fmpz_print(d2); printf("\n");
-            flint_printf("a = "); nf_elem_print_pretty(a, nf, "x");
+            flint_printf("a = "); nf_elem_print_pretty(a, nf, "a");
+            printf("\n");
+            flint_printf("f = "); fmpq_poly_print_pretty(f, "x");
+            printf("\n");
+            flint_printf("g = "); fmpq_poly_print_pretty(f, "x");
             abort();
         }
 
@@ -81,10 +83,9 @@ main(void)
         
         nf_clear(nf);
 
-        fmpz_clear(d);
-        fmpz_clear(d2);
-
         fmpq_poly_clear(pol);
+        fmpq_poly_clear(f);
+        fmpq_poly_clear(g);
     }
 
     flint_randclear(state);
