@@ -36,12 +36,33 @@ void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M,
    {
       fmpz_set(LNF_ELEM_NUMREF(b), fmpz_mat_entry(M, i, 0));
       fmpz_set(LNF_ELEM_DENREF(b), den);
+      _fmpq_canonicalise(LNF_ELEM_NUMREF(b), LNF_ELEM_DENREF(b));
    } else if (nf->flag & NF_QUADRATIC)
    {
+      fmpz_t d;
       fmpz * const bnum = QNF_ELEM_NUMREF(b);
+
+      fmpz_init(d);
+
       fmpz_set(bnum, fmpz_mat_entry(M, i, 0));
       fmpz_set(bnum + 1, fmpz_mat_entry(M, i, 1));
       fmpz_set(QNF_ELEM_DENREF(b), den);
+      
+      fmpz_gcd(d, bnum, bnum + 1);
+
+      if (!fmpz_is_one(d))
+      {
+          fmpz_gcd(d, d, QNF_ELEM_DENREF(b));
+
+          if (!fmpz_is_one(d))
+          {
+              fmpz_divexact(bnum, bnum, d);
+              fmpz_divexact(bnum + 1, bnum + 1, d);
+              fmpz_divexact(QNF_ELEM_DENREF(b), QNF_ELEM_DENREF(b), d);
+          }
+       }
+
+       fmpz_clear(d);
    } else
    {
       slong j;
@@ -52,5 +73,6 @@ void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M,
       for (; j >= 0; j--)
       fmpq_poly_set_coeff_fmpz(NF_ELEM(b), j, fmpz_mat_entry(M, i, j));
       fmpz_set(NF_ELEM_DENREF(b), den);
+      fmpq_poly_canonicalise(NF_ELEM(b));
    }
 }
