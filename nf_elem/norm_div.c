@@ -20,13 +20,14 @@
 /******************************************************************************
 
     Copyright (C) 2014 William Hart
+    Copyright (C) 2015 Claus Fieker
 
 ******************************************************************************/
 
 #include "fmpq.h"
 #include "nf_elem.h"
 
-void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong num_primes)
+void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong nbits)
 {
    if (nf->flag & NF_LINEAR)
    {
@@ -57,7 +58,7 @@ void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t n
       fmpz_init(pow);
 
       _fmpq_poly_resultant_div(rnum, rden,
-         nf->pol->coeffs, one, 3, anum, aden, alen, divisor, num_primes);
+         nf->pol->coeffs, one, 3, anum, aden, alen, divisor, nbits);
 
       if (!fmpz_is_one(nf->pol->coeffs + 2) && alen > 1)
       {
@@ -95,7 +96,7 @@ void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t n
       fmpz_init(pow);
 
       _fmpq_poly_resultant_div(rnum, rden,
-         nf->pol->coeffs, one, len, anum, aden, alen, divisor, num_primes);
+         nf->pol->coeffs, one, len, anum, aden, alen, divisor, nbits);
 
       if (!fmpz_is_one(coeffs + len - 1) && alen > 1)
       {
@@ -115,7 +116,7 @@ void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t n
    }   
 }
 
-void nf_elem_norm_div(fmpq_t res, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong num_primes)
+void nf_elem_norm_div(fmpq_t res, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong nbits)
 {
-   _nf_elem_norm_div(fmpq_numref(res), fmpq_denref(res), a, nf, divisor, num_primes);
+   _nf_elem_norm_div(fmpq_numref(res), fmpq_denref(res), a, nf, divisor, nbits);
 }

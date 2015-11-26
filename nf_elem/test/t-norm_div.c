@@ -1,13 +1,13 @@
 /*=============================================================================
 
-    This file is part of ANTIC
+    This file is part of FLINT.
 
-    ANTIC is free software; you can redistribute it and/or modify
+    FLINT is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    ANTIC is distributed in the hope that it will be useful,
+    FLINT is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
@@ -19,28 +19,29 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2015 Claus Fieker
+    Copyright (C) 2014 William Hart
 
 ******************************************************************************/
 
-#ifndef ANTIC_MISC_H
-#define ANTIC_MISC_H
-
-#undef ulong
-#define ulong ulongxx /* interferes with system includes */
 #include <stdio.h>
-#undef ulong
+#include <gmp.h>
+#include "flint.h"
+#include "fmpz.h"
+#include "fmpz_poly.h"
+#include "nf.h"
+#include "nf_elem.h"
+#include "ulong_extras.h"
 
-#ifdef __cplusplus
- extern "C" {
-#endif
+int
+main(void)
+{
+    int i, result;
+    flint_rand_t state;
 
-FLINT_DLL slong _nmod_mat_howell(nmod_mat_t A)
+    flint_printf("norm_div....");
+    fflush(stdout);
 
-FLINT_DLL slong _fmpz_mat_howell(fmpz_mat_t A, fmpz_t mod)
-
-#ifdef __cplusplus
+    flint_cleanup();
+    flint_printf("PASS\n");
+    return 0;
 }
-#endif
-#endif
-
