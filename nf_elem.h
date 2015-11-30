@@ -420,6 +420,36 @@ void nf_elem_get_fmpq_poly(fmpq_poly_t pol, const nf_elem_t a, const nf_t nf)
 ******************************************************************************/
 
 NF_ELEM_INLINE
+void nf_elem_get_den(fmpz_t d, const nf_elem_t b, const nf_t nf)
+{
+   if (nf->flag & NF_LINEAR)
+   {
+     fmpz_set(d, LNF_ELEM_DENREF(b));
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+     fmpz_set(d, QNF_ELEM_DENREF(b));
+   } else
+   {
+     fmpz_set(d, NF_ELEM_DENREF(b));
+   }
+}
+
+NF_ELEM_INLINE
+void nf_elem_set_den(nf_elem_t b, fmpz_t d, const nf_t nf)
+{
+   if (nf->flag & NF_LINEAR)
+   {
+     fmpz_set(LNF_ELEM_DENREF(b), d);
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+     fmpz_set(QNF_ELEM_DENREF(b), d);
+   } else
+   {
+     fmpz_set(NF_ELEM_DENREF(b), d);
+   }
+}
+
+NF_ELEM_INLINE
 void nf_elem_get_coeff_fmpq(fmpq_t a, const nf_elem_t b, 
                                                         slong i, const nf_t nf)
 {
@@ -641,9 +671,11 @@ FLINT_DLL void _nf_elem_norm(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const 
 
 FLINT_DLL void nf_elem_norm(fmpq_t res, const nf_elem_t a, const nf_t nf);
 
-FLINT_DLL void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong nbits);
+FLINT_DLL void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a,
+                             const nf_t nf, const fmpz_t divisor, slong nbits);
 
-FLINT_DLL void nf_elem_norm_div(fmpq_t res, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong nbits);
+FLINT_DLL void nf_elem_norm_div(fmpq_t res, const nf_elem_t a, const nf_t nf,
+                                            const fmpz_t divisor, slong nbits);
 
 FLINT_DLL void _nf_elem_trace(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, 
                                                                 const nf_t nf);
@@ -655,4 +687,3 @@ FLINT_DLL void nf_elem_trace(fmpq_t res, const nf_elem_t a, const nf_t nf);
 #endif
 
 #endif
-
