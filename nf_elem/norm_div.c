@@ -29,94 +29,106 @@
 
 void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong nbits)
 {
-   if (nf->flag & NF_LINEAR)
-   {
-      const fmpz * const anum = LNF_ELEM_NUMREF(a);
-      const fmpz * const aden = LNF_ELEM_DENREF(a);
+    if (fmpz_is_zero(divisor))
+    {
+        fmpz_zero(rnum);
+        fmpz_one(rden);
+        return;
+    }
 
-      fmpz_set(rnum, anum);
-      fmpz_set(rden, aden);
-   } else if (nf->flag & NF_QUADRATIC)
-   {
-      const fmpz * const anum = QNF_ELEM_NUMREF(a);
-      const fmpz * const aden = QNF_ELEM_DENREF(a);
-      fmpz_t pow, one;
+    if (nf->flag & NF_LINEAR)
+    {
+        const fmpz * const anum = LNF_ELEM_NUMREF(a);
+        const fmpz * const aden = LNF_ELEM_DENREF(a);
 
-      slong alen = 2;
-      while (alen > 0 && fmpz_is_zero(anum + alen - 1))
-         alen--;
+        fmpz_gcd(rden, anum, divisor);
+        fmpz_divexact(rnum, anum, rden);
+        fmpz_divexact(rden, divisor, rden);
+        fmpz_mul(rden, rden, aden);
+        if (fmpz_sgn(rden) == -1)
+        {
+            fmpz_neg(rden, rden);
+            fmpz_neg(rnum, rnum);
+        }
+    } else if (nf->flag & NF_QUADRATIC)
+    {
+        const fmpz * const anum = QNF_ELEM_NUMREF(a);
+        const fmpz * const aden = QNF_ELEM_DENREF(a);
+        fmpz_t pow, one;
 
-      if (alen == 0)
-      {
-         fmpz_zero(rnum);
-         fmpz_one(rden);
-         
-         return;
-      }
+        slong alen = 2;
+        while (alen > 0 && fmpz_is_zero(anum + alen - 1))
+            alen--;
+
+        if (alen == 0)
+        {
+            fmpz_zero(rnum);
+            fmpz_one(rden);
+
+            return;
+        }
       
-      fmpz_init_set_ui(one, 1);
-      fmpz_init(pow);
+        fmpz_init_set_ui(one, 1);
+        fmpz_init(pow);
 
-      _fmpq_poly_resultant_div(rnum, rden,
-         nf->pol->coeffs, one, 3, anum, aden, alen, divisor, nbits);
+        _fmpq_poly_resultant_div(rnum, rden,
+            nf->pol->coeffs, one, 3, anum, aden, alen, divisor, nbits);
 
-      if (!fmpz_is_one(nf->pol->coeffs + 2) && alen > 1)
-      {
-         fmpz_pow_ui(pow, nf->pol->coeffs + 2, alen - 1);
-         _fmpq_mul(rnum, rden, rnum, rden, one, pow);
+        if (!fmpz_is_one(nf->pol->coeffs + 2) && alen > 1)
+        {
+            fmpz_pow_ui(pow, nf->pol->coeffs + 2, alen - 1);
+            _fmpq_mul(rnum, rden, rnum, rden, one, pow);
          
-         if (fmpz_sgn(rden) < 0)
-         {
-            fmpz_neg(rnum, rnum);
-            fmpz_neg(rden, rden);
-         }
-      }
+            if (fmpz_sgn(rden) < 0)
+            {
+                fmpz_neg(rnum, rnum);
+                fmpz_neg(rden, rden);
+            }
+        }
+        fmpz_clear(one);
+        fmpz_clear(pow);
+    } else /* generic nf_elem */
+    {
+        const fmpz * const anum = NF_ELEM_NUMREF(a);
+        const fmpz * const aden = NF_ELEM_DENREF(a);
+        fmpz_t pow, one;
 
-      fmpz_clear(one);
-      fmpz_clear(pow);
-   } else /* generic nf_elem */
-   {
-      const fmpz * const anum = NF_ELEM_NUMREF(a);
-      const fmpz * const aden = NF_ELEM_DENREF(a);
-      fmpz_t pow, one;
+        slong alen = NF_ELEM(a)->length;
+        slong len = nf->pol->length;
+        fmpz * coeffs = nf->pol->coeffs;
 
-      slong alen = NF_ELEM(a)->length;
-      slong len = nf->pol->length;
-      fmpz * coeffs = nf->pol->coeffs;
+        if (alen == 0)
+        {
+            fmpz_zero(rnum);
+            fmpz_one(rden);
 
-      if (alen == 0)
-      {
-         fmpz_zero(rnum);
-         fmpz_one(rden);
+            return;
+        }
 
-         return;
-      }
+        fmpz_init_set_ui(one, 1);
+        fmpz_init(pow);
 
-      fmpz_init_set_ui(one, 1);
-      fmpz_init(pow);
+        _fmpq_poly_resultant_div(rnum, rden,
+            nf->pol->coeffs, one, len, anum, aden, alen, divisor, nbits);
 
-      _fmpq_poly_resultant_div(rnum, rden,
-         nf->pol->coeffs, one, len, anum, aden, alen, divisor, nbits);
-
-      if (!fmpz_is_one(coeffs + len - 1) && alen > 1)
-      {
-         fmpz_pow_ui(pow, coeffs + len - 1, alen - 1);
-         _fmpq_mul(rnum, rden, rnum, rden, one, pow);
+        if (!fmpz_is_one(coeffs + len - 1) && alen > 1)
+        {
+            fmpz_pow_ui(pow, coeffs + len - 1, alen - 1);
+            _fmpq_mul(rnum, rden, rnum, rden, one, pow);
          
-         if (fmpz_sgn(rden) < 0)
-         {
-            fmpz_neg(rnum, rnum);
-            fmpz_neg(rden, rden);
-         }
-      }
+            if (fmpz_sgn(rden) < 0)
+            {
+                fmpz_neg(rnum, rnum);
+                fmpz_neg(rden, rden);
+            }
+        }
 
-      fmpz_clear(one);
-      fmpz_clear(pow);
-
-   }   
+        fmpz_clear(one);
+        fmpz_clear(pow);
+    }   
 }
 
 void nf_elem_norm_div(fmpq_t res, const nf_elem_t a, const nf_t nf, const fmpz_t divisor, slong nbits)
 {
-   _nf_elem_norm_div(fmpq_numref(res), fmpq_denref(res), a, nf, divisor, nbits);
+    _nf_elem_norm_div(fmpq_numref(res), fmpq_denref(res), a, nf, divisor, nbits);
 }
