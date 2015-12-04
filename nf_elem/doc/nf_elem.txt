@@ -271,6 +271,8 @@ void nf_elem_norm_div(fmpq_t res, const nf_elem_t a, const nf_t nf,
     field element $a$. Assumes the result to be an integer and having
     at most \code{nbits} bits.
 
+    Note that \code{res} must not contain \code{div}.
+
 void _nf_elem_trace(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf)
 
     Set \code{{rnum, rden}} to the absolute trace of the given number field
