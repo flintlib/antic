@@ -469,6 +469,24 @@ void nf_elem_get_coeff_fmpq(fmpq_t a, const nf_elem_t b,
       fmpq_poly_get_coeff_fmpq(a, NF_ELEM(b), i);
 }
 
+NF_ELEM_INLINE
+void nf_elem_get_coeff_fmpz(fmpz_t a, const nf_elem_t b, 
+                                                        slong i, const nf_t nf)
+{
+   if (nf->flag & NF_LINEAR)
+   {
+      fmpz_set(a, LNF_ELEM_NUMREF(b));
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+      const fmpz * const bnum = QNF_ELEM_NUMREF(b);
+      
+      fmpz_set(a, bnum + i);
+   } else
+      fmpq_poly_get_coeff_fmpz(a, NF_ELEM(b), i);
+}
+
+
+
 /******************************************************************************
 
     Arithmetic
