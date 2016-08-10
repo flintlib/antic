@@ -61,9 +61,6 @@ void nf_elem_print_pretty(const nf_elem_t a, const nf_t nf, const char * var)
 		   flint_printf("/");
 		   fmpz_print(aden);
 		}
-    } else if (nf->flag & NF_MONIC)
-    {
-       _fmpz_poly_fprint_pretty(stdout, NF_ELEM_NUMREF(a), NF_ELEM(a)->length, var);
     } else
     {
         fmpq_poly_print_pretty(NF_ELEM(a), var);
