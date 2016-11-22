@@ -115,11 +115,14 @@ void _nf_elem_add_qf(nf_elem_t a, const nf_elem_t b,
    {
       fmpz_add(anum, bnum, cnum);
       fmpz_add(anum + 1, bnum + 1, cnum + 1);
+      fmpz_add(anum + 2, bnum + 2, cnum + 2);
+
       fmpz_set(aden, bden);
 
       if (can && !fmpz_is_one(aden))
       {
          fmpz_gcd(d, anum, anum + 1);
+         fmpz_gcd(d, d, anum + 2);
          if (!fmpz_is_one(d))
          {
             fmpz_gcd(d, d, aden);
@@ -128,6 +131,7 @@ void _nf_elem_add_qf(nf_elem_t a, const nf_elem_t b,
             {
                fmpz_divexact(anum, anum, d);
                fmpz_divexact(anum + 1, anum + 1, d);
+               fmpz_divexact(anum + 2, anum + 2, d);
                fmpz_divexact(aden, aden, d);
             }
          }
@@ -145,8 +149,10 @@ void _nf_elem_add_qf(nf_elem_t a, const nf_elem_t b,
    {
       fmpz_mul(anum, bnum, cden);
       fmpz_mul(anum + 1, bnum + 1, cden);
+      fmpz_mul(anum + 2, bnum + 2, cden);
       fmpz_addmul(anum, cnum, bden);
       fmpz_addmul(anum + 1, cnum + 1, bden);
+      fmpz_addmul(anum + 2, cnum + 2, bden);
       fmpz_mul(aden, bden, cden);
    } else
    {
@@ -161,10 +167,12 @@ void _nf_elem_add_qf(nf_elem_t a, const nf_elem_t b,
         
       fmpz_mul(anum, bnum, cden1);
       fmpz_mul(anum + 1, bnum + 1, cden1);
+      fmpz_mul(anum + 2, bnum + 2, cden1);
       fmpz_addmul(anum, cnum, bden1);
       fmpz_addmul(anum + 1, cnum + 1, bden1);
+      fmpz_addmul(anum + 2, cnum + 2, bden1);
       
-      if (fmpz_is_zero(anum) && fmpz_is_zero(anum + 1))
+      if (fmpz_is_zero(anum) && fmpz_is_zero(anum + 1) && fmpz_is_zero(anum + 2))
          fmpz_one(aden);
       else
       {
@@ -175,6 +183,7 @@ void _nf_elem_add_qf(nf_elem_t a, const nf_elem_t b,
             fmpz_init(e);
               
             fmpz_gcd(e, anum, anum + 1);
+            fmpz_gcd(e, e, anum + 2);
             if (!fmpz_is_one(e))
                fmpz_gcd(e, e, d);
             
@@ -184,6 +193,7 @@ void _nf_elem_add_qf(nf_elem_t a, const nf_elem_t b,
             {
                 fmpz_divexact(anum, anum, e);
                 fmpz_divexact(anum + 1, anum + 1, e);
+                fmpz_divexact(anum + 2, anum + 2, e);
                 fmpz_divexact(bden1, bden, e);
                 fmpz_mul(aden, bden1, cden1);
             }
