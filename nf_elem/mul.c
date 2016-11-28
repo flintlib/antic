@@ -74,6 +74,8 @@ void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
 
             _fmpz_vec_clear(prod, 3);
          }
+
+         fmpz_zero(anum + 2);
       }
    } else /* generic nf_elem */
    {
