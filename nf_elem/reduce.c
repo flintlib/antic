@@ -53,6 +53,8 @@ void nf_elem_reduce(nf_elem_t a, const nf_t nf)
 
             _fmpz_vec_clear(prod, 3);
          }
+
+         fmpz_zero(anum + 2);
       }
    } else /* generic nf_elem */
    {
