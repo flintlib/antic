@@ -45,7 +45,7 @@ void nf_elem_si_sub(nf_elem_t a, slong c, const nf_elem_t b, const nf_t nf)
    {
       fmpz * den = QNF_ELEM_DENREF(a);
 	  fmpz * num = QNF_ELEM_NUMREF(a); 
-	  slong len = 2;
+	  slong len = 2, i;
 	  
 	  nf_elem_set(a, b, nf);
 	  
@@ -56,7 +56,9 @@ void nf_elem_si_sub(nf_elem_t a, slong c, const nf_elem_t b, const nf_t nf)
 	     fmpz_submul_ui(num, den, c);
 	  else
 	     fmpz_addmul_ui(num, den, -c);
-	  fmpz_neg(num, num);
+
+          for(i=0; i<= len; i++) 
+             fmpz_neg(num+i, num+i);
 	  _fmpq_poly_canonicalise(num, den, len);
    } else
    {
