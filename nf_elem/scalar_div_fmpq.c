@@ -26,7 +26,7 @@
 #include "nf_elem.h"
 
 void nf_elem_scalar_div_fmpq(nf_elem_t a, const nf_elem_t b, 
-                                                       fmpq_t c, const nf_t nf)
+                                                       const fmpq_t c, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
    {
