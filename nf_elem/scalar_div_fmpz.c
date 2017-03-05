@@ -26,7 +26,7 @@
 #include "nf_elem.h"
 
 void nf_elem_scalar_div_fmpz(nf_elem_t a, const nf_elem_t b, 
-                                                       fmpz_t c, const nf_t nf)
+                                                       const fmpz_t c, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
    {

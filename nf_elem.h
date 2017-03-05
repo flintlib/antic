@@ -554,46 +554,46 @@ FLINT_DLL void nf_elem_add_si(nf_elem_t a,
                                    const nf_elem_t b, slong c, const nf_t nf);
 								   
 FLINT_DLL void nf_elem_add_fmpz(nf_elem_t a,
-                                  const nf_elem_t b, fmpz_t c, const nf_t nf);
+                                  const nf_elem_t b, const fmpz_t c, const nf_t nf);
 
 FLINT_DLL void nf_elem_add_fmpq(nf_elem_t a,
-                                  const nf_elem_t b, fmpq_t c, const nf_t nf);
+                                  const nf_elem_t b, const fmpq_t c, const nf_t nf);
 
 FLINT_DLL void nf_elem_sub_si(nf_elem_t a, 
                                    const nf_elem_t b, slong c, const nf_t nf);
 								   
 FLINT_DLL void nf_elem_sub_fmpz(nf_elem_t a,
-                                  const nf_elem_t b, fmpz_t c, const nf_t nf);
+                                  const nf_elem_t b, const fmpz_t c, const nf_t nf);
 
 FLINT_DLL void nf_elem_sub_fmpq(nf_elem_t a,
-                                  const nf_elem_t b, fmpq_t c, const nf_t nf);
+                                  const nf_elem_t b, const fmpq_t c, const nf_t nf);
 
 FLINT_DLL void nf_elem_si_sub(nf_elem_t a, 
                                    slong c, const nf_elem_t b, const nf_t nf);
 								   
 FLINT_DLL void nf_elem_fmpz_sub(nf_elem_t a,
-                                  fmpz_t c, const nf_elem_t b, const nf_t nf);
+                                  const fmpz_t c, const nf_elem_t b, const nf_t nf);
 
 FLINT_DLL void nf_elem_fmpq_sub(nf_elem_t a,
-                                  fmpq_t c, const nf_elem_t b, const nf_t nf);
+                                  const fmpq_t c, const nf_elem_t b, const nf_t nf);
 
 FLINT_DLL void nf_elem_scalar_mul_si(nf_elem_t a, const nf_elem_t b, 
                                                       slong c, const nf_t nf);
 
 FLINT_DLL void nf_elem_scalar_mul_fmpz(nf_elem_t a, const nf_elem_t b, 
-                                                     fmpz_t c, const nf_t nf);
+                                                     const fmpz_t c, const nf_t nf);
 
 FLINT_DLL void nf_elem_scalar_mul_fmpq(nf_elem_t a, const nf_elem_t b, 
-                                                     fmpq_t c, const nf_t nf);
+                                                     const fmpq_t c, const nf_t nf);
 									
 FLINT_DLL void nf_elem_scalar_div_si(nf_elem_t a, const nf_elem_t b, 
                                                       slong c, const nf_t nf);
 
 FLINT_DLL void nf_elem_scalar_div_fmpz(nf_elem_t a, const nf_elem_t b, 
-                                                     fmpz_t c, const nf_t nf);
+                                                     const fmpz_t c, const nf_t nf);
 
 FLINT_DLL void nf_elem_scalar_div_fmpq(nf_elem_t a, const nf_elem_t b, 
-                                                     fmpq_t c, const nf_t nf);
+                                                     const fmpq_t c, const nf_t nf);
 									
 FLINT_DLL void _nf_elem_add_lf(nf_elem_t a, const nf_elem_t b, 
                                    const nf_elem_t c, const nf_t nf, int can);

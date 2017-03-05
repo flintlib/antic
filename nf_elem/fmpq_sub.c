@@ -25,7 +25,7 @@
 
 #include "nf_elem.h"
 
-void nf_elem_fmpq_sub(nf_elem_t a, fmpq_t c, const nf_elem_t b, const nf_t nf)
+void nf_elem_fmpq_sub(nf_elem_t a, const fmpq_t c, const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
    {
