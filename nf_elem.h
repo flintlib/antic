@@ -104,7 +104,9 @@ void nf_elem_canonicalise(nf_elem_t a, const nf_t nf)
       fmpq_poly_canonicalise(NF_ELEM(a));
 }
 
-void nf_elem_reduce(nf_elem_t a, const nf_t nf);
+FLINT_DLL void _nf_elem_reduce(nf_elem_t a, const nf_t nf);
+
+FLINT_DLL void nf_elem_reduce(nf_elem_t a, const nf_t nf);
 
 FLINT_DLL int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf);
 

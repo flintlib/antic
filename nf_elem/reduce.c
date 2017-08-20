@@ -15,9 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with FLINT; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-
-=============================================================================*/
 /******************************************************************************
+=============================================================================*/
+
 
     Copyright (C) 2015 William Hart
 
@@ -25,7 +25,7 @@
 
 #include "nf_elem.h"
 
-void nf_elem_reduce(nf_elem_t a, const nf_t nf)
+void _nf_elem_reduce(nf_elem_t a, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
    {
@@ -107,7 +107,7 @@ void nf_elem_reduce(nf_elem_t a, const nf_t nf)
             } else
             {
                fmpq_poly_init2(t, 2*len - 3);
-        
+
                _fmpq_poly_rem(t->coeffs, t->den,
                   NF_ELEM(a)->coeffs, NF_ELEM(a)->den, plen, 
                   nf->pol->coeffs, nf->pol->den, len, nf->pinv.qq); 
@@ -120,5 +120,14 @@ void nf_elem_reduce(nf_elem_t a, const nf_t nf)
             }
          }
       }
+   }
+}
+
+void nf_elem_reduce(nf_elem_t a, const nf_t nf)
+{
+   if (!(nf->flag & NF_LINEAR))
+   {
+      _nf_elem_reduce(a, nf);
+      nf_elem_canonicalise(a, nf);
    }
 }
