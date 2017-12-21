@@ -175,7 +175,7 @@ slong qfb_reduced_forms_large(qfb ** forms, slong d)
            }
         }
 
-        free(s);
+        flint_free(s);
     }
 
     flint_free(fac);
