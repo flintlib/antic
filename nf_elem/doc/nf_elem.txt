@@ -186,6 +186,10 @@ void nf_elem_swap(nf_elem_t a, nf_elem_t b, const nf_t nf)
 
     Efficiently swap the two number field elements $a$ and $b$.
 
+void nf_elem_mul_gen(nf_elem_t a, const nf_elem_t b, const nf_t nf)
+    
+    Multiply the element $b$ with the generator of the number field.
+
 void _nf_elem_add(nf_elem_t r, const nf_elem_t a, 
                                               const nf_elem_t b, const nf_t nf)
 
@@ -261,7 +265,7 @@ void _nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t nf)
     
     Assumes that $a \neq 0$ and $e > 1$. Does not support aliasing.
 
-void nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t nf);
+void nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t nf)
 
     Set \code{res} = \code{a^e} using the binary exponentiation algorithm.  
     If $e$ is zero, returns one, so that in particular \code{0^0 = 1}.
@@ -298,4 +302,23 @@ void nf_elem_trace(fmpq_t res, const nf_elem_t a, const nf_t nf)
 
     Set \code{res} to the absolute trace of the given number field
     element $a$.
+
+*******************************************************************************
+
+    Representation matrix
+
+*******************************************************************************
+
+void nf_elem_rep_mat(fmpq_mat_t res, const nf_elem_t a, const nf_t nf)
+    
+    Set \code{res} to the matrix representing the multiplication with $a$ with
+    respect to the basis $1, a, \dotsc, a^{d - 1}$, where $a$ is the generator
+    of the number field of $d$ is its degree.
+
+void nf_elem_rep_mat_fmpz_mat_den(fmpz_mat_t res, fmpz_t den, const nf_elem_t a, const nf_t nf)
+
+    Return a tuple $M, d$ such that $M/d$ is the matrix representing the
+    multiplication with $a$ with respect to the basis $1, a, \dotsc, a^{d - 1}$,
+    where $a$ is the generator of the number field of $d$ is its degree.
+    The integral matrix $M$ is primitive.
 

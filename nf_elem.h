@@ -35,6 +35,7 @@
 #include "gmp.h"
 #include "flint.h"
 #include "fmpq_poly.h"
+#include "fmpq_mat.h"
 #include "fmpz_mat.h"
 #include "nf.h"
 
@@ -276,6 +277,7 @@ void nf_elem_gen(nf_elem_t a, const nf_t nf)
    {
       fmpz_neg(LNF_ELEM_NUMREF(a), nf->pol->coeffs);
       fmpz_set(LNF_ELEM_DENREF(a), nf->pol->coeffs + 1);
+      _fmpq_canonicalise(LNF_ELEM_NUMREF(a), LNF_ELEM_DENREF(a));
    } else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
@@ -284,7 +286,10 @@ void nf_elem_gen(nf_elem_t a, const nf_t nf)
       fmpz_zero(anum);
       fmpz_one(QNF_ELEM_DENREF(a));
    } else
+   {
+      fmpq_poly_zero(NF_ELEM(a));
       fmpq_poly_set_coeff_ui(NF_ELEM(a), 1, 1);
+   }
 }
 
 NF_ELEM_INLINE
@@ -663,6 +668,38 @@ void nf_elem_sub(nf_elem_t a, const nf_elem_t b,
       fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 1);
 }
 
+NF_ELEM_INLINE
+void nf_elem_mul_gen(nf_elem_t a, const nf_elem_t b, const nf_t nf)
+{
+  if (nf->flag & NF_LINEAR)
+  {
+      fmpz * den = LNF_ELEM_DENREF(a);
+	    fmpz * num = LNF_ELEM_NUMREF(a);
+      _fmpq_mul(num, den, LNF_ELEM_NUMREF(b), LNF_ELEM_DENREF(b), fmpq_poly_numref(nf->pol), fmpq_poly_denref(nf->pol));
+      _fmpq_canonicalise(num, den);
+      fmpz_neg(num, num);
+  }
+  else if (nf->flag & NF_QUADRATIC)
+  {
+      fmpz * anum = QNF_ELEM_NUMREF(a);
+      fmpz const * bnum = QNF_ELEM_NUMREF(b);
+
+      fmpz_set(anum + 2, bnum + 1);
+      fmpz_set(anum + 1, bnum);
+      fmpz_zero(anum);
+      fmpz_set(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b));
+
+      nf_elem_reduce(a, nf);
+      nf_elem_canonicalise(a, nf);
+  }
+  else
+  {
+      fmpq_poly_shift_left(NF_ELEM(a), NF_ELEM(b), 1);
+      nf_elem_reduce(a, nf);
+      nf_elem_canonicalise(a, nf);
+  }
+}
+
 FLINT_DLL void _nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
                                              const nf_elem_t c, const nf_t nf);
 
@@ -701,6 +738,10 @@ FLINT_DLL void _nf_elem_trace(fmpz_t rnum, fmpz_t rden, const nf_elem_t a,
                                                                 const nf_t nf);
 
 FLINT_DLL void nf_elem_trace(fmpq_t res, const nf_elem_t a, const nf_t nf);
+
+FLINT_DLL void nf_elem_rep_mat(fmpq_mat_t res, const nf_elem_t a, const nf_t nf);
+
+FLINT_DLL void nf_elem_rep_mat_fmpz_mat_den(fmpz_mat_t res, fmpz_t den, const nf_elem_t a, const nf_t nf);
 
 #ifdef __cplusplus
 }
