@@ -163,7 +163,7 @@ endif
 
 install: library
 	mkdir -p $(DESTDIR)$(PREFIX)/$(LIBDIR)
-	mkdir -p $(DESTDIR)$(PREFIX)/include
+	mkdir -p $(DESTDIR)$(PREFIX)/include/antic
 	$(AT)if [ "$(ANTIC_SHARED)" -eq "1" ]; then \
 		cp $(ANTIC_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
 		cp -a $(shell ls $(ANTIC_LIBNAME)*) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
@@ -171,9 +171,9 @@ install: library
 	$(AT)if [ "$(ANTIC_STATIC)" -eq "1" ]; then \
 		cp libantic.a $(DESTDIR)$(PREFIX)/$(LIBDIR); \
 	fi
-	cp $(HEADERS) $(DESTDIR)$(PREFIX)/include
+	cp $(HEADERS) $(DESTDIR)$(PREFIX)/include/antic
 	$(AT)if [ ! -z $(EXT_HEADERS) ]; then \
-		cp $(EXT_HEADERS) $(DESTDIR)$(PREFIX)/include; \
+		cp $(EXT_HEADERS) $(DESTDIR)$(PREFIX)/include/antic; \
 	fi
 
 build:
