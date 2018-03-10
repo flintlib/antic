@@ -5,10 +5,7 @@ Antic is an algebraic number theory library.
 
 The only dependency at present is flint2 (see http://flintlib.org).
 
-To install Antic, clone the repository into a directory on your filesystem, e.g. /home/username/antic
-
-Now build flint in the usual way, passing --extensions=/home/username/antic to flint's configure.
-
-The usual make, make check, make install, make clean, etc. apply.
+To install Antic, clone the repository into a directory on your filesystem,
+e.g. /home/username/antic and follows the instruction in the INSTALL file.
 
 William Hart -- 12 May 2013.

@@ -25,9 +25,9 @@
 
 #include <stdlib.h>
 #include <gmp.h>
-#include "flint.h"
-#include "ulong_extras.h"
-#include "fmpz.h"
+#include "flint/flint.h"
+#include "flint/ulong_extras.h"
+#include "flint/fmpz.h"
 #include "qfb.h"
 
 int qfb_is_reduced(qfb_t r)

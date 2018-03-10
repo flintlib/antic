@@ -25,9 +25,6 @@
 
 #include <stdlib.h>
 #include <gmp.h>
-#include "flint.h"
-#include "ulong_extras.h"
-#include "fmpz.h"
 #include "qfb.h"
 
 qfb_hash_t * qfb_hash_init(slong depth)

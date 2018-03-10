@@ -27,14 +27,16 @@
 #define NF_H
 
 #include "gmp.h"
-#include "flint.h"
-#include "fmpz.h"
-#include "fmpz_poly.h"
-#include "fmpq_poly.h"
+#include "flint/flint.h"
+#include "flint/fmpz.h"
+#include "flint/fmpz_poly.h"
+#include "flint/fmpq_poly.h"
 
 #ifdef __cplusplus
  extern "C" {
 #endif
+
+long int antic_test_multiplier();
 
 typedef struct {
    fmpq_poly_t pol;  /* defining polynomial */

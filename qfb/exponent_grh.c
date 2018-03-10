@@ -26,9 +26,6 @@
 #include <stdlib.h>
 #include <gmp.h>
 #include <mpfr.h>
-#include "flint.h"
-#include "ulong_extras.h"
-#include "fmpz.h"
 #include "qfb.h"
 
 int qfb_exponent_grh(fmpz_t exponent, fmpz_t n, ulong B1, ulong B2_sqrt)

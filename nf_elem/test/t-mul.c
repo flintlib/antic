@@ -24,13 +24,8 @@
 ******************************************************************************/
 
 #include <stdio.h>
-#include <gmp.h>
-#include "flint.h"
-#include "fmpz.h"
-#include "fmpz_poly.h"
 #include "nf.h"
 #include "nf_elem.h"
-#include "ulong_extras.h"
 
 int
 main(void)
@@ -44,7 +39,7 @@ main(void)
     flint_randinit(state);
 
     /* test a*(b + c) = a*b + a*c */
-    for (i = 0; i < 100 * flint_test_multiplier(); i++)
+    for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
         fmpq_poly_t pol;
         nf_t nf;
@@ -104,7 +99,7 @@ main(void)
     }
     
     /* test aliasing a and b */
-    for (i = 0; i < 100 * flint_test_multiplier(); i++)
+    for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
         fmpq_poly_t pol;
         nf_t nf;
@@ -147,7 +142,7 @@ main(void)
     }
 
     /* test aliasing a and c */
-    for (i = 0; i < 100 * flint_test_multiplier(); i++)
+    for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
         fmpq_poly_t pol;
         nf_t nf;

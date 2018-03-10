@@ -24,13 +24,8 @@
 ******************************************************************************/
 
 #include <stdio.h>
-#include <gmp.h>
-#include "flint.h"
-#include "fmpz.h"
-#include "fmpz_poly.h"
 #include "nf.h"
 #include "nf_elem.h"
-#include "ulong_extras.h"
 
 int
 main(void)
@@ -44,7 +39,7 @@ main(void)
     flint_randinit(state);
 
     /* test norm(a*b) = norm(a)*norm(b) */
-    for (i = 0; i < 10 * flint_test_multiplier(); i++)
+    for (i = 0; i < 10 * antic_test_multiplier(); i++)
     {
         fmpq_poly_t pol;
         nf_t nf;

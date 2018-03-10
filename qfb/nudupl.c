@@ -25,9 +25,9 @@
 
 #include <stdlib.h>
 #include <gmp.h>
-#include "flint.h"
-#include "ulong_extras.h"
-#include "fmpz.h"
+#include "flint/flint.h"
+#include "flint/ulong_extras.h"
+#include "flint/fmpz.h"
 #include "qfb.h"
 
 void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t D, fmpz_t L)

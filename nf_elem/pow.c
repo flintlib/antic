@@ -28,10 +28,10 @@
 
 #include <stdlib.h>
 #include <gmp.h>
-#include "flint.h"
-#include "fmpz.h"
-#include "fmpz_vec.h"
-#include "fmpz_poly.h"
+#include "flint/flint.h"
+#include "flint/fmpz.h"
+#include "flint/fmpz_vec.h"
+#include "flint/fmpz_poly.h"
 
 void
 _nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t nf)
