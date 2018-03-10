@@ -25,9 +25,7 @@
 
 #include <stdlib.h>
 #include <gmp.h>
-#include "flint.h"
-#include "ulong_extras.h"
-#include "fmpz.h"
+#include "flint/fmpz.h"
 #include "qfb.h"
 
 void qfb_pow_ui(qfb_t r, qfb_t f, fmpz_t D, ulong exp)

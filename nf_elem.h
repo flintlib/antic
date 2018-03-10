@@ -33,10 +33,10 @@
 #endif
 
 #include "gmp.h"
-#include "flint.h"
-#include "fmpq_poly.h"
-#include "fmpq_mat.h"
-#include "fmpz_mat.h"
+#include "flint/flint.h"
+#include "flint/fmpq_poly.h"
+#include "flint/fmpq_mat.h"
+#include "flint/fmpz_mat.h"
 #include "nf.h"
 
 #ifdef __cplusplus

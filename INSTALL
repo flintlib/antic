@@ -1,15 +1,11 @@
 Instructions on installing ant
 ------------------------------
 
-If /path/to/ant is the top level directory of ANT then pass the following to flint2 configure (along with the usual options for your system):
+ANTIC follows a standard installation format for installation
 
-./configure --extensions=/path/to/ant
-
-Then as usual, the following ought to work:
-
+./configure
 make
 make check
 make install
 
-For further information refer to the flint2 documentation (see http://flintlib.org)
-
+Note that ANTIC needs flint (see http://flintlib.org).

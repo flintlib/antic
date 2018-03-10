@@ -23,7 +23,7 @@
 
 ******************************************************************************/
 
-#include "fmpq.h"
+#include "flint/fmpq.h"
 #include "nf_elem.h"
 
 void _nf_elem_norm(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf)

@@ -27,7 +27,7 @@
 ******************************************************************************/
 
 #include "nf_elem.h"
-#include "fmpq_poly.h"
+#include "flint/fmpq_poly.h"
 
 void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, 
                                       const slong i, fmpz_t den, const nf_t nf)
