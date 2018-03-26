@@ -43,7 +43,7 @@ void nf_elem_rep_mat_fmpz_mat_den(fmpz_mat_t res, fmpz_t den, const nf_elem_t a,
         nf_elem_init(t, nf);
         nf_elem_mul_gen(t, a, nf);
 
-        if (fmpz_equal(tden, anum))
+        if (fmpz_equal(tden, aden))
         {
             fmpz_set(fmpz_mat_entry(res, 0, 0), anum);
             fmpz_set(fmpz_mat_entry(res, 0, 1), anum + 1);
