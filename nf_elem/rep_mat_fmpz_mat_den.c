@@ -104,7 +104,7 @@ void nf_elem_rep_mat_fmpz_mat_den(fmpz_mat_t res, fmpz_t den, const nf_elem_t a,
                 for (j = 1; j <= d - NF_ELEM(a)->length; j++)
                 {
                     nf_elem_mul_gen(t, t, nf);
-                    for (i = 0; i < j; i++);
+                    for (i = 0; i < j; i++)
                         fmpz_zero(fmpz_mat_entry(res, j, i));
 
                     for (i = 0; i <= NF_ELEM(a)->length - 1; i++)
