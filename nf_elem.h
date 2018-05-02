@@ -37,6 +37,7 @@
 #include "flint/fmpq_poly.h"
 #include "flint/fmpq_mat.h"
 #include "flint/fmpz_mat.h"
+#include "flint/fmpz_mod_poly.h"
 #include "nf.h"
 
 #ifdef __cplusplus
@@ -420,6 +421,24 @@ void nf_elem_get_fmpq_poly(fmpq_poly_t pol, const nf_elem_t a, const nf_t nf)
     }
 }
 
+FLINT_DLL
+void _nf_elem_get_nmod_poly(nmod_poly_t pol, const nf_elem_t a, const nf_t nf);
+
+FLINT_DLL
+void nf_elem_get_nmod_poly_den(nmod_poly_t pol, const nf_elem_t a, const nf_t nf, int den);
+
+FLINT_DLL
+void nf_elem_get_nmod_poly(nmod_poly_t pol, const nf_elem_t a, const nf_t nf);
+
+FLINT_DLL
+void _nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf);
+
+FLINT_DLL
+void nf_elem_get_fmpz_mod_poly_den(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf, int den);
+
+FLINT_DLL
+void nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf);
+
 /******************************************************************************
  
     Basic manipulation 
@@ -492,7 +511,62 @@ void nf_elem_get_coeff_fmpz(fmpz_t a, const nf_elem_t b,
       fmpq_poly_get_coeff_fmpz(a, NF_ELEM(b), i);
 }
 
+NF_ELEM_INLINE
+int nf_elem_den_is_one(const nf_elem_t a, const nf_t nf)
+{
+    if (nf->flag & NF_LINEAR)
+    {
+        return fmpz_is_one(LNF_ELEM_DENREF(a));
+    } else if (nf->flag & NF_QUADRATIC)
+    {
+        return fmpz_is_one(QNF_ELEM_DENREF(a));
+    } else
+    {
+        return fmpz_is_one(LNF_ELEM_DENREF(a));
+    }
+}
 
+NF_ELEM_INLINE
+void _nf_elem_set_coeff_num_fmpz(nf_elem_t a, slong i, const fmpz_t b, const nf_t nf)
+{
+ 
+    if (nf->flag & NF_LINEAR)
+    {
+        fmpz_set(LNF_ELEM_NUMREF(a), b);
+        nf_elem_canonicalise(a, nf);
+    } else if (nf->flag & NF_QUADRATIC)
+    {
+        fmpz_set(QNF_ELEM_NUMREF(a) + i, b);
+        nf_elem_canonicalise(a, nf);
+    } else
+    {
+        slong len = NF_ELEM(a)->length;
+        const int replace = (i < len && !fmpz_is_zero(NF_ELEM(a)->coeffs + i));
+    
+        if (!replace && fmpz_is_zero(b))
+            return;
+    
+        if (i + 1 > len)
+        {
+            fmpq_poly_fit_length(NF_ELEM(a), i + 1);
+            _fmpq_poly_set_length(NF_ELEM(a), i + 1);
+            flint_mpn_zero((mp_ptr) NF_ELEM(a)->coeffs + len, (i + 1) - len);
+        }
+    
+        if (*NF_ELEM(a)->den == WORD(1))
+        {
+            fmpz_set(NF_ELEM(a)->coeffs + i, b);
+            if (replace)
+                _fmpq_poly_normalise(NF_ELEM(a));
+        }
+        else
+        {
+            fmpz_set(NF_ELEM(a)->coeffs + i, b);
+            if (replace)
+                fmpq_poly_canonicalise(NF_ELEM(a));
+        }
+    }
+}
 
 /******************************************************************************
 
@@ -742,6 +816,21 @@ FLINT_DLL void nf_elem_trace(fmpq_t res, const nf_elem_t a, const nf_t nf);
 FLINT_DLL void nf_elem_rep_mat(fmpq_mat_t res, const nf_elem_t a, const nf_t nf);
 
 FLINT_DLL void nf_elem_rep_mat_fmpz_mat_den(fmpz_mat_t res, fmpz_t den, const nf_elem_t a, const nf_t nf);
+
+/******************************************************************************
+
+    Modular reduction
+
+******************************************************************************/
+
+FLINT_DLL
+void _nf_elem_mod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf);
+
+FLINT_DLL
+void nf_elem_mod_fmpz_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf, int den);
+
+FLINT_DLL
+void nf_elem_mod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf);
 
 #ifdef __cplusplus
 }
