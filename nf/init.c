@@ -26,7 +26,7 @@
 
 #include "nf.h"
 
-void nf_init(nf_t nf, fmpq_poly_t pol)
+void nf_init(nf_t nf, const fmpq_poly_t pol)
 {
     slong i, j;
     slong len = pol->length, deg = len - 1;

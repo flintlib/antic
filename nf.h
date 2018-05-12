@@ -67,7 +67,7 @@ typedef nf_struct nf_t[1];
 
 ******************************************************************************/
 
-FLINT_DLL void nf_init(nf_t nf, fmpq_poly_t pol);
+FLINT_DLL void nf_init(nf_t nf, const fmpq_poly_t pol);
 
 FLINT_DLL void nf_clear(nf_t nf);
 
