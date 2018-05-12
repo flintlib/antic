@@ -252,6 +252,49 @@ int nf_elem_equal_ui(const nf_elem_t a, const ulong b, const nf_t nf)
     }
 }
 
+NF_ELEM_INLINE
+int nf_elem_equal_fmpz(const nf_elem_t a, const fmpz_t b, const nf_t nf)
+{
+    if (nf->flag & NF_LINEAR)
+        return fmpz_is_one(LNF_ELEM_DENREF(a)) && fmpz_equal(LNF_ELEM_NUMREF(a), b);
+    else if (nf->flag & NF_QUADRATIC)
+        return fmpz_is_zero(QNF_ELEM_NUMREF(a) + 1) &&
+               fmpz_is_one(QNF_ELEM_DENREF(a)) &&
+               fmpz_equal(QNF_ELEM_NUMREF(a), b);
+    else
+    {
+        if (NF_ELEM(a)->length == 0)
+            return fmpz_is_zero(b);
+        else if (NF_ELEM(a)->length == 1)
+            return fmpz_is_one(NF_ELEM_DENREF(a)) &&
+                   fmpz_equal(NF_ELEM_NUMREF(a), b);
+        else
+            return 0;
+    }
+}
+
+NF_ELEM_INLINE
+int nf_elem_equal_fmpq(const nf_elem_t a, const fmpq_t b, const nf_t nf)
+{
+    if (nf->flag & NF_LINEAR)
+        return fmpz_equal(LNF_ELEM_NUMREF(a), fmpq_numref(b)) &&
+               fmpz_equal(LNF_ELEM_DENREF(a), fmpq_denref(b));
+    else if (nf->flag & NF_QUADRATIC)
+        return fmpz_is_zero(QNF_ELEM_NUMREF(a) + 1) &&
+               fmpz_equal(QNF_ELEM_NUMREF(a), fmpq_numref(b)) &&
+               fmpz_equal(QNF_ELEM_DENREF(a), fmpq_denref(b)) ;
+    else
+    {
+        if (NF_ELEM(a)->length == 0)
+            return fmpq_is_zero(b);
+        else if (NF_ELEM(a)->length == 1)
+            return fmpz_equal(NF_ELEM_NUMREF(a), fmpq_numref(b)) &&
+                   fmpz_equal(NF_ELEM_DENREF(a), fmpq_denref(b));
+        else
+            return 0;
+    }
+}
+
 /******************************************************************************
 
     I/O
