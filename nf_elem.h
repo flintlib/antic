@@ -192,6 +192,44 @@ int nf_elem_is_gen(const nf_elem_t a, const nf_t nf)
 		  && fmpz_is_zero(NF_ELEM(a)->coeffs);
 }
 
+NF_ELEM_INLINE
+int nf_elem_equal_si(const nf_elem_t a, const slong b, const nf_t nf)
+{
+    if (nf->flag & NF_LINEAR)
+        return fmpz_is_one(LNF_ELEM_DENREF(a)) &&
+               fmpz_equal_si(LNF_ELEM_NUMREF(a), b);
+    else if (nf->flag & NF_QUADRATIC)
+        return fmpz_is_zero(QNF_ELEM_NUMREF(a) + 1) &&
+               fmpz_is_one(QNF_ELEM_DENREF(a)) &&
+               fmpz_equal_si(QNF_ELEM_NUMREF(a), b);
+    else
+    {
+        if (b == 0) return fmpq_poly_is_zero(NF_ELEM(a));
+        else return NF_ELEM(a)->length == 1 &&
+                    fmpz_is_one(NF_ELEM_DENREF(a)) &&
+                    fmpz_equal_si(NF_ELEM_NUMREF(a), b);
+    }
+}
+
+NF_ELEM_INLINE
+int nf_elem_equal_ui(const nf_elem_t a, const ulong b, const nf_t nf)
+{
+    if (nf->flag & NF_LINEAR)
+        return fmpz_is_one(LNF_ELEM_DENREF(a)) &&
+               fmpz_equal_ui(LNF_ELEM_NUMREF(a), b);
+    else if (nf->flag & NF_QUADRATIC)
+        return fmpz_is_zero(QNF_ELEM_NUMREF(a) + 1) &&
+               fmpz_is_one(QNF_ELEM_DENREF(a)) &&
+               fmpz_equal_ui(QNF_ELEM_NUMREF(a), b);
+    else
+    {
+        if (b == 0) return fmpq_poly_is_zero(NF_ELEM(a));
+        else return NF_ELEM(a)->length == 1 &&
+                    fmpz_is_one(NF_ELEM_DENREF(a)) &&
+                    fmpz_equal_ui(NF_ELEM_NUMREF(a), b);
+    }
+}
+
 /******************************************************************************
 
     I/O
@@ -309,6 +347,24 @@ void nf_elem_set_si(nf_elem_t a, slong c, const nf_t nf)
       fmpz_one(QNF_ELEM_DENREF(a));
    } else
       fmpq_poly_set_si(NF_ELEM(a), c);
+}
+
+NF_ELEM_INLINE
+void nf_elem_set_ui(nf_elem_t a, ulong c, const nf_t nf)
+{
+   if (nf->flag & NF_LINEAR)
+   {
+      fmpz_set_ui(LNF_ELEM_NUMREF(a), c);
+      fmpz_one(LNF_ELEM_DENREF(a));
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+      fmpz * const anum = QNF_ELEM_NUMREF(a);
+
+      fmpz_set_ui(anum, c);
+      fmpz_zero(anum + 1);
+      fmpz_one(QNF_ELEM_DENREF(a));
+   } else
+      fmpq_poly_set_ui(NF_ELEM(a), c);
 }
 
 NF_ELEM_INLINE
