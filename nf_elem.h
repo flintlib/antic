@@ -193,6 +193,28 @@ int nf_elem_is_gen(const nf_elem_t a, const nf_t nf)
 }
 
 NF_ELEM_INLINE
+int nf_elem_is_integer(const nf_elem_t a, const nf_t nf)
+{
+    if (nf->flag & NF_LINEAR)
+        return fmpz_is_one(LNF_ELEM_DENREF(a));
+    else if (nf->flag & NF_QUADRATIC)
+        return fmpz_is_zero(QNF_ELEM_NUMREF(a) + 1) &&
+               fmpz_is_one(QNF_ELEM_DENREF(a));
+    else
+        return NF_ELEM(a)->length <= 1 && fmpz_is_one(NF_ELEM_DENREF(a));
+}
+
+NF_ELEM_INLINE
+int nf_elem_is_rational(const nf_elem_t a, const nf_t nf)
+{
+    if (nf->flag & NF_LINEAR) return 1;
+    else if (nf->flag & NF_QUADRATIC)
+        return fmpz_is_zero(QNF_ELEM_NUMREF(a) + 1);
+    else
+        return NF_ELEM(a)->length <= 1;
+}
+
+NF_ELEM_INLINE
 int nf_elem_equal_si(const nf_elem_t a, const slong b, const nf_t nf)
 {
     if (nf->flag & NF_LINEAR)
