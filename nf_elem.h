@@ -747,6 +747,7 @@ void nf_elem_swap(nf_elem_t a, nf_elem_t b, const nf_t nf)
       
       fmpz_swap(anum, bnum);
       fmpz_swap(anum + 1, bnum + 1);
+      fmpz_swap(anum + 2, bnum + 2);
       fmpz_swap(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b));
    } else
       fmpq_poly_swap(NF_ELEM(a), NF_ELEM(b));
