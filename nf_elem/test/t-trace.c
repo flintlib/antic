@@ -60,7 +60,7 @@ main(void)
         fmpq_init(atrace);
         fmpq_init(btrace);
         fmpq_init(ctrace);
-        fmpq_init(ctrace);
+        fmpq_init(ctrace2);
 
         nf_elem_randtest(a, state, 200, nf);
         nf_elem_randtest(b, state, 200, nf);
@@ -82,14 +82,14 @@ main(void)
            printf("trace(a) = "); fmpq_print(atrace); printf("\n");
            printf("trace(b) = "); fmpq_print(btrace); printf("\n");
            printf("trace(a + b) = "); fmpq_print(ctrace); printf("\n");
-           printf("trace(a) + trace(b) = "); fmpq_print(ctrace); printf("\n");
+           printf("trace(a) + trace(b) = "); fmpq_print(ctrace2); printf("\n");
            abort();
         }
 
         fmpq_clear(atrace);
         fmpq_clear(btrace);
         fmpq_clear(ctrace);
-        fmpq_clear(ctrace);
+        fmpq_clear(ctrace2);
 
         nf_elem_clear(a, nf);
         nf_elem_clear(b, nf);
