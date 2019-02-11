@@ -16,7 +16,9 @@ int main(void)
     fmpq_poly_t pol;
     nf_t nf;
     nf_elem_t a;
+    flint_rand_t state;
 
+    flint_randinit(state);
     fmpq_poly_init(pol);
     do {
        fmpq_poly_randtest_not_zero(pol, state, 5, 20);
@@ -29,6 +31,8 @@ int main(void)
     nf_elem_clear(a, nf);
     nf_clear(nf);
     fmpq_poly_clear(pol);
+    flint_randclear(state);
+    flint_cleanup();
 
     return 0;
 }
