@@ -54,7 +54,7 @@ typedef lnf_elem_struct lnf_elem_t[1];
 
 typedef struct /* element of a quadratic number field */
 {
-   fmpz num[3];
+   fmpz num[3]; /* extra coeff for delayed reduction */
    fmpz_t den;
 } qnf_elem_struct;
 
