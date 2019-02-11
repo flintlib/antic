@@ -19,8 +19,6 @@ nf_elem
 * in _nf_elem_equal only compute gcd if this will be faster than multiplying
   by full denominators
 
-* special case quadratic number fields
-
 * fix nf_elem_print to print consistent format
 
 * add nf_elem_print_pretty ?
