@@ -20,6 +20,7 @@ compiler:
 
 install:
   - export LOCAL=$(pwd)/local
+  - while sleep 30; do echo "still alive"; done &
   - ./.build_dependencies
   - ./configure --with-mpir=${LOCAL} --with-mpfr=${LOCAL} --with-flint=${LOCAL} --prefix=${LOCAL}
   - ${MAKE}
