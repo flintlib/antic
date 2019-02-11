@@ -38,7 +38,7 @@ int main(void)
 }
 EOL
 
-$CC test.c -o test -I${PREFIX}/include -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -lflint -lgmp
+$CC test.c -o test -I${PREFIX}/include -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -lantic -lflint -lgmp
 if [ $? -ne 0 ];
 then
     exit 1;
