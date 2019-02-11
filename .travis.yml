@@ -1,0 +1,33 @@
+language: c
+sudo: false
+cache: ccache
+addons:
+  apt:
+    packages:
+      - texinfo
+env:
+  MAKE="make -j4"
+
+os:
+  - osx
+  - linux
+
+osx_image: xcode6.4
+
+compiler:
+  - gcc
+  - clang
+
+install:
+  - export LOCAL=$(pwd)/local
+  - ./.build_dependencies
+  - ./configure --with-mpir=${LOCAL} --with-mpfr=${LOCAL} --with-flint=${LOCAL} --prefix=${LOCAL}
+  - ${MAKE}
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -L libantic.dylib; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ldd libantic.so; fi
+
+script:
+  - ${MAKE} check
+  - ${MAKE} install
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -L local/lib/libantic.dylib; fi
+  - PREFIX=$(pwd)/local ./.check_post_install
