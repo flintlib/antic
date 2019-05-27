@@ -954,6 +954,10 @@ void nf_elem_mod_fmpz_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, co
 FLINT_DLL
 void nf_elem_mod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf);
 
+FLINT_DLL
+void
+nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf);
+
 #ifdef __cplusplus
 }
 #endif
