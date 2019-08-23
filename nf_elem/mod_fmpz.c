@@ -26,7 +26,7 @@
 #include "nf_elem.h"
 
 void
-_nf_elem_mod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf)
+_nf_elem_mod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf, int sign)
 {
     if (nf_elem_is_zero(a, nf))
     {
@@ -35,30 +35,41 @@ _nf_elem_mod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t
     }
     if (nf->flag & NF_LINEAR)
     {
-        fmpz_mod(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(a), mod);
+        if (sign == 0)
+            fmpz_mod(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(a), mod);
+        else
+            fmpz_mods(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(a), mod);
+
         fmpz_one(LNF_ELEM_DENREF(res));
     }
     else if (nf->flag & NF_QUADRATIC)
     { 
-        _fmpz_vec_scalar_mod_fmpz(QNF_ELEM_NUMREF(res), QNF_ELEM_NUMREF(a), 3, mod);
+        if (sign == 0)
+            _fmpz_vec_scalar_mod_fmpz(QNF_ELEM_NUMREF(res), QNF_ELEM_NUMREF(a), 3, mod);
+        else
+            _fmpz_vec_scalar_smod_fmpz(QNF_ELEM_NUMREF(res), QNF_ELEM_NUMREF(a), 3, mod);
+
         fmpz_one(QNF_ELEM_DENREF(res));
     }
     else
     {
         fmpq_poly_fit_length(NF_ELEM(res), fmpq_poly_length(NF_ELEM(a)));
         _fmpq_poly_set_length(NF_ELEM(res), fmpq_poly_length(NF_ELEM(a)));
-        _fmpz_vec_scalar_mod_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(a)->coeffs, fmpq_poly_length(NF_ELEM(a)), mod);
+        if (sign == 0)
+            _fmpz_vec_scalar_mod_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(a)->coeffs, fmpq_poly_length(NF_ELEM(a)), mod);
+        else
+            _fmpz_vec_scalar_smod_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(a)->coeffs, fmpq_poly_length(NF_ELEM(a)), mod);
         fmpz_one(NF_ELEM_DENREF(res));
     }
     nf_elem_canonicalise(res, nf);
 }
 
 void
-nf_elem_mod_fmpz_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf, int den)
+_nf_elem_mod_fmpz_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf, int den, int sign)
 {
     if (!den || nf_elem_den_is_one(a, nf))
     {
-        _nf_elem_mod_fmpz(res, a, mod, nf);
+        _nf_elem_mod_fmpz(res, a, mod, nf, sign);
     }
     else
     {
@@ -69,7 +80,7 @@ nf_elem_mod_fmpz_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const n
         nf_elem_get_den(t, a, nf);
         fmpz_mul(t, t, mod);
 
-        _nf_elem_mod_fmpz(res, a, t, nf);
+        _nf_elem_mod_fmpz(res, a, t, nf, sign);
 
         if (nf->flag & NF_LINEAR)
         {
@@ -88,11 +99,28 @@ nf_elem_mod_fmpz_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const n
     }
 }
 
+void
+nf_elem_mod_fmpz_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf, int den)
+{
+    _nf_elem_mod_fmpz_den(res, a, mod, nf, den, 0);
+}
+
+void
+nf_elem_smod_fmpz_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf, int den)
+{
+    _nf_elem_mod_fmpz_den(res, a, mod, nf, den, 1);
+}
+
 void nf_elem_mod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf)
 {
     nf_elem_mod_fmpz_den(res, a, mod, nf, 1);
 }
-    
+
+ void nf_elem_smod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf)
+{
+    nf_elem_smod_fmpz_den(res, a, mod, nf, 1);
+}
+   
 static void
 _fmpz_ppio(fmpz_t ppi, fmpz_t ppo, const fmpz_t a, const fmpz_t b)
 {
@@ -121,7 +149,7 @@ _fmpz_ppio(fmpz_t ppi, fmpz_t ppo, const fmpz_t a, const fmpz_t b)
 }
 
 void
-nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf)
+_nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf, int sign)
 {
     if (nf_elem_is_zero(a, nf))
     {
@@ -131,7 +159,7 @@ nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf
 
     if (nf_elem_den_is_one(a, nf))
     {
-        nf_elem_mod_fmpz_den(res, a, mod, nf, 0);
+        _nf_elem_mod_fmpz_den(res, a, mod, nf, 0, sign);
         return ;
     }
 
@@ -145,7 +173,10 @@ nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf
         fmpz_mul(LNF_ELEM_DENREF(res), mod, c);
         fmpz_invmod(nc, nc, LNF_ELEM_DENREF(res));
         fmpz_mul(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(a), nc);
-        fmpz_mod(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(res), LNF_ELEM_DENREF(res));
+        if (sign == 0)
+            fmpz_mod(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(res), LNF_ELEM_DENREF(res));
+        else
+            fmpz_mods(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(res), LNF_ELEM_DENREF(res));
         fmpz_set(LNF_ELEM_DENREF(res), c);
 
         fmpz_clear(c);
@@ -161,7 +192,10 @@ nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf
         fmpz_mul(QNF_ELEM_DENREF(res), mod, c);
         fmpz_invmod(nc, nc, QNF_ELEM_DENREF(res));
         _fmpz_vec_scalar_mul_fmpz(QNF_ELEM_NUMREF(res), QNF_ELEM_NUMREF(a), 3, nc);
-        _fmpz_vec_scalar_mod_fmpz(QNF_ELEM_NUMREF(res), QNF_ELEM_NUMREF(res), 3, QNF_ELEM_DENREF(res));
+        if (sign == 0)
+            _fmpz_vec_scalar_mod_fmpz(QNF_ELEM_NUMREF(res), QNF_ELEM_NUMREF(res), 3, QNF_ELEM_DENREF(res));
+        else
+            _fmpz_vec_scalar_smod_fmpz(QNF_ELEM_NUMREF(res), QNF_ELEM_NUMREF(res), 3, QNF_ELEM_DENREF(res));
         fmpz_set(QNF_ELEM_DENREF(res), c);
         
         fmpz_clear(c);
@@ -177,8 +211,10 @@ nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf
         _fmpz_ppio(c, nc, NF_ELEM_DENREF(a), mod);
         fmpz_mul(NF_ELEM_DENREF(res), mod, c);
         fmpz_invmod(nc, nc, NF_ELEM_DENREF(res));
-        _fmpz_vec_scalar_mul_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(a)->coeffs, fmpq_poly_length(NF_ELEM(a)), nc);
-        _fmpz_vec_scalar_mod_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(res)->coeffs, fmpq_poly_length(NF_ELEM(a)), NF_ELEM_DENREF(res));
+        if (sign == 0)
+            _fmpz_vec_scalar_mul_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(a)->coeffs, fmpq_poly_length(NF_ELEM(a)), nc);
+        else
+            _fmpz_vec_scalar_smod_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(res)->coeffs, fmpq_poly_length(NF_ELEM(a)), NF_ELEM_DENREF(res));
         fmpz_set(NF_ELEM_DENREF(res), c);
         _fmpq_poly_set_length(NF_ELEM(res), fmpq_poly_length(NF_ELEM(a)));
 
@@ -186,4 +222,16 @@ nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf
         fmpz_clear(nc);
     }
     nf_elem_canonicalise(res, nf);
+}
+  
+void
+nf_elem_coprime_den_signed(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf)
+{
+    _nf_elem_coprime_den(res, a, mod, nf, 1);
+}
+  
+void
+nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf)
+{
+    _nf_elem_coprime_den(res, a, mod, nf, 0);
 }

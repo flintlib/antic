@@ -84,6 +84,25 @@ main(void)
             }
         }
 
+        nf_elem_smod_fmpz_den(b, a, mod, nf, 0);
+
+        for (j = 0; j < fmpq_poly_degree(pol); j++)
+        {
+            nf_elem_get_coeff_fmpz(coeff, a, j, nf);
+            fmpz_mods(coeff, coeff, mod);
+            nf_elem_get_coeff_fmpz(reduced_coeff, b, j, nf);
+            result = fmpz_equal(reduced_coeff, coeff);
+            if (!result)
+            {
+                printf("FAIL: Reducing without denominator\n");
+                printf("f = "); fmpq_poly_print_pretty(pol, "x"); printf("\n");
+                printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+                printf("n = "); fmpz_print(mod); printf("\n");
+                printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+                abort();
+            }
+        }
+
         nf_elem_clear(a, nf);
         nf_elem_clear(b, nf);
         fmpz_clear(coeff);
@@ -129,6 +148,27 @@ main(void)
         {
             nf_elem_get_coeff_fmpz(coeff, c, j, nf);
             fmpz_mod(coeff, coeff, mod);
+            result = fmpz_is_zero(coeff);
+            if (!result || !nf_elem_den_is_one(c, nf))
+            {
+                printf("FAIL: Reducing without denominator\n");
+                printf("f = "); fmpq_poly_print_pretty(pol, "x"); printf("\n");
+                printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+                printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+                printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
+                printf("n = "); fmpz_print(mod); printf("\n");
+                abort();
+            }
+        }
+
+        nf_elem_smod_fmpz(b, a, mod, nf);
+
+        nf_elem_sub(c, b, a, nf);
+
+        for (j = 0; j < fmpq_poly_degree(pol); j++)
+        {
+            nf_elem_get_coeff_fmpz(coeff, c, j, nf);
+            fmpz_mods(coeff, coeff, mod);
             result = fmpz_is_zero(coeff);
             if (!result || !nf_elem_den_is_one(c, nf))
             {
