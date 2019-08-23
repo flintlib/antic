@@ -51,8 +51,8 @@ void nf_elem_fmpz_sub(nf_elem_t a, const fmpz_t c, const nf_elem_t b, const nf_t
 
           fmpz_submul(num, den, c);
 
-          for(i=0; i<= len; i++)
-             fmpz_neg(num+i, num+i);
+          for(i = 0; i <= len; i++)
+             fmpz_neg(num + i, num + i);
 
 	  _fmpq_poly_canonicalise(num, den, len);
    } else
