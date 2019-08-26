@@ -40,21 +40,11 @@ void nf_elem_fmpz_sub(nf_elem_t a, const fmpz_t c, const nf_elem_t b, const nf_t
    else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * den = QNF_ELEM_DENREF(a);
-	  fmpz * num = QNF_ELEM_NUMREF(a);
-	  slong len = 2, i;
+      fmpz * num = QNF_ELEM_NUMREF(a);
 	  
-	  nf_elem_set(a, b, nf);
-	  
-	  while (len != 0 && fmpz_is_zero(num + len - 1))
-	     len--;
-
-
-          fmpz_submul(num, den, c);
-
-          for(i = 0; i <= len; i++)
-             fmpz_neg(num + i, num + i);
-
-	  _fmpq_poly_canonicalise(num, den, len);
+      nf_elem_neg(a, b, nf);
+      fmpz_addmul(num, den, c);
+      _fmpq_poly_canonicalise(num, den, 2);
    } else
    {
       fmpq_poly_fmpz_sub(NF_ELEM(a), c, NF_ELEM(b));
