@@ -211,8 +211,9 @@ _nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const n
         _fmpz_ppio(c, nc, NF_ELEM_DENREF(a), mod);
         fmpz_mul(NF_ELEM_DENREF(res), mod, c);
         fmpz_invmod(nc, nc, NF_ELEM_DENREF(res));
+        _fmpz_vec_scalar_mul_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(a)->coeffs, fmpq_poly_length(NF_ELEM(a)), nc);
         if (sign == 0)
-            _fmpz_vec_scalar_mul_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(a)->coeffs, fmpq_poly_length(NF_ELEM(a)), nc);
+            _fmpz_vec_scalar_mod_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(res)->coeffs, fmpq_poly_length(NF_ELEM(a)), NF_ELEM_DENREF(res));
         else
             _fmpz_vec_scalar_smod_fmpz(NF_ELEM(res)->coeffs, NF_ELEM(res)->coeffs, fmpq_poly_length(NF_ELEM(a)), NF_ELEM_DENREF(res));
         fmpz_set(NF_ELEM_DENREF(res), c);
