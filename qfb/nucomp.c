@@ -20,6 +20,7 @@
 /******************************************************************************
 
     Copyright (C) 2012 William Hart
+    Copyright (C) 2020 Chia Network Inc
 
 ******************************************************************************/
 
@@ -83,8 +84,8 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
 
       if (!fmpz_is_one(s))
       {
-         fmpz_fdiv_q(a1, a1, s);
-         fmpz_fdiv_q(a2, a2, s);
+         fmpz_divexact(a1, a1, s);
+         fmpz_divexact(a2, a2, s);
          fmpz_mul(c2, c2, s);
       }
 
@@ -104,7 +105,7 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
       fmpz_mul(cc, cc, k);
       fmpz_add(cc, cc, c2);
 
-      fmpz_fdiv_q(cc, cc, a1);
+      fmpz_divexact(cc, cc, a1);
    } else
    {
       fmpz_t m1, m2, r1, r2, co1, co2, temp;
@@ -120,12 +121,12 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
       fmpz_mul(t, a2, r1);
       fmpz_mul(m1, m, co1);
       fmpz_add(m1, m1, t);
-      fmpz_tdiv_q(m1, m1, a1);
+      fmpz_divexact(m1, m1, a1);
 
       fmpz_mul(m2, ss, r1);
       fmpz_mul(temp, c2, co1);
       fmpz_sub(m2, m2, temp);
-      fmpz_tdiv_q(m2, m2, a1);
+      fmpz_divexact(m2, m2, a1);
 
       fmpz_mul(ca, r1, m1);
       fmpz_mul(temp, co1, m2);
@@ -137,14 +138,14 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
       fmpz_mul(cb, ca, co2);
       fmpz_sub(cb, t, cb);
       fmpz_mul_2exp(cb, cb, 1);
-      fmpz_fdiv_q(cb, cb, co1);
+      fmpz_divexact(cb, cb, co1);
       fmpz_sub(cb, cb, g->b);
       fmpz_mul_2exp(temp, ca, 1);
       fmpz_fdiv_r(cb, cb, temp);
 
       fmpz_mul(cc, cb, cb);
       fmpz_sub(cc, cc, D);
-      fmpz_fdiv_q(cc, cc, ca);
+      fmpz_divexact(cc, cc, ca);
       fmpz_fdiv_q_2exp(cc, cc, 2);
 
       if (fmpz_sgn(ca) < 0)
