@@ -31,6 +31,18 @@
 #include "flint/fmpz.h"
 #include "qfb.h"
 
+static void
+qfb_nudupl_gcdinv(fmpz_t d, fmpz_t a, fmpz_t t, const fmpz_t f, const fmpz_t g)
+{
+   if (fmpz_cmp(f, g) < 0)
+      fmpz_gcdinv(d, a, f, g);
+   else
+   {
+      fmpz_fdiv_r(t, f, g);
+      fmpz_gcdinv(d, a, t, g);
+   }
+}
+
 void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t D, fmpz_t L)
 {
    fmpz_t a1, b1, c1, ca, cb, cc, k, s, t, u2, v1, v2;
@@ -55,10 +67,10 @@ void qfb_nudupl(qfb_t r, const qfb_t f, fmpz_t D, fmpz_t L)
    } else if (fmpz_sgn(f->b) < 0)
    {
       fmpz_neg(b1, f->b);
-      fmpz_gcdinv(s, v2, b1, a1);
+      qfb_nudupl_gcdinv(s, v2, t, b1, a1);
       fmpz_neg(v2, v2);
    } else
-      fmpz_gcdinv(s, v2, f->b, a1);
+      qfb_nudupl_gcdinv(s, v2, t, f->b, a1);
 
    fmpz_mul(t, v2, c1);
    fmpz_neg(k, t);
