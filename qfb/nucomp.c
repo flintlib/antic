@@ -20,6 +20,7 @@
 /******************************************************************************
 
     Copyright (C) 2012 William Hart
+    Copyright (C) 2020 Chia Network Inc
 
 ******************************************************************************/
 
@@ -28,10 +29,10 @@
 #include "qfb.h"
 
 /*
-   This is based (with permission) on an implementation of NUCOMP 
-   by Michael Jacobson which is an adaption to binary quadratic 
-   forms of the algorithm presented in Appendix A of "Solving the 
-   Pell Equation", Michael Jacobson and High Williams, CMS Books in 
+   This is based (with permission) on an implementation of NUCOMP
+   by Michael Jacobson which is an adaption to binary quadratic
+   forms of the algorithm presented in Appendix A of "Solving the
+   Pell Equation", Michael Jacobson and High Williams, CMS Books in
    Mathematics, Springer 2009.
 */
 void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
@@ -45,11 +46,11 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
    }
 
    fmpz_init(a1); fmpz_init(a2); fmpz_init(c2);
-   fmpz_init(ca); fmpz_init(cb); fmpz_init(cc); 
-   fmpz_init(k); fmpz_init(m); 
-   fmpz_init(s); fmpz_init(sp); fmpz_init(ss); 
-   fmpz_init(t); fmpz_init(u2); fmpz_init(v1); fmpz_init(v2); 
-   
+   fmpz_init(ca); fmpz_init(cb); fmpz_init(cc);
+   fmpz_init(k); fmpz_init(m);
+   fmpz_init(s); fmpz_init(sp); fmpz_init(ss);
+   fmpz_init(t); fmpz_init(u2); fmpz_init(v1); fmpz_init(v2);
+
    /* nucomp calculation */
 
    fmpz_set(a1, f->a);
@@ -72,19 +73,19 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
 
    fmpz_mul(k, m, v1);
    fmpz_fdiv_r(k, k, a1);
-   
+
    if (!fmpz_is_one(sp))
    {
       fmpz_xgcd(s, v2, u2, ss, sp);
-      
+
       fmpz_mul(k, k, u2);
       fmpz_mul(t, v2, c2);
       fmpz_sub(k, k, t);
 
       if (!fmpz_is_one(s))
       {
-         fmpz_fdiv_q(a1, a1, s);
-         fmpz_fdiv_q(a2, a2, s);
+         fmpz_divexact(a1, a1, s);
+         fmpz_divexact(a2, a2, s);
          fmpz_mul(c2, c2, s);
       }
 
@@ -103,8 +104,8 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
       fmpz_add(cc, g->b, t);
       fmpz_mul(cc, cc, k);
       fmpz_add(cc, cc, c2);
-      
-      fmpz_fdiv_q(cc, cc, a1);
+
+      fmpz_divexact(cc, cc, a1);
    } else
    {
       fmpz_t m1, m2, r1, r2, co1, co2, temp;
@@ -116,17 +117,17 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
       fmpz_set(r1, k);
 
       fmpz_xgcd_partial(co2, co1, r2, r1, L);
-      
+
       fmpz_mul(t, a2, r1);
       fmpz_mul(m1, m, co1);
       fmpz_add(m1, m1, t);
-      fmpz_tdiv_q(m1, m1, a1);
-      
+      fmpz_divexact(m1, m1, a1);
+
       fmpz_mul(m2, ss, r1);
       fmpz_mul(temp, c2, co1);
       fmpz_sub(m2, m2, temp);
-      fmpz_tdiv_q(m2, m2, a1);
-      
+      fmpz_divexact(m2, m2, a1);
+
       fmpz_mul(ca, r1, m1);
       fmpz_mul(temp, co1, m2);
       if (fmpz_sgn(co1) < 0)
@@ -137,14 +138,14 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
       fmpz_mul(cb, ca, co2);
       fmpz_sub(cb, t, cb);
       fmpz_mul_2exp(cb, cb, 1);
-      fmpz_fdiv_q(cb, cb, co1);
+      fmpz_divexact(cb, cb, co1);
       fmpz_sub(cb, cb, g->b);
       fmpz_mul_2exp(temp, ca, 1);
       fmpz_fdiv_r(cb, cb, temp);
-      
+
       fmpz_mul(cc, cb, cb);
       fmpz_sub(cc, cc, D);
-      fmpz_fdiv_q(cc, cc, ca);
+      fmpz_divexact(cc, cc, ca);
       fmpz_fdiv_q_2exp(cc, cc, 2);
 
       if (fmpz_sgn(ca) < 0)
@@ -161,9 +162,9 @@ void qfb_nucomp(qfb_t r, const qfb_t f, const qfb_t g, fmpz_t D, fmpz_t L)
    fmpz_set(r->b, cb);
    fmpz_set(r->c, cc);
 
-   fmpz_clear(ca); fmpz_clear(cb); fmpz_clear(cc); 
-   fmpz_clear(k); fmpz_clear(m); 
-   fmpz_clear(s); fmpz_clear(sp); fmpz_clear(ss); 
+   fmpz_clear(ca); fmpz_clear(cb); fmpz_clear(cc);
+   fmpz_clear(k); fmpz_clear(m);
+   fmpz_clear(s); fmpz_clear(sp); fmpz_clear(ss);
    fmpz_clear(t); fmpz_clear(u2); fmpz_clear(v1); fmpz_clear(v2);
    fmpz_clear(a1); fmpz_clear(a2); fmpz_clear(c2);
 }
