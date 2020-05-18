@@ -89,7 +89,7 @@ main(void)
         for (j = 0; j < fmpq_poly_degree(pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, a, j, nf);
-            fmpz_mods(coeff, coeff, mod);
+            fmpz_smod(coeff, coeff, mod);
             nf_elem_get_coeff_fmpz(reduced_coeff, b, j, nf);
             result = fmpz_equal(reduced_coeff, coeff);
             if (!result)
@@ -168,7 +168,7 @@ main(void)
         for (j = 0; j < fmpq_poly_degree(pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, c, j, nf);
-            fmpz_mods(coeff, coeff, mod);
+            fmpz_smod(coeff, coeff, mod);
             result = fmpz_is_zero(coeff);
             if (!result || !nf_elem_den_is_one(c, nf))
             {

@@ -38,7 +38,7 @@ _nf_elem_mod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t
         if (sign == 0)
             fmpz_mod(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(a), mod);
         else
-            fmpz_mods(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(a), mod);
+            fmpz_smod(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(a), mod);
 
         fmpz_one(LNF_ELEM_DENREF(res));
     }
@@ -176,7 +176,7 @@ _nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const n
         if (sign == 0)
             fmpz_mod(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(res), LNF_ELEM_DENREF(res));
         else
-            fmpz_mods(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(res), LNF_ELEM_DENREF(res));
+            fmpz_smod(LNF_ELEM_NUMREF(res), LNF_ELEM_NUMREF(res), LNF_ELEM_DENREF(res));
         fmpz_set(LNF_ELEM_DENREF(res), c);
 
         fmpz_clear(c);
