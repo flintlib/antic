@@ -11,6 +11,7 @@
 /******************************************************************************
 
     Copyright (C) 2018 Tommy Hofmann
+                  2020 Julian Rüth
 
 ******************************************************************************/
 
@@ -32,16 +33,10 @@ main(void)
     /* test mul_gen(b) = a * b, where a is the generator */
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, b, p1, p2;
 
-        fmpq_poly_init(pol);
-        do {
-           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-        } while (fmpq_poly_degree(pol) < 1);
-        
-        nf_init(nf, pol);
+        nf_init_randtest(nf, state, 40, 200);
         
         nf_elem_init(a, nf);
         nf_elem_init(b, nf);
@@ -73,23 +68,15 @@ main(void)
         nf_elem_clear(p2, nf);
          
         nf_clear(nf);
-
-        fmpq_poly_clear(pol);
     }
     
     /* test aliasing b and b */
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t b, c;
 
-        fmpq_poly_init(pol);
-        do {
-           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-        } while (fmpq_poly_degree(pol) < 1);
-        
-        nf_init(nf, pol);
+        nf_init_randtest(nf, state, 40, 200);
 
         nf_elem_init(b, nf);
         nf_elem_init(c, nf);
@@ -112,8 +99,6 @@ main(void)
         nf_elem_clear(c, nf);
          
         nf_clear(nf);
-
-        fmpq_poly_clear(pol);
     }
     
     flint_randclear(state);

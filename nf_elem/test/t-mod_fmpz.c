@@ -8,28 +8,10 @@
     (at your option) any later version. See <http://www.gnu.org/licenses/>.
 
 =============================================================================*/
-/*=============================================================================
-
-  This file is part of ANTIC.
-
-  FLINT is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-
-  FLINT is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with FLINT; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-
-  =============================================================================*/
 /******************************************************************************
 
   Copyright (C) 2018 Tommy Hofmann
+                2020 Julian Rüth
 
  ******************************************************************************/
 
@@ -51,7 +33,6 @@ main(void)
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
         slong j;
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, b;
         fmpz_t coeff, mod, reduced_coeff;
@@ -63,12 +44,7 @@ main(void)
         fmpz_init(coeff);
         fmpz_init(reduced_coeff);
 
-        fmpq_poly_init(pol);
-        do {
-            fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-        } while (fmpq_poly_degree(pol) < 1);
-
-        nf_init(nf, pol);
+        nf_init_randtest(nf, state, 40, 200);
 
         nf_elem_init(a, nf);
         nf_elem_init(b, nf);
@@ -77,7 +53,7 @@ main(void)
 
         nf_elem_mod_fmpz_den(b, a, mod, nf, 0);
 
-        for (j = 0; j < fmpq_poly_degree(pol); j++)
+        for (j = 0; j < fmpq_poly_degree(nf->pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, a, j, nf);
             fmpz_mod(coeff, coeff, mod);
@@ -86,7 +62,7 @@ main(void)
             if (!result)
             {
                 printf("FAIL: Reducing without denominator\n");
-                printf("f = "); fmpq_poly_print_pretty(pol, "x"); printf("\n");
+                printf("f = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
                 printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
                 printf("n = "); fmpz_print(mod); printf("\n");
                 printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
@@ -96,7 +72,7 @@ main(void)
 
         nf_elem_smod_fmpz_den(b, a, mod, nf, 0);
 
-        for (j = 0; j < fmpq_poly_degree(pol); j++)
+        for (j = 0; j < fmpq_poly_degree(nf->pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, a, j, nf);
             fmpz_smod(coeff, coeff, mod);
@@ -105,7 +81,7 @@ main(void)
             if (!result)
             {
                 printf("FAIL: Reducing without denominator\n");
-                printf("f = "); fmpq_poly_print_pretty(pol, "x"); printf("\n");
+                printf("f = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
                 printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
                 printf("n = "); fmpz_print(mod); printf("\n");
                 printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
@@ -119,13 +95,11 @@ main(void)
         fmpz_clear(reduced_coeff);
         fmpz_clear(mod);
         nf_clear(nf);
-        fmpq_poly_clear(pol);
     }
 
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
         slong j;
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, b, c;
         fmpz_t coeff, mod, den;
@@ -137,12 +111,7 @@ main(void)
         fmpz_init(coeff);
         fmpz_init(den);
 
-        fmpq_poly_init(pol);
-        do {
-            fmpq_poly_randtest_not_zero(pol, state, 4, 2);
-        } while (fmpq_poly_degree(pol) < 1);
-
-        nf_init(nf, pol);
+        nf_init_randtest(nf, state, 4, 2);
 
         nf_elem_init(a, nf);
         nf_elem_init(b, nf);
@@ -154,7 +123,7 @@ main(void)
 
         nf_elem_sub(c, b, a, nf);
 
-        for (j = 0; j < fmpq_poly_degree(pol); j++)
+        for (j = 0; j < fmpq_poly_degree(nf->pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, c, j, nf);
             fmpz_mod(coeff, coeff, mod);
@@ -162,7 +131,7 @@ main(void)
             if (!result || !nf_elem_den_is_one(c, nf))
             {
                 printf("FAIL: Reducing without denominator\n");
-                printf("f = "); fmpq_poly_print_pretty(pol, "x"); printf("\n");
+                printf("f = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
                 printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
                 printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
                 printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
@@ -175,7 +144,7 @@ main(void)
 
         nf_elem_sub(c, b, a, nf);
 
-        for (j = 0; j < fmpq_poly_degree(pol); j++)
+        for (j = 0; j < fmpq_poly_degree(nf->pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, c, j, nf);
             fmpz_smod(coeff, coeff, mod);
@@ -183,7 +152,7 @@ main(void)
             if (!result || !nf_elem_den_is_one(c, nf))
             {
                 printf("FAIL: Reducing without denominator\n");
-                printf("f = "); fmpq_poly_print_pretty(pol, "x"); printf("\n");
+                printf("f = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
                 printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
                 printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
                 printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
@@ -199,12 +168,10 @@ main(void)
         fmpz_clear(mod);
         fmpz_clear(den);
         nf_clear(nf);
-        fmpq_poly_clear(pol);
     }
 
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, b, c;
         fmpz_t mod, den, gcd;
@@ -216,12 +183,7 @@ main(void)
         fmpz_init(den);
         fmpz_init(gcd);
 
-        fmpq_poly_init(pol);
-        do {
-            fmpq_poly_randtest_not_zero(pol, state, 4, 2);
-        } while (fmpq_poly_degree(pol) < 1);
-
-        nf_init(nf, pol);
+        nf_init_randtest(nf, state, 4, 2);
 
         nf_elem_init(a, nf);
         nf_elem_init(b, nf);
@@ -239,7 +201,7 @@ main(void)
         if (!fmpz_is_one(gcd))
         {
             printf("FAIL: Coprime denominators\n");
-            printf("f = "); fmpq_poly_print_pretty(pol, "x"); printf("\n");
+            printf("f = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
             printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
             printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
             printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
@@ -254,7 +216,6 @@ main(void)
         fmpz_clear(den);
         fmpz_clear(gcd);
         nf_clear(nf);
-        fmpq_poly_clear(pol);
     }
 
     flint_randclear(state);

@@ -11,6 +11,7 @@
 /******************************************************************************
 
     Copyright (C) 2013 William Hart
+                  2020 Julian Rüth
 
 ******************************************************************************/
 
@@ -31,23 +32,17 @@ main(void)
 
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
-        fmpq_poly_t pol;
         fmpq_poly_t f;
         fmpq_poly_t g;
         nf_t nf;
         nf_elem_t a;
 
-        fmpq_poly_init(pol);
         fmpq_poly_init(f);
         fmpq_poly_init(g);
 
-        do {
-           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-        } while (fmpq_poly_degree(pol) < 1);
+        nf_init_randtest(nf, state, 40, 200);
 
-        nf_init(nf, pol);
-
-        fmpq_poly_randtest(f, state, fmpq_poly_degree(pol) - 1, 200);
+        fmpq_poly_randtest(f, state, fmpq_poly_degree(nf->pol) - 1, 200);
 
         nf_elem_init(a, nf);
         nf_elem_set_fmpq_poly(a, f, nf);
@@ -69,7 +64,6 @@ main(void)
         
         nf_clear(nf);
 
-        fmpq_poly_clear(pol);
         fmpq_poly_clear(f);
         fmpq_poly_clear(g);
     }

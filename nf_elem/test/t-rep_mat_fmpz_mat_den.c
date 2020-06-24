@@ -11,6 +11,7 @@
 /******************************************************************************
 
     Copyright (C) 2018 Tommy Hofmann
+                  2020 Julian Rüth
 
 ******************************************************************************/
 
@@ -33,7 +34,6 @@ main(void)
     /* test mul_gen(b) = a * b, where a is the generator */
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, b, p1, p2, t;
         slong d;
@@ -41,14 +41,9 @@ main(void)
         fmpz_mat_t R;
         fmpz_t den;
 
-        fmpq_poly_init(pol);
-        do {
-           fmpq_poly_randtest_not_zero(pol, state, 20, 100);
-        } while (fmpq_poly_degree(pol) < 1);
+        nf_init_randtest(nf, state, 20, 100);
 
-        nf_init(nf, pol);
-
-        d = fmpq_poly_degree(pol);
+        d = fmpq_poly_degree(nf->pol);
 
         fmpz_mat_init(R, d, d);
 
@@ -107,8 +102,6 @@ main(void)
         fmpz_clear(den);
 
         nf_clear(nf);
-
-        fmpq_poly_clear(pol);
     }
 
     flint_randclear(state);

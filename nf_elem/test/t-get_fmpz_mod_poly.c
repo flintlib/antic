@@ -11,6 +11,7 @@
 /******************************************************************************
 
   Copyright (C) 2018 Tommy Hofmann
+                2020 Julian Rüth
 
  ******************************************************************************/
 
@@ -32,7 +33,6 @@ main(void)
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
         slong j;
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a;
         fmpz_mod_poly_t reduced_elem;
@@ -46,12 +46,7 @@ main(void)
         fmpz_init(reduced_coeff);
         fmpz_mod_poly_init(reduced_elem, mod);
 
-        fmpq_poly_init(pol);
-        do {
-            fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-        } while (fmpq_poly_degree(pol) < 1);
-
-        nf_init(nf, pol);
+        nf_init_randtest(nf, state, 40, 200);
 
         nf_elem_init(a, nf);
 
@@ -59,7 +54,7 @@ main(void)
 
         nf_elem_get_fmpz_mod_poly_den(reduced_elem, a, nf, 0);
 
-        for (j = 0; j < fmpq_poly_degree(pol); j++)
+        for (j = 0; j < fmpq_poly_degree(nf->pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, a, j, nf);
             fmpz_mod(coeff, coeff, mod);
@@ -68,7 +63,7 @@ main(void)
             if (!result)
             {
                 printf("FAIL: Reducing without denominator\n");
-                printf("f = "); fmpq_poly_print_pretty(pol, "x"); printf("\n");
+                printf("f = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
                 printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
                 printf("n = "); fmpz_print(mod); printf("\n");
                 printf("a mod n = "); fmpz_mod_poly_print_pretty(reduced_elem, "x"); printf("\n");
@@ -81,13 +76,11 @@ main(void)
         fmpz_clear(coeff);
         fmpz_clear(mod);
         nf_clear(nf);
-        fmpq_poly_clear(pol);
     }
 
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
         slong j;
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a;
         fmpz_mod_poly_t reduced_elem;
@@ -106,12 +99,7 @@ main(void)
 
         fmpz_mod_poly_init(reduced_elem, mod);
 
-        fmpq_poly_init(pol);
-        do {
-            fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-        } while (fmpq_poly_degree(pol) < 1);
-
-        nf_init(nf, pol);
+        nf_init_randtest(nf, state, 40, 200);
 
         nf_elem_init(a, nf);
 
@@ -124,7 +112,7 @@ main(void)
 
         nf_elem_get_fmpz_mod_poly(reduced_elem, a, nf);
 
-        for (j = 0; j < fmpq_poly_degree(pol); j++)
+        for (j = 0; j < fmpq_poly_degree(nf->pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, a, j, nf);
             nf_elem_get_den(den, a, nf);
@@ -152,7 +140,6 @@ main(void)
         nf_elem_clear(a, nf);
         fmpz_mod_poly_clear(reduced_elem);
         nf_clear(nf);
-        fmpq_poly_clear(pol);
     }
 
     flint_randclear(state);
