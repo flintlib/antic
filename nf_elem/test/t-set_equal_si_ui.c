@@ -11,6 +11,7 @@
 /******************************************************************************
 
     Copyright (C) 2018 Vincent Delecroix
+                  2020 Julian Rüth
 
 ******************************************************************************/
 
@@ -32,7 +33,6 @@ int main(void)
 
     for (i = 0; i < 1000 * antic_test_multiplier(); i++)
     {
-        fmpq_poly_t pol;
         fmpq_poly_t f;
         ulong m, n;
         slong sm, sn;
@@ -42,12 +42,8 @@ int main(void)
         nf_elem_t a;
         nf_elem_t b;
 
-        fmpq_poly_init(pol);
-        do {
-           fmpq_poly_randtest_not_zero(pol, state, 20, 200);
-        } while (fmpq_poly_degree(pol) < 1);
+        nf_init_randtest(nf, state, 20, 200);
 
-        nf_init(nf, pol);
         nf_elem_init(a, nf);
         nf_elem_init(b, nf);
 
@@ -73,7 +69,7 @@ int main(void)
             abort();
         }
 
-        fmpq_poly_randtest(f, state, fmpq_poly_degree(pol) - 1, 200);
+        fmpq_poly_randtest(f, state, fmpq_poly_degree(nf->pol) - 1, 200);
         nf_elem_set_fmpq_poly(a, f, nf);
 
         if (fmpq_poly_length(f) == 0)
@@ -134,7 +130,6 @@ int main(void)
 
         /* cleaning */
 
-        fmpq_poly_clear(pol);
         fmpq_poly_clear(f);
         nf_elem_clear(a, nf);
         nf_elem_clear(b, nf);

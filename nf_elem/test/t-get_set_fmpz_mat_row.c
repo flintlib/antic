@@ -11,6 +11,7 @@
 /******************************************************************************
 
     Copyright (C) 2013 William Hart
+                  2020 Julian Rüth
 
 ******************************************************************************/
 
@@ -31,23 +32,17 @@ main(void)
 
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a, b;
         fmpz_mat_t mat;
         slong rows, j;
         fmpz_t d;
 
-        fmpq_poly_init(pol);
-        do {
-           fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-        } while (fmpq_poly_degree(pol) < 1);
-
-        nf_init(nf, pol);
+        nf_init_randtest(nf, state, 40, 200);
 
         rows = n_randint(state, 100) + 1;
         j = n_randint(state, rows);
-        fmpz_mat_init(mat, rows, fmpq_poly_degree(pol));
+        fmpz_mat_init(mat, rows, fmpq_poly_degree(nf->pol));
 
         nf_elem_init(a, nf);
         nf_elem_init(b, nf);
@@ -63,7 +58,7 @@ main(void)
         if (!result)
         {
            flint_printf("FAIL:\n");
-           flint_printf("rows = %wd, cols = %wd, j = %wd\n", rows, fmpq_poly_degree(pol), j);
+           flint_printf("rows = %wd, cols = %wd, j = %wd\n", rows, fmpq_poly_degree(nf->pol), j);
            flint_printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
            flint_printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
            flint_printf("d = "); fmpz_print(d); printf("\n");
@@ -78,8 +73,6 @@ main(void)
         fmpz_clear(d);
 
         nf_clear(nf);
-
-        fmpq_poly_clear(pol);
     }
 
     flint_randclear(state);

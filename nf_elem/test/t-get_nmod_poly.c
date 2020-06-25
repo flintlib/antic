@@ -11,6 +11,7 @@
 /******************************************************************************
 
     Copyright (C) 2018 Tommy Hofmann
+                  2020 Julian Rüth
 
 ******************************************************************************/
 
@@ -32,7 +33,6 @@ main(void)
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
         slong j;
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a;
         nmod_poly_t reduced_elem;
@@ -44,12 +44,7 @@ main(void)
         fmpz_init(coeff);
         nmod_poly_init(reduced_elem, mod);
 
-        fmpq_poly_init(pol);
-        do {
-            fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-        } while (fmpq_poly_degree(pol) < 1);
-
-        nf_init(nf, pol);
+        nf_init_randtest(nf, state, 40, 200);
 
         nf_elem_init(a, nf);
 
@@ -57,7 +52,7 @@ main(void)
 
         nf_elem_get_nmod_poly_den(reduced_elem, a, nf, 0);
 
-        for (j = 0; j < fmpq_poly_degree(pol); j++)
+        for (j = 0; j < fmpq_poly_degree(nf->pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, a, j, nf);
             result = (nmod_poly_get_coeff_ui(reduced_elem, j) == fmpz_fdiv_ui(coeff, mod));
@@ -76,14 +71,11 @@ main(void)
         fmpz_clear(coeff);
 
         nf_clear(nf);
-
-        fmpq_poly_clear(pol);
     }
 
     for (i = 0; i < 100 * antic_test_multiplier(); i++)
     {
         slong j;
-        fmpq_poly_t pol;
         nf_t nf;
         nf_elem_t a;
         nmod_poly_t reduced_elem;
@@ -99,12 +91,7 @@ main(void)
 
         nmod_poly_init(reduced_elem, mod);
 
-        fmpq_poly_init(pol);
-        do {
-            fmpq_poly_randtest_not_zero(pol, state, 40, 200);
-        } while (fmpq_poly_degree(pol) < 1);
-
-        nf_init(nf, pol);
+        nf_init_randtest(nf, state, 40, 200);
 
         nf_elem_init(a, nf);
 
@@ -116,7 +103,7 @@ main(void)
 
         nf_elem_get_nmod_poly(reduced_elem, a, nf);
 
-        for (j = 0; j < fmpq_poly_degree(pol); j++)
+        for (j = 0; j < fmpq_poly_degree(nf->pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, a, j, nf);
             d_modinv = n_invmod(d_mod, mod);
@@ -136,7 +123,6 @@ main(void)
         nf_elem_clear(a, nf);
         nmod_poly_clear(reduced_elem);
         nf_clear(nf);
-        fmpq_poly_clear(pol);
     }
 
     flint_randclear(state);

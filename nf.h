@@ -60,6 +60,8 @@ typedef nf_struct nf_t[1];
 
 FLINT_DLL void nf_init(nf_t nf, const fmpq_poly_t pol);
 
+FLINT_DLL void nf_init_randtest(nf_t nf, flint_rand_t state, slong len,  mp_bitcnt_t bits_in);
+
 FLINT_DLL void nf_clear(nf_t nf);
 
 FLINT_DLL void nf_print(const nf_t nf);

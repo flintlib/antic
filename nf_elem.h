@@ -862,7 +862,7 @@ void nf_elem_mul_gen(nf_elem_t a, const nf_elem_t b, const nf_t nf)
   {
       fmpz * den = LNF_ELEM_DENREF(a);
 	    fmpz * num = LNF_ELEM_NUMREF(a);
-      _fmpq_mul(num, den, LNF_ELEM_NUMREF(b), LNF_ELEM_DENREF(b), fmpq_poly_numref(nf->pol), fmpq_poly_denref(nf->pol));
+      _fmpq_mul(num, den, LNF_ELEM_NUMREF(b), LNF_ELEM_DENREF(b), fmpq_poly_numref(nf->pol), fmpq_poly_numref(nf->pol) + 1);
       _fmpq_canonicalise(num, den);
       fmpz_neg(num, num);
   }
