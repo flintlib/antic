@@ -27,7 +27,7 @@
  extern "C" {
 #endif
 
-long int antic_test_multiplier();
+long int antic_test_multiplier(void);
 
 typedef struct {
    fmpq_poly_t pol;  /* defining polynomial */
