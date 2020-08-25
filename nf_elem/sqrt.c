@@ -16,7 +16,7 @@
 
 #include "nf_elem.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 /*
    TODO:
@@ -99,7 +99,7 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       nf_elem_t sqr;
       slong i, j, k;
       fmpz * r, * mr;
-      int res = 0, factored;
+      int res = 0, factored, iters;
 
       if (!fmpz_is_one(NF_ELEM_DENREF(b)))
       {
@@ -150,7 +150,7 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 #endif
 
       bbits = FLINT_ABS(_fmpz_vec_max_bits(NF_ELEM_NUMREF(b), lenb));
-      nbits = (bbits + 1)/2 + 2;
+      nbits = (bbits + 1)/(2*lenf) + 2;
 
       /*
          Step 3: find a nbits bit prime such that z = f(n) is a product
@@ -177,7 +177,8 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
          _fmpz_poly_discriminant(disc, fmpq_poly_numref(nf->pol), lenf);
 
          factored = 0;
-         
+         iters = 0;
+
          while (!factored || fac->num > 5) /* no bound known for finding such a factorisation */
          {
             fmpz_factor_clear(fac);
@@ -191,6 +192,14 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
             if (!factored)
                factored = fmpz_is_probabprime(fac->p + fac->num - 1);
+
+            if (nbits < 20 && iters >= (1<<(nbits-1)))
+            {
+               iters = 0;
+               nbits++;
+            }
+
+            iters++;
          }
 
          flint_randclear(state);

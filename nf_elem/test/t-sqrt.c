@@ -30,7 +30,7 @@ main(void)
     flint_randinit(state);
 
     /* test sqrt(a^2) */
-    for (i = 0; i < 1000 * antic_test_multiplier(); )
+    for (i = 0; i < 100 * antic_test_multiplier(); )
     {
         nf_t nf;
         nf_elem_t a, b, c, d;
@@ -38,7 +38,7 @@ main(void)
         fmpz_poly_factor_t fac;
         fmpz_poly_t pol; /* do not clear */
 
-        nf_init_randtest(nf, state, 10, 20);
+        nf_init_randtest(nf, state, 30, 30);
 
         fmpz_poly_factor_init(fac);
 
@@ -61,13 +61,12 @@ main(void)
            nf_elem_init(c, nf);
            nf_elem_init(d, nf);
 
-           nf_elem_randtest(a, state, 20, nf);
+           nf_elem_randtest(a, state, 30, nf);
 
            fmpz_set_ui(NF_ELEM_DENREF(a), 1);
 
-printf("a = "); fmpq_poly_print_pretty(NF_ELEM(a), "x"); printf("\n");
-
            nf_elem_mul(b, a, a, nf);
+           
            is_square = nf_elem_sqrt(c, b, nf);
            
            nf_elem_mul(d, c, c, nf);
