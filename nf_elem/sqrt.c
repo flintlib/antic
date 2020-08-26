@@ -179,7 +179,7 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
          factored = 0;
          iters = 0;
 
-         while (!factored || fac->num > 5) /* no bound known for finding such a factorisation */
+         while (!factored || fac->num > 10) /* no bound known for finding such a factorisation */
          {
             fmpz_factor_clear(fac);
             fmpz_factor_init(fac);
