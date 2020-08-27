@@ -178,7 +178,6 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
          flint_abort();
       } */
 
-/*
       if (!fmpz_is_square(fmpq_numref(bnorm)))
       {
          nf_elem_zero(a, nf);
@@ -198,7 +197,6 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 #endif
          return 0;
       }
-*/
 
       fmpz_init(temp);
       
