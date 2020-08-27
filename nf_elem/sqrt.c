@@ -25,7 +25,6 @@
      * try to reuse information from previous failed attempt
      * improve bounds
      * add LM bound termination for nonsquare case
-     * deal with algebraic integers with denominators
      * add linear and quadratic cases
      * Tune the number of primes used in trial factoring
      * Use ECM and larger recombination for very large square roots
@@ -33,6 +32,8 @@
      * Deal with lousy starting bounds (they are too optimistic if f is not monic)
      * Deal with number fields of degree 1 and 2
      * Deal with primes dividing denominator of norm
+     * Figure out why norm is square test fails if defining polynomial is not monic
+     * Remove small squares from denominator before rationalising
 */
 
 int _fmpq_poly_set_fmpz_poly_mod_fmpz(fmpq_poly_t X,
@@ -150,11 +151,11 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       fmpz * r, * mr, * bz;
       int res = 0, factored, iters;
 
-      /* if (!fmpz_is_one(NF_ELEM_DENREF(b)))
+      if (!fmpz_is_one(fmpq_poly_denref(nf->pol)))
       {
-         flint_printf("Sqrt1 outside Z[alpha] not implemented yet\n");
+         flint_printf("Non-monic defining polynomial not supported in sqrt yet.\n");
          flint_abort();
-      }*/
+      }
 
       if (lenb == 0)
       {
@@ -170,13 +171,6 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       fmpq_init(bnorm);
 
       nf_elem_norm(bnorm, b, nf);
-      
-      /* if (!fmpz_is_one(fmpq_denref(bnorm)))
-      {
-         flint_printf("Sqrt2 outside Z[alpha] not yet implemented yet\n");
-         fmpq_clear(bnorm);
-         flint_abort();
-      } */
 
       if (!fmpz_is_square(fmpq_numref(bnorm)))
       {
