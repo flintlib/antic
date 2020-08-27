@@ -35,6 +35,7 @@
      * Figure out why norm is square test fails if defining polynomial is not monic
      * Remove small squares from denominator before rationalising
      * Move _fmpq_poly_set_fmpz_poly_mod_fmpz into Flint
+     * Cache factorisation of f(n) on number field for future square roots
 */
 
 int _fmpq_poly_set_fmpz_poly_mod_fmpz(fmpq_poly_t X,
