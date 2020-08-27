@@ -36,6 +36,7 @@
      * Remove small squares from denominator before rationalising
      * Move _fmpq_poly_set_fmpz_poly_mod_fmpz into Flint
      * Cache factorisation of f(n) on number field for future square roots
+     * Deal with primality vs probable prime testing
 */
 
 int _fmpq_poly_set_fmpz_poly_mod_fmpz(fmpq_poly_t X,
