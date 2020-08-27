@@ -52,7 +52,7 @@ main(void)
 
         fmpz_poly_factor_clear(fac);
 
-        if (nf->pol->length > 3 && (nf->flag & NF_MONIC) && num_facs == 1)
+        if (nf->pol->length > 3 && nf->flag & NF_MONIC && num_facs == 1)
         {
            i++;
 
@@ -62,8 +62,6 @@ main(void)
            nf_elem_init(d, nf);
 
            nf_elem_randtest(a, state, 30, nf);
-
-           fmpz_set_ui(NF_ELEM_DENREF(a), 1);
 
            nf_elem_mul(b, a, a, nf);
            

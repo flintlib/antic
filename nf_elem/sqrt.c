@@ -27,7 +27,56 @@
      * add LM bound termination for nonsquare case
      * deal with algebraic integers with denominators
      * add linear and quadratic cases
+     * Tune the number of primes used in trial factoring
+     * Use ECM and larger recombination for very large square roots
+     * Prove isomorphism to Z/pZ in all cases or exclude primes
+     * Deal with lousy starting bounds (they are too optimistic if f is not monic)
+     * Deal with number fields of degree 1 and 2
+     * Deal with primes dividing denominator of norm
 */
+
+int _fmpq_poly_set_fmpz_poly_mod_fmpz(fmpq_poly_t X,
+                                           const fmpz * Xmod, slong Xlen, const fmpz_t mod)
+{
+   fmpz_t t, u, d;
+   fmpq_t Q;
+   slong i;
+
+   int success = 1;
+
+   fmpq_init(Q);
+   fmpz_init(d);
+   fmpz_init(t);
+   fmpz_init(u);
+
+   fmpz_one(d);
+
+   fmpq_poly_zero(X);
+
+   for (i = 0; i < Xlen; i++)
+   {
+      fmpz_mul(t, d, Xmod + i);
+      fmpz_fdiv_qr(u, t, t, mod);
+
+      success = _fmpq_reconstruct_fmpz(fmpq_numref(Q), fmpq_denref(Q), t, mod);
+
+      if (!success)
+         goto cleanup;
+
+      fmpz_mul(fmpq_denref(Q), fmpq_denref(Q), d);
+      fmpz_set(d, fmpq_denref(Q));
+
+      fmpq_poly_set_coeff_fmpq(X, i, Q);
+   }
+
+cleanup:
+   fmpq_clear(Q);
+   fmpz_clear(d);
+   fmpz_clear(t);
+   fmpz_clear(u);
+
+   return success;
+}
 
 slong _fmpz_poly_get_n_adic(fmpz * sqrt, slong len, fmpz_t z, fmpz_t n)
 {
@@ -98,14 +147,14 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       fmpz_t disc, z, temp, n, m;
       nf_elem_t sqr;
       slong i, j, k;
-      fmpz * r, * mr;
+      fmpz * r, * mr, * bz;
       int res = 0, factored, iters;
 
-      if (!fmpz_is_one(NF_ELEM_DENREF(b)))
+      /* if (!fmpz_is_one(NF_ELEM_DENREF(b)))
       {
          flint_printf("Sqrt1 outside Z[alpha] not implemented yet\n");
          flint_abort();
-      }
+      }*/
 
       if (lenb == 0)
       {
@@ -113,7 +162,7 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
          return 1;
       }
 
-      /* Step 1: compute norm and check it is square */
+      /* Step 1: compute norm and check it is square and rationalise denominator */
 #if DEBUG
       flint_printf("Step 1\n");
 #endif
@@ -122,20 +171,41 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
       nf_elem_norm(bnorm, b, nf);
       
-      if (!fmpz_is_one(fmpq_denref(bnorm)))
+      /* if (!fmpz_is_one(fmpq_denref(bnorm)))
       {
          flint_printf("Sqrt2 outside Z[alpha] not yet implemented yet\n");
          fmpq_clear(bnorm);
          flint_abort();
-      }
+      } */
 
+/*
       if (!fmpz_is_square(fmpq_numref(bnorm)))
       {
          nf_elem_zero(a, nf);
          fmpq_clear(bnorm);
+#if DEBUG
+         flint_printf("Norm does not have square numerator\n");
+#endif
          return 0;
       }
 
+      if (!fmpz_is_square(fmpq_denref(bnorm)))
+      {
+         nf_elem_zero(a, nf);
+         fmpq_clear(bnorm);
+#if DEBUG
+         flint_printf("Norm does not have square denominator\n");
+#endif
+         return 0;
+      }
+*/
+
+      fmpz_init(temp);
+      
+      /* get rid of denominator */
+      bz = _fmpz_vec_init(NF_ELEM(b)->length);
+      _fmpz_vec_scalar_mul_fmpz(bz, NF_ELEM_NUMREF(b), NF_ELEM(b)->length, NF_ELEM_DENREF(b));
+      
       /* 
          Step 2: compute number of bits for initial n
                  start by assuming sqrt k has coeffs of about b1 bits where
@@ -149,7 +219,7 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       flint_printf("Step 2\n");
 #endif
 
-      bbits = FLINT_ABS(_fmpz_vec_max_bits(NF_ELEM_NUMREF(b), lenb));
+      bbits = FLINT_ABS(_fmpz_vec_max_bits(bz, lenb));
       nbits = (bbits + 1)/(2*lenf) + 2;
 
       /*
@@ -166,7 +236,6 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
       fmpz_factor_init(fac);
       fmpz_init(z);
-      fmpz_init(temp);
       fmpz_init(n);
 
       do /* continue increasing nbits until square root found */
@@ -179,13 +248,15 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
          factored = 0;
          iters = 0;
 
-         while (!factored || fac->num > 10) /* no bound known for finding such a factorisation */
+         while (!factored || fac->num > 6) /* no bound known for finding such a factorisation */
          {
             fmpz_factor_clear(fac);
             fmpz_factor_init(fac);
 
             fmpz_randprime(n, state, nbits, 0);
-            
+            if (fmpz_sgn(n) < 0)
+               fmpz_neg(n, n);
+
             _fmpz_poly_evaluate_fmpz(z, fmpq_poly_numref(nf->pol), lenf, n);
 
             factored = fmpz_factor_trial(fac, z, 3512);
@@ -219,7 +290,7 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
          r = _fmpz_vec_init(fac->num);
 
-         _fmpz_poly_evaluate_fmpz(z, NF_ELEM_NUMREF(b), lenb, n);
+         _fmpz_poly_evaluate_fmpz(z, bz, lenb, n);
 
          for (i = 0; i < fac->num; i++)
          {
@@ -282,9 +353,26 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
             NF_ELEM(a)->length = _fmpz_poly_get_n_adic(NF_ELEM_NUMREF(a),
                                                                lenf - 1, z, n);
 
+            fmpz_set(NF_ELEM_DENREF(a), NF_ELEM_DENREF(b));
+
             nf_elem_mul(sqr, a, a, nf);
 
             res = nf_elem_equal(sqr, b, nf);
+
+            if (!res) /* try rational coeffs */
+            {
+               res = _fmpq_poly_set_fmpz_poly_mod_fmpz(NF_ELEM(a),
+                                     NF_ELEM_NUMREF(a), NF_ELEM(a)->length, n);
+
+               if (res)
+               {
+                  fmpz_mul(NF_ELEM_DENREF(a), NF_ELEM_DENREF(a), NF_ELEM_DENREF(b));
+
+                  nf_elem_mul(sqr, a, a, nf);
+
+                  res = nf_elem_equal(sqr, b, nf);
+               }
+            }
          }
          
          fmpz_clear(m);
@@ -301,6 +389,7 @@ cleanup:
       fmpz_clear(z);
 
       _fmpz_vec_clear(r, fac->num);
+      _fmpz_vec_clear(bz, NF_ELEM(b)->length);
 
       fmpz_factor_clear(fac);
 
