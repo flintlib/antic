@@ -24,9 +24,7 @@
      * try to reuse information from previous failed attempt
      * improve bounds
      * add LM bound termination for nonsquare case
-     * add linear and quadratic cases
-     * Tune the number of primes used in trial factoring
-     * Use ECM and larger recombination for very large square roots
+     * add quadratic case
      * Prove homomorphism to Z/pZ in all cases or exclude primes
      * Deal with lousy starting bounds (they are too optimistic if f is not monic)
      * Deal with number fields of degree 1 and 2
@@ -36,6 +34,8 @@
      * Move _fmpq_poly_set_fmpz_poly_mod_fmpz into Flint
      * Cache factorisation of f(n) on number field for future square roots
      * Deal with primality vs probable prime testing
+     * add is_square function
+     * test non-squares
 */
 
 int _fmpq_poly_set_fmpz_poly_mod_fmpz(fmpq_poly_t X,
@@ -124,13 +124,31 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
    {
-      /* const fmpz * const bnum = LNF_ELEM_NUMREF(b);
+      const fmpz * const bnum = LNF_ELEM_NUMREF(b);
       const fmpz * const bden = LNF_ELEM_DENREF(b);
       fmpz * const anum = LNF_ELEM_NUMREF(a);
-      fmpz * const aden = LNF_ELEM_DENREF(a); */
+      fmpz * const aden = LNF_ELEM_DENREF(a);
+      fmpz_t r;
+      int res = 1;
+
+      fmpz_init(r);
       
-      flint_printf("Sqrt for linear number fields not implemented yet\n");
-      flint_abort();
+      fmpz_sqrtrem(anum, r, bnum);
+
+      if (!fmpz_is_zero(r))
+         res = 0;
+         
+      fmpz_sqrtrem(aden, r, bden);
+
+      if (!fmpz_is_zero(r))
+         res = 0;
+         
+      if (!res)
+         nf_elem_zero(a, nf);
+
+      fmpz_clear(r);
+
+      return res;
    } else if (nf->flag & NF_QUADRATIC)
    {
       /* const fmpz * const bnum = QNF_ELEM_NUMREF(b);
@@ -296,9 +314,13 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
             if (!fmpz_sqrtmod(r + i, temp, fac->p + i)) /* check it is square mod p_i */
             {
-               res = 0;
-               nf_elem_zero(a, nf);
-               goto cleanup;
+               /* we must prove primality of prime used to reject as nonsquare */
+               if (fmpz_is_prime(fac->p + i))
+               {
+                  res = 0;
+                  nf_elem_zero(a, nf);
+                  goto cleanup;
+               }
             }
          }
 

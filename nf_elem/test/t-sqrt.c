@@ -57,7 +57,7 @@ main(void)
 
         fmpz_poly_factor_clear(fac);
 
-        if (nf->pol->length > 3 && nf->flag & NF_MONIC && num_facs == 1)
+        if (nf->pol->length != 3 && nf->flag & NF_MONIC && num_facs == 1)
         {
            i++;
 
