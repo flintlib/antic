@@ -35,10 +35,15 @@ main(void)
         nf_t nf;
         nf_elem_t a, b, c, d;
         int is_square, num_facs;
+        slong flen, fbits, abits;
         fmpz_poly_factor_t fac;
         fmpz_poly_t pol; /* do not clear */
 
-        nf_init_randtest(nf, state, 30, 30);
+        flen = n_randint(state, 30) + 2;
+        fbits = n_randint(state, 30) + 1;
+        abits = n_randint(state, 30) + 1;
+        
+        nf_init_randtest(nf, state, flen, fbits);
 
         fmpz_poly_factor_init(fac);
 
@@ -60,8 +65,8 @@ main(void)
            nf_elem_init(b, nf);
            nf_elem_init(c, nf);
            nf_elem_init(d, nf);
-
-           nf_elem_randtest(a, state, 30, nf);
+           
+           nf_elem_randtest(a, state, abits, nf);
 
            nf_elem_mul(b, a, a, nf);
            

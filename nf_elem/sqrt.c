@@ -21,14 +21,13 @@
 /*
    TODO:
 
-     * Handle aliasing
      * try to reuse information from previous failed attempt
      * improve bounds
      * add LM bound termination for nonsquare case
      * add linear and quadratic cases
      * Tune the number of primes used in trial factoring
      * Use ECM and larger recombination for very large square roots
-     * Prove isomorphism to Z/pZ in all cases or exclude primes
+     * Prove homomorphism to Z/pZ in all cases or exclude primes
      * Deal with lousy starting bounds (they are too optimistic if f is not monic)
      * Deal with number fields of degree 1 and 2
      * Deal with primes dividing denominator of norm
@@ -121,7 +120,7 @@ slong _fmpz_poly_get_n_adic(fmpz * sqrt, slong len, fmpz_t z, fmpz_t n)
    return slen;
 }
 
-int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
+int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
    {
@@ -153,12 +152,6 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       slong i, j, k;
       fmpz * r, * mr, * bz;
       int res = 0, factored, iters;
-
-      if (!fmpz_is_one(fmpq_poly_denref(nf->pol)))
-      {
-         flint_printf("Non-monic defining polynomial not supported in sqrt yet.\n");
-         flint_abort();
-      }
 
       if (lenb == 0)
       {
@@ -215,7 +208,7 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 #endif
 
       bbits = FLINT_ABS(_fmpz_vec_max_bits(bz, lenb));
-      nbits = (bbits + 1)/(2*lenf) + 2;
+      nbits = (bbits + 1)/(20) + 2;
 
       /*
          Step 3: find a nbits bit prime such that z = f(n) is a product
@@ -225,29 +218,41 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
                  field K defined by f. Then O_K/P_i is isomorphic to Z/pZ via
                  the map s(x) mod P_i -> s(n) mod p.
       */
-#if DEBUG
-      flint_printf("Step 3\n");
-#endif
 
       fmpz_factor_init(fac);
       fmpz_init(z);
       fmpz_init(n);
 
+      fmpz_init(disc);
+      flint_randinit(state);
+
+      _fmpz_poly_discriminant(disc, fmpq_poly_numref(nf->pol), lenf);
+
       do /* continue increasing nbits until square root found */
       {
-         fmpz_init(disc);
-         flint_randinit(state);
-
-         _fmpz_poly_discriminant(disc, fmpq_poly_numref(nf->pol), lenf);
+         fmpz_t fac1;
+         
+         fmpz_init(fac1);
 
          factored = 0;
          iters = 0;
 
-         while (!factored || fac->num > 6) /* no bound known for finding such a factorisation */
+#if DEBUG
+      flint_printf("Step 3\n");
+#endif
+
+         while (!factored || fac->num > 14) /* no bound known for finding such a factorisation */
          {
             fmpz_factor_clear(fac);
             fmpz_factor_init(fac);
 
+            /* ensure we don't exhaust all primes of the given size */
+            if (nbits < 20 && iters >= (1<<(nbits-1)))
+            {
+               iters = 0;
+               nbits++;
+            }
+            
             fmpz_randprime(n, state, nbits, 0);
             if (fmpz_sgn(n) < 0)
                fmpz_neg(n, n);
@@ -257,19 +262,17 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
             factored = fmpz_factor_trial(fac, z, 3512);
 
             if (!factored)
-               factored = fmpz_is_probabprime(fac->p + fac->num - 1);
-
-            if (nbits < 20 && iters >= (1<<(nbits-1)))
             {
-               iters = 0;
-               nbits++;
+               fmpz_set(fac1, fac->p + fac->num - 1);
+               fac->num--;
+
+               factored = fmpz_factor_smooth(fac, fac1, FLINT_MIN(20, nbits/5 + 1), 0);
             }
 
             iters++;
          }
 
-         flint_randclear(state);
-         fmpz_clear(disc);
+         fmpz_clear(fac1);
 
          /*
             Step 4: compute the square roots r_i of z = b(n) mod p_i for each
@@ -379,6 +382,9 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       } while (res != 1);
 
 cleanup:
+      flint_randclear(state);
+      fmpz_clear(disc);
+
       fmpz_clear(n);
       fmpz_clear(temp);
       fmpz_clear(z);
@@ -394,3 +400,23 @@ cleanup:
    }
 }
 
+int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
+{
+   nf_elem_t t;
+
+   if (a == b)
+   {
+      int ret;
+
+      nf_elem_init(t, nf);
+
+      ret = _nf_elem_sqrt(t, b, nf);
+      nf_elem_swap(t, a, nf);
+
+      nf_elem_clear(t, nf);
+
+      return ret;
+   }
+   else
+      return _nf_elem_sqrt(a, b, nf);
+}
