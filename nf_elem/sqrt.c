@@ -259,7 +259,7 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
             _fmpz_poly_evaluate_fmpz(z, fmpq_poly_numref(nf->pol), lenf, n);
 
-            factored = fmpz_factor_trial(fac, z, 3512);
+            factored = fmpz_factor_trial(fac, z, FLINT_MIN(log(nbits)*nbits, 3512));
 
             if (!factored)
             {
