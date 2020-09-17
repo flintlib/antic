@@ -24,7 +24,6 @@
      * try to reuse information from previous failed attempt
      * improve bounds
      * add LM bound termination for nonsquare case
-     * add quadratic case
      * Prove homomorphism to Z/pZ in all cases or exclude primes
      * Deal with lousy starting bounds (they are too optimistic if f is not monic)
      * Deal with number fields of degree 1 and 2
@@ -39,6 +38,7 @@
      * deal with lifting of square roots mod prime factors of f(n) to same
        exponent as in the factorisation of f(n) (e.g. the square root with inputs
        f = x^8 - 8, g^2 = 4050*x^6 mod f fails currently)
+     * fix bug in fmpz_factor_trial #843
 */
 
 int _fmpq_poly_set_fmpz_poly_mod_fmpz(fmpq_poly_t X,
