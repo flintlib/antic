@@ -36,6 +36,9 @@
      * Deal with primality vs probable prime testing
      * add is_square function
      * test non-squares
+     * deal with lifting of square roots mod prime factors of f(n) to same
+       exponent as in the factorisation of f(n) (e.g. the square root with inputs
+       f = x^8 - 8, g^2 = 4050*x^6 mod f fails currently)
 */
 
 int _fmpq_poly_set_fmpz_poly_mod_fmpz(fmpq_poly_t X,
@@ -151,13 +154,185 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       return res;
    } else if (nf->flag & NF_QUADRATIC)
    {
-      /* const fmpz * const bnum = QNF_ELEM_NUMREF(b);
+      const fmpz * const bnum = QNF_ELEM_NUMREF(b);
       const fmpz * const bden = QNF_ELEM_DENREF(b);
       fmpz * const anum = QNF_ELEM_NUMREF(a);
-      fmpz * const aden = QNF_ELEM_DENREF(a); */
+      fmpz * const aden = QNF_ELEM_DENREF(a);
+      fmpz_t d, t, t2, t3;
+      fmpq_t r, s, r1, s1, tq, tq2;
+      nf_elem_t sqr;
+      int sq, ret = 1;
+
+      /*
+         We use that (m + n*sqrt(d))^2 = m^2 + n^2*d + 2*m*n*sqrt(d).
+         Thus, finding (m^2)*(n^2*d) and (m^2) + (n^2*d) allows us to
+         retrieve m^2 and n^2*d as the roots of (Y - m^2)(Y - n^2*d),
+         from which we can retrieve m and n.
+
+         Here d is the discriminant of the defining polynomial of the
+         number field.
+      */
+      fmpq_init(r);
+      fmpq_init(s);
+      fmpq_init(r1);
+      fmpq_init(s1);
+      fmpq_init(tq);
+      fmpq_init(tq2);
+      fmpz_init(t);
+      fmpz_init(t2);
+      fmpz_init(t3);
+      fmpz_init(d);
+      nf_elem_init(sqr, nf);
+
+      /* compute discriminant d of the defining polynomial */
+      fmpz_mul(d, fmpq_poly_numref(nf->pol) + 1, fmpq_poly_numref(nf->pol) + 1);
+      fmpz_mul(t, fmpq_poly_numref(nf->pol) + 0, fmpq_poly_numref(nf->pol) + 2);
+      fmpz_mul_2exp(t, t, 2);
+      fmpz_sub(d, d, t);
+
+      /* write x mod nf->pol in the form r1 + s1*sqrt(d) */
+      fmpz_neg(fmpq_numref(r1), fmpq_poly_numref(nf->pol) + 1);
+      fmpz_mul_2exp(fmpq_denref(r1), fmpq_poly_numref(nf->pol) + 2, 1);
+      fmpz_set(fmpq_denref(s1), fmpq_denref(r1));
+      fmpz_set_ui(fmpq_numref(s1), 1);      
+      fmpq_canonicalise(r1);
+      fmpq_canonicalise(s1);
+
+      /* write b in the form r + s*sqrt(d) */
+      fmpq_set_fmpz_frac(tq, bnum + 1, bden);
+      fmpq_mul(r, r1, tq);
+      fmpq_mul(s, s1, tq);
+      fmpq_set_fmpz_frac(tq, bnum + 0, bden);
+      fmpq_add(r, r, tq);
+
+      /* compute m^2*n^2*d and m^2 + n^2*d as above */
+      fmpq_div_2exp(s, s, 1);
+      fmpq_mul(s, s, s);
+      fmpq_mul_fmpz(s, s, d);
+
+      /* compute m^2 and n^2*d as above */
+      fmpq_mul(tq, r, r);
+      fmpq_mul_2exp(tq2, s, 2);
+      fmpq_sub(tq, tq, tq2);
+      fmpz_sqrtrem(fmpq_numref(s), t, fmpq_numref(tq));
+      if (!fmpz_is_zero(t))
+      {
+         ret = 0;
+         nf_elem_zero(a, nf);
+
+         goto quadratic_cleanup;
+      }
+      fmpz_sqrtrem(fmpq_denref(s), t, fmpq_denref(tq));
+      if (!fmpz_is_zero(t))
+      {
+         ret = 0;
+         nf_elem_zero(a, nf);
+
+         goto quadratic_cleanup;
+      }
+      fmpq_div_2exp(r, r, 1);
+      fmpq_div_2exp(s, s, 1);
       
-      flint_printf("Sqrt for quadratic number fields not implemented yet\n");
-      flint_abort();
+      /*
+         we now have m^2 = r + s and n^2*d = r - s, or vice versa, so
+         compute m^2 and n^2
+      */
+      fmpq_add(tq, r, s);
+      fmpq_sub(s, r, s);
+      fmpq_swap(r, tq);
+      fmpq_div_fmpz(s, s, d);
+
+      /* compute m and +/- n */
+      fmpz_sqrtrem(t2, t, fmpq_numref(r));
+      sq = fmpz_is_zero(t);
+      if (sq)
+      {
+         fmpz_sqrtrem(t3, t, fmpq_denref(r));
+         sq = fmpz_is_zero(t);
+      }
+      if (!sq)
+      {
+         fmpq_mul_fmpz(s, s, d);
+         fmpq_div_fmpz(r, r, d);
+         fmpq_swap(r, s);
+         fmpz_sqrtrem(t2, t, fmpq_numref(r));
+         sq = fmpz_is_zero(t);
+         if (sq)
+         {
+            fmpz_sqrtrem(t3, t, fmpq_denref(r));
+            sq &= fmpz_is_zero(t);
+         }
+         if (!sq)
+         {
+            ret = 0;
+            nf_elem_zero(a, nf);
+
+            goto quadratic_cleanup;
+         }
+      }
+      fmpz_swap(fmpq_numref(r), t2);
+      fmpz_swap(fmpq_denref(r), t3);
+      fmpz_sqrtrem(fmpq_numref(s), t, fmpq_numref(s));
+      if (!fmpz_is_zero(t))
+      {
+         ret = 0;
+         nf_elem_zero(a, nf);
+
+         goto quadratic_cleanup;
+      }
+      fmpz_sqrtrem(fmpq_denref(s), t, fmpq_denref(s));
+      if (!fmpz_is_zero(t))
+      {
+         ret = 0;
+         nf_elem_zero(a, nf);
+
+         goto quadratic_cleanup;
+      }
+
+      /* write m + n*sqrt(d) as alpha*x + beta */
+      fmpq_div(tq, s, s1);
+      fmpq_mul(tq2, tq, r1);
+      fmpq_sub(tq2, r, tq2);
+
+      fmpz_gcd(t, fmpq_denref(tq), fmpq_denref(tq2));
+      fmpz_mul(aden, fmpq_denref(tq), fmpq_denref(tq2));
+      fmpz_tdiv_q(aden, aden, t);
+      fmpz_tdiv_q(anum + 1, fmpq_denref(tq2), t);
+      fmpz_tdiv_q(anum + 0, fmpq_denref(tq), t);
+      fmpz_mul(anum + 1, anum + 1, fmpq_numref(tq));
+      fmpz_mul(anum + 0, anum + 0, fmpq_numref(tq2));
+
+      nf_elem_mul(sqr, a, a, nf);
+
+      if (!nf_elem_equal(sqr, b, nf))
+      {
+         fmpq_mul_2exp(r, r, 1);
+         fmpq_sub(tq2, tq2, r);
+
+         fmpz_gcd(t, fmpq_denref(tq), fmpq_denref(tq2));
+         fmpz_mul(aden, fmpq_denref(tq), fmpq_denref(tq2));
+         fmpz_tdiv_q(aden, aden, t);
+         fmpz_tdiv_q(anum + 1, fmpq_denref(tq2), t);
+         fmpz_tdiv_q(anum + 0, fmpq_denref(tq), t);
+         fmpz_mul(anum + 1, anum + 1, fmpq_numref(tq));
+         fmpz_mul(anum + 0, anum + 0, fmpq_numref(tq2));
+      }
+
+quadratic_cleanup:
+
+      fmpq_clear(r);
+      fmpq_clear(s);
+      fmpq_clear(r1);
+      fmpq_clear(s1);
+      fmpq_clear(tq);
+      fmpq_clear(tq2);
+      fmpz_clear(t);
+      fmpz_clear(t2);
+      fmpz_clear(t3);
+      fmpz_clear(d);
+      nf_elem_clear(sqr, nf);
+
+      return ret;
    } else /* generic nf_elem */
    {
       const slong lenb = NF_ELEM(b)->length, lenf = fmpq_poly_length(nf->pol);
@@ -261,6 +436,8 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
          while (!factored || fac->num > 14) /* no bound known for finding such a factorisation */
          {
+            slong primes;
+            
             fmpz_factor_clear(fac);
             fmpz_factor_init(fac);
 
@@ -277,14 +454,15 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
             _fmpz_poly_evaluate_fmpz(z, fmpq_poly_numref(nf->pol), lenf, n);
 
-            factored = fmpz_factor_trial(fac, z, FLINT_MIN(log(nbits)*nbits, 3512));
+            primes = FLINT_MIN((slong) log(nbits)*nbits + 2, 3512);
+            factored = fmpz_factor_trial(fac, z, primes);
 
             if (!factored)
             {
                fmpz_set(fac1, fac->p + fac->num - 1);
                fac->num--;
 
-               factored = fmpz_factor_smooth(fac, fac1, FLINT_MIN(20, nbits/5 + 1), 0);
+               factored = fmpz_factor_smooth(fac, fac1, FLINT_MIN(20, fmpz_bits(z)/100 + 1), 0);
             }
 
             iters++;

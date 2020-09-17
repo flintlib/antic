@@ -57,7 +57,7 @@ main(void)
 
         fmpz_poly_factor_clear(fac);
 
-        if (nf->pol->length != 3 && nf->flag & NF_MONIC && num_facs == 1)
+        if (nf->flag & NF_MONIC && num_facs == 1)
         {
            i++;
 
@@ -69,7 +69,7 @@ main(void)
            nf_elem_randtest(a, state, abits, nf);
 
            nf_elem_mul(b, a, a, nf);
-           
+
            is_square = nf_elem_sqrt(c, b, nf);
            
            nf_elem_mul(d, c, c, nf);
