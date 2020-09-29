@@ -21,9 +21,6 @@
 /*
    TODO:
 
-     * try to reuse information from previous failed attempt
-     * Prove homomorphism to Z/pZ in all cases or exclude primes
-     * Deal with lousy starting bounds (they are too optimistic if f is not monic)
      * Remove small squares from denominator before rationalising
      * Cache factorisation of f(n) on number field for future square roots
      * fix bug in fmpz_factor_trial #843
@@ -363,8 +360,10 @@ quadratic_cleanup:
       flint_printf("Step 2\n");
 #endif
 
-      bbits = FLINT_ABS(_fmpz_vec_max_bits(bz, lenb));
-      nbits = (bbits + 1)/(20) + 2;
+      bbits = FLINT_ABS(_fmpz_vec_max_bits(bz1, lenb));
+      bbits -= (lenf - 1)*(FLINT_ABS(fmpz_bits(fmpq_poly_numref(nf->pol) + lenf - 1)) - 1);
+      bbits = FLINT_MAX(bbits, 1);
+      nbits = (2*bbits + 1)/(lenf) + 2;
 
       /*
          Step 3: find a nbits bit prime such that z = f(n) is a product

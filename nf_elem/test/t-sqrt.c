@@ -315,9 +315,9 @@ main(void)
         fmpz_poly_factor_t fac;
         fmpz_poly_t pol; /* do not clear */
 
-        flen = n_randint(state, 10) + 2;
-        fbits = n_randint(state, 10) + 1;
-        abits = n_randint(state, 10) + 1;
+        flen = n_randint(state, 15) + 2;
+        fbits = n_randint(state, 15) + 1;
+        abits = n_randint(state, 15) + 1;
         
         nf_init_randtest(nf, state, flen, fbits);
 
