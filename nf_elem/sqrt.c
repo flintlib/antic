@@ -23,66 +23,20 @@
 
      * try to reuse information from previous failed attempt
      * improve bounds
-     * add LM bound termination for nonsquare case
+     * add termination bound for nonsquare case
      * Prove homomorphism to Z/pZ in all cases or exclude primes
      * Deal with lousy starting bounds (they are too optimistic if f is not monic)
-     * Deal with number fields of degree 1 and 2
-     * Deal with primes dividing denominator of norm
-     * Figure out why norm is square test fails if defining polynomial is not monic
+     * Fix bug in antic norm function
      * Remove small squares from denominator before rationalising
-     * Move _fmpq_poly_set_fmpz_poly_mod_fmpz into Flint
      * Cache factorisation of f(n) on number field for future square roots
-     * Deal with primality vs probable prime testing
      * add is_square function
      * test non-squares
-     * deal with lifting of square roots mod prime factors of f(n) to same
-       exponent as in the factorisation of f(n) (e.g. the square root with inputs
-       f = x^8 - 8, g^2 = 4050*x^6 mod f fails currently)
      * fix bug in fmpz_factor_trial #843
+     * valgrind
 */
 
-int _fmpq_poly_set_fmpz_poly_mod_fmpz(fmpq_poly_t X,
-                                           const fmpz * Xmod, slong Xlen, const fmpz_t mod)
-{
-   fmpz_t t, u, d;
-   fmpq_t Q;
-   slong i;
-
-   int success = 1;
-
-   fmpq_init(Q);
-   fmpz_init(d);
-   fmpz_init(t);
-   fmpz_init(u);
-
-   fmpz_one(d);
-
-   fmpq_poly_zero(X);
-
-   for (i = 0; i < Xlen; i++)
-   {
-      fmpz_mul(t, d, Xmod + i);
-      fmpz_fdiv_qr(u, t, t, mod);
-
-      success = _fmpq_reconstruct_fmpz(fmpq_numref(Q), fmpq_denref(Q), t, mod);
-
-      if (!success)
-         goto cleanup;
-
-      fmpz_mul(fmpq_denref(Q), fmpq_denref(Q), d);
-      fmpz_set(d, fmpq_denref(Q));
-
-      fmpq_poly_set_coeff_fmpq(X, i, Q);
-   }
-
-cleanup:
-   fmpq_clear(Q);
-   fmpz_clear(d);
-   fmpz_clear(t);
-   fmpz_clear(u);
-
-   return success;
-}
+#define ROT(u,v,t)   \
+    do { fmpz _t = *u; *u = *v; *v = *t; *t = _t; } while (0);
 
 slong _fmpz_poly_get_n_adic(fmpz * sqrt, slong len, fmpz_t z, fmpz_t n)
 {
@@ -340,10 +294,10 @@ quadratic_cleanup:
       fmpq_t bnorm;
       fmpz_factor_t fac;
       flint_rand_t state;
-      fmpz_t disc, z, temp, n, m;
+      fmpz_t disc, z, temp, n, m, az, d;
       nf_elem_t sqr;
       slong i, j, k;
-      fmpz * r, * mr, * bz;
+      fmpz * r, * mr, * bz, * bz1, * modulus;
       int res = 0, factored, iters;
 
       if (lenb == 0)
@@ -384,9 +338,10 @@ quadratic_cleanup:
       fmpz_init(temp);
       
       /* get rid of denominator */
+      bz1 = _fmpz_vec_init(NF_ELEM(b)->length);
       bz = _fmpz_vec_init(NF_ELEM(b)->length);
-      _fmpz_vec_scalar_mul_fmpz(bz, NF_ELEM_NUMREF(b), NF_ELEM(b)->length, NF_ELEM_DENREF(b));
-      
+      _fmpz_vec_scalar_mul_fmpz(bz1, NF_ELEM_NUMREF(b), NF_ELEM(b)->length, NF_ELEM_DENREF(b));
+
       /* 
          Step 2: compute number of bits for initial n
                  start by assuming sqrt k has coeffs of about b1 bits where
@@ -405,9 +360,8 @@ quadratic_cleanup:
 
       /*
          Step 3: find a nbits bit prime such that z = f(n) is a product
-                 at most five distinct primes p_i, none of which divide the
-                 discriminant of f or the norm of b. This guarantees that
-                 P_i = (p_i, x - n) are ideals of degree one  in the number
+                 of powers of at most 14 distinct primes p_i. This ensures the
+                 P_i = (p_i, x - n) are ideals of degree one in the number
                  field K defined by f. Then O_K/P_i is isomorphic to Z/pZ via
                  the map s(x) mod P_i -> s(n) mod p.
       */
@@ -415,6 +369,8 @@ quadratic_cleanup:
       fmpz_factor_init(fac);
       fmpz_init(z);
       fmpz_init(n);
+      fmpz_init(d);
+      fmpz_set_ui(d, 1);
 
       fmpz_init(disc);
       flint_randinit(state);
@@ -427,6 +383,8 @@ quadratic_cleanup:
          
          fmpz_init(fac1);
 
+         _fmpz_vec_set(bz, bz1, NF_ELEM(b)->length);
+
          factored = 0;
          iters = 0;
 
@@ -438,6 +396,7 @@ quadratic_cleanup:
          {
             slong primes;
             
+            fmpz_set_ui(d, 1);
             fmpz_factor_clear(fac);
             fmpz_factor_init(fac);
 
@@ -448,7 +407,7 @@ quadratic_cleanup:
                nbits++;
             }
             
-            fmpz_randprime(n, state, nbits, 0);
+            fmpz_randbits(n, state, nbits);
             if (fmpz_sgn(n) < 0)
                fmpz_neg(n, n);
 
@@ -459,24 +418,78 @@ quadratic_cleanup:
 
             if (!factored)
             {
+               fmpz_factor_t fac2;
+
                fmpz_set(fac1, fac->p + fac->num - 1);
                fac->num--;
 
-               factored = fmpz_factor_smooth(fac, fac1, FLINT_MIN(20, fmpz_bits(z)/100 + 1), 0);
+               fmpz_factor_init(fac2);
+               factored = fmpz_factor_smooth(fac2, fac1, FLINT_MIN(20, fmpz_bits(z)/100 + 1), 0);
+               _fmpz_factor_concat(fac, fac2, fac->exp[fac->num]);
+               fmpz_factor_clear(fac2);
+            }
+
+            if (factored)
+            {
+               /* check for primes dividing the discriminant */
+               j = 0;
+               for (i = 0; i < fac->num; i++)
+               {
+                  fmpz_mod(temp, disc, fac->p + i);
+
+                  if (fmpz_is_zero(temp))
+                  {
+                     if (fmpz_cmp_ui(fac->p + i, 2*lenf) > 0)
+                     {
+                        factored = 0;
+
+                        break;
+                     } else
+                     {
+                        if (fac->exp[i] & 1)
+                           fac->exp[i]++;
+                           
+                        fac->exp[i] >>= 1;
+                        
+                        fmpz_pow_ui(temp, fac->p + i, fac->exp[i]);
+                        fmpz_mul(d, d, temp);
+                        fmpz_mul(temp, temp, temp);
+
+                        fmpz_zero(fac->p + i);
+                     }
+                  } else
+                  {
+                     if (i != j)
+                     {
+                        fmpz_set(fac->p + j, fac->p + i);
+                        fac->exp[j] = fac->exp[i];
+                     }
+                     j++;
+                  }
+               }
+
+               if (i == fac->num)
+                  fac->num = j;
             }
 
             iters++;
          }
 
+         if (!fmpz_is_one(d))
+         {
+            _fmpz_vec_scalar_mul_fmpz(bz, bz, NF_ELEM(b)->length, d);
+            _fmpz_vec_scalar_mul_fmpz(bz, bz, NF_ELEM(b)->length, d);
+         }
+
          fmpz_clear(fac1);
 
          /*
-            Step 4: compute the square roots r_i of z = b(n) mod p_i for each
-                    of the primes p_i dividing f(n). This allows us to compute
-                    all of the square roots of b(n) mod m where m = prod_i p_i.
-                    If m was sufficiently large, this allows us to retrieve the
-                    square root of b from its n-adic expansion. (Note that z
-                    here is not the same z as above!)
+            Step 4: compute the square roots r_i of z = b(n) mod p_i^k_i for
+                    each of the prime powers p_i^k_i dividing f(n). This allows
+                    us to compute all of the square roots of b(n) mod m where
+                    m = prod_i p_i^k_i. If m was sufficiently large, this
+                    allows us to retrieve the square root of b from its n-adic
+                    expansion. (Note that z here is not the same z as above!)
          */
 #if DEBUG
          flint_printf("Step 4\n");
@@ -485,6 +498,10 @@ quadratic_cleanup:
          r = _fmpz_vec_init(fac->num);
 
          _fmpz_poly_evaluate_fmpz(z, bz, lenb, n);
+
+         fmpz_init(m);
+         fmpz_init(az);
+         modulus = _fmpz_vec_init(fac->num);
 
          for (i = 0; i < fac->num; i++)
          {
@@ -497,17 +514,47 @@ quadratic_cleanup:
                {
                   res = 0;
                   nf_elem_zero(a, nf);
+                  _fmpz_vec_clear(modulus, fac->num);
                   goto cleanup;
+               }
+            }
+
+            fmpz_set(modulus + i, fac->p + i); /* initial modulus m = p_i */
+
+            /*
+               Step 4a: lift the square roots mod p_i to roots mod p_i^k_i
+                        We require the lift to be unique so must exclude 2
+                        and the case where the root is 0 mod p_i from lifting
+             */
+            if (fac->exp[i] != 1 && fmpz_cmp_ui(fac->p + i, 2) != 0 && !fmpz_is_zero(r + i))
+            {
+               for (j = 1; j < fac->exp[i]; j++)
+               {
+                  fmpz_add(az, r + i, r + i);
+                  if (fmpz_cmp(az, modulus + i) >= 0)
+                     fmpz_sub(az, az, modulus + i);
+               
+                  fmpz_mul(m, r + i, r + i);
+                  fmpz_sub(m, m, z);
+                  fmpz_mul(modulus + i, modulus + i, fac->p + i);
+                  fmpz_mod(m, m, modulus + i);
+                  fmpz_mul(m, m, az);
+                  fmpz_mod(m, m, modulus + i);
+                  fmpz_sub(r + i, r + i, m);
+                  if (fmpz_sgn(r + i) < 0)
+                     fmpz_add(r + i, r + i, modulus + i);
                }
             }
          }
 
+         fmpz_clear(az);
+
          /* 
             Step 5: CRT recombination of the square roots r_i
-                    We compute z congruent to r_i mod p_i, which is hopefully
-                    k(n) where k is the square root of g. Of course we must
-                    go through all possibilities of r_i and -r_i. (Note again
-                    that z here has a different meaning to above.)
+                    We compute z congruent to r_i mod p_i^k_i, which is
+                    hopefully k(n) where k is the square root of g. Of course
+                    we must go through all possibilities of r_i and -r_i. (Note
+                    again that z here has a different meaning to above.)
          */
 #if DEBUG
          flint_printf("Step 5\n");
@@ -515,13 +562,12 @@ quadratic_cleanup:
 
          nf_elem_init(sqr, nf);
 
-         mr = _fmpz_vec_init(fac->num); /* compute -r_i mod p_i */
-         fmpz_init(m);
+         mr = _fmpz_vec_init(fac->num); /* compute -r_i mod p_i^k_i */
 
          for (i = 0; i < fac->num; i++)
          {
             if (!fmpz_is_zero(r + i))
-               fmpz_sub(mr + i, fac->p + i, r + i);
+               fmpz_sub(mr + i, modulus + i, r + i);
          }
 
          for (j = 0; j < (1<<fac->num) && res != 1; j++)
@@ -535,16 +581,19 @@ quadratic_cleanup:
             for (i = 0; i < fac->num; i++)
             {
                if (k & 1)
-                  fmpz_CRT(z, z, m, r + i, fac->p + i, 0);
+                  fmpz_CRT(z, z, m, r + i, modulus + i, 0);
                else
-                  fmpz_CRT(z, z, m, mr + i, fac->p + i, 0);
+                  fmpz_CRT(z, z, m, mr + i, modulus + i, 0);
 
-               fmpz_mul(m, m, fac->p + i);
+               fmpz_mul(m, m, modulus + i);
 
                k >>= 1;
             }
 
-            /* Step 6: retrieve sqrt from n-adic expansion, check sqrt */
+            /* 
+               Step 6: retrieve sqrt from n-adic expansion, check sqrt.
+                       First try assuming coeffs are integers.
+             */
 #if DEBUG
             flint_printf("Step 6\n");
 #endif
@@ -552,30 +601,94 @@ quadratic_cleanup:
                                                                lenf - 1, z, n);
 
             fmpz_set(NF_ELEM_DENREF(a), NF_ELEM_DENREF(b));
+            
+            if (!fmpz_is_one(d))
+            {
+               fmpz_mul(NF_ELEM_DENREF(a), NF_ELEM_DENREF(a), d);
+               fmpq_poly_canonicalise(NF_ELEM(a));
+            }
 
             nf_elem_mul(sqr, a, a, nf);
 
             res = nf_elem_equal(sqr, b, nf);
 
-            if (!res) /* try rational coeffs */
+            /*
+               Step 6a. Now try rational coeffs. We loop through all
+                        possible denominators of the *evaluation* k(n),
+                        and try to compute the numerator as an integer
+                        polynomial.
+            */
+            if (!res)
             {
-               res = _fmpq_poly_set_fmpz_poly_mod_fmpz(NF_ELEM(a),
-                                     NF_ELEM_NUMREF(a), NF_ELEM(a)->length, n);
+               fmpz_t q, r, s, t, g, num, den;
+               int sgn;
 
-               if (res)
+               fmpz_init(q);
+               fmpz_init(r);
+               fmpz_init(s);
+               fmpz_init(t);
+               fmpz_init(g);
+               fmpz_init(num);
+               fmpz_init(den);
+               
+               fmpz_set(r, m); fmpz_zero(s);
+               fmpz_set(num, z); fmpz_one(den);
+
+               while (!res && !fmpz_is_zero(num)) /* try rational coeffs */
                {
-                  fmpz_mul(NF_ELEM_DENREF(a), NF_ELEM_DENREF(a), NF_ELEM_DENREF(b));
+                  fmpz_fdiv_q(q, r, num);
+                  fmpz_mul(t, q, num); fmpz_sub(t, r, t); ROT(r, num, t);
+                  fmpz_mul(t, q, den); fmpz_sub(t, s, t); ROT(s, den, t);
+        
+                  sgn = fmpz_sgn(den) < 0;
+                  
+                  if (sgn)
+                  {
+                     fmpz_neg(num, num);
+                     fmpz_neg(den, den);
+                  }
+                  
+                  fmpz_gcd(g, num, den);
+                  res = fmpz_is_one(g);
 
-                  nf_elem_mul(sqr, a, a, nf);
+                  if (res)
+                  {
+                     NF_ELEM(a)->length = _fmpz_poly_get_n_adic(NF_ELEM_NUMREF(a),
+                                                                     lenf - 1, num, n);
+            
+                     fmpz_mul(NF_ELEM_DENREF(a), NF_ELEM_DENREF(b), den);
 
-                  res = nf_elem_equal(sqr, b, nf);
+                     if (!fmpz_is_one(d))
+                     {
+                        fmpz_mul(NF_ELEM_DENREF(a), NF_ELEM_DENREF(a), d);
+                        fmpq_poly_canonicalise(NF_ELEM(a));
+                     }
+
+                     nf_elem_mul(sqr, a, a, nf);
+
+                     res = nf_elem_equal(sqr, b, nf);
+                  }
+
+                  if (sgn)
+                  {
+                     fmpz_neg(num, num);
+                     fmpz_neg(den, den);
+                  }
                }
+
+               fmpz_clear(q);
+               fmpz_clear(r);
+               fmpz_clear(s);
+               fmpz_clear(t);
+               fmpz_clear(g);
+               fmpz_clear(num);
+               fmpz_clear(den);
             }
          }
          
          fmpz_clear(m);
          _fmpz_vec_clear(mr, fac->num);
-
+         _fmpz_vec_clear(modulus, fac->num);
          nf_elem_clear(sqr, nf);
 
          nbits = 1.1*nbits + 1; /* increase nbits and try again if sqrt not found */
@@ -586,11 +699,13 @@ cleanup:
       fmpz_clear(disc);
 
       fmpz_clear(n);
+      fmpz_clear(d);
       fmpz_clear(temp);
       fmpz_clear(z);
 
       _fmpz_vec_clear(r, fac->num);
       _fmpz_vec_clear(bz, NF_ELEM(b)->length);
+      _fmpz_vec_clear(bz1, NF_ELEM(b)->length);
 
       fmpz_factor_clear(fac);
 
