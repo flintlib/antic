@@ -271,7 +271,7 @@ main(void)
         if (nf->flag & NF_MONIC && num_facs == 1)
         {
            i++;
-
+ 
            nf_elem_init(a, nf);
            nf_elem_init(b, nf);
            nf_elem_init(c, nf);

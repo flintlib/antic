@@ -21,7 +21,6 @@
 /*
    TODO:
 
-     * Remove small squares from denominator before rationalising
      * Cache factorisation of f(n) on number field for future square roots
      * fix bug in fmpz_factor_trial #843
 */
@@ -295,11 +294,11 @@ quadratic_cleanup:
    } else /* generic nf_elem */
    {
       const slong lenb = NF_ELEM(b)->length, lenf = fmpq_poly_length(nf->pol);
-      slong nbits, bbits;
+      slong nbits, bbits, primes;
       fmpq_t bnorm;
       fmpz_factor_t fac;
       flint_rand_t state;
-      fmpz_t disc, z, temp, n, m, az, d;
+      fmpz_t disc, z, temp, n, m, az, d, bden;
       nf_elem_t sqr;
       slong i, j, k;
       fmpz * r, * mr, * bz, * bz1, * modulus;
@@ -341,11 +340,34 @@ quadratic_cleanup:
       }
 
       fmpz_init(temp);
-      
+      fmpz_init(bden);
+
+      fmpz_set_ui(bden, 1);
+
       /* get rid of denominator */
       bz1 = _fmpz_vec_init(NF_ELEM(b)->length);
       bz = _fmpz_vec_init(NF_ELEM(b)->length);
-      _fmpz_vec_scalar_mul_fmpz(bz1, NF_ELEM_NUMREF(b), NF_ELEM(b)->length, NF_ELEM_DENREF(b));
+
+      fmpz_factor_init(fac);
+      nbits = FLINT_ABS(fmpz_bits(NF_ELEM_DENREF(b)));
+      primes = FLINT_MIN((slong) 4*log(nbits)*nbits + 2, 3512);
+      fmpz_factor_trial(fac, NF_ELEM_DENREF(b), primes);
+      
+      for (i = 0; i < fac->num; i++)
+      {
+         if (fac->exp[i] > 1)
+         {
+            fmpz_pow_ui(temp, fac->p + i, fac->exp[i]/2);
+            fmpz_mul(bden, bden, temp);
+         }
+      }
+
+      fmpz_fdiv_q(temp, NF_ELEM_DENREF(b), bden);
+      fmpz_fdiv_q(temp, temp, bden);
+
+      _fmpz_vec_scalar_mul_fmpz(bz1, NF_ELEM_NUMREF(b), NF_ELEM(b)->length, temp);
+
+      fmpz_mul(bden, temp, bden);
 
       /* 
          Step 2: compute number of bits for initial n
@@ -400,9 +422,7 @@ quadratic_cleanup:
 #endif
 
          while (!factored || fac->num > 14) /* no bound known for finding such a factorisation */
-         {
-            slong primes;
-            
+         {            
             fmpz_set_ui(d, 1);
             fmpz_factor_clear(fac);
             fmpz_factor_init(fac);
@@ -608,7 +628,7 @@ quadratic_cleanup:
             NF_ELEM(a)->length = _fmpz_poly_get_n_adic(NF_ELEM_NUMREF(a),
                                                                lenf - 1, z, n);
 
-            fmpz_set(NF_ELEM_DENREF(a), NF_ELEM_DENREF(b));
+            fmpz_set(NF_ELEM_DENREF(a), bden);
             
             if (!fmpz_is_one(d))
             {
@@ -711,6 +731,7 @@ cleanup:
       fmpz_clear(d);
       fmpz_clear(temp);
       fmpz_clear(z);
+      fmpz_clear(bden);
 
       _fmpz_vec_clear(bz, NF_ELEM(b)->length);
       _fmpz_vec_clear(bz1, NF_ELEM(b)->length);
