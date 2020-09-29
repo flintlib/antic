@@ -66,6 +66,84 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
     }
 }
 
+void nf_elem_randtest_bounded(nf_elem_t a, flint_rand_t state, 
+                                               mp_bitcnt_t bits, const nf_t nf)
+{
+    if (nf->flag & NF_LINEAR)
+    {
+        fmpz_randtest(LNF_ELEM_NUMREF(a), state, bits);
+
+        if (n_randint(state, 2))
+        {
+           fmpz_randtest_not_zero(LNF_ELEM_DENREF(a), state, bits);
+           fmpz_abs(LNF_ELEM_DENREF(a), LNF_ELEM_DENREF(a));
+
+           _fmpq_canonicalise(LNF_ELEM_NUMREF(a), LNF_ELEM_DENREF(a));
+        } else
+           fmpz_one(LNF_ELEM_DENREF(a));
+    } else if (nf->flag & NF_QUADRATIC)
+    {
+        fmpz_randtest(QNF_ELEM_NUMREF(a), state, bits);
+        fmpz_randtest(QNF_ELEM_NUMREF(a) + 1, state, bits);
+
+        if (n_randint(state, 2))
+        {
+           fmpz_t d;
+           
+           fmpz_randtest_not_zero(QNF_ELEM_DENREF(a), state, bits);
+           fmpz_abs(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(a));
+
+           fmpz_init(d);
+           fmpz_gcd(d, QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(a) + 1);
+           if (!fmpz_is_one(d))
+           {
+              fmpz_gcd(d, d, QNF_ELEM_DENREF(a));
+
+              if (!fmpz_is_one(d))
+              {
+                 _fmpz_vec_scalar_divexact_fmpz(QNF_ELEM_NUMREF(a), QNF_ELEM_NUMREF(a), 2, d);
+                 fmpz_divexact(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(a), d);
+              }
+           }
+        } else
+           fmpz_one(QNF_ELEM_DENREF(a));
+    }
+    else
+    {
+        slong i, lenf = nf->pol->length;
+        fmpz_t d;
+
+        for (i = 0; i < lenf - 1; i++)
+            fmpz_randtest(NF_ELEM_NUMREF(a) + i, state, bits);
+
+        if (n_randint(state, 2))                                                                                                {
+            fmpz_init(d);
+
+            fmpz_randtest_not_zero(NF_ELEM_DENREF(a), state, bits);
+            fmpz_abs(NF_ELEM_DENREF(a), NF_ELEM_DENREF(a));
+
+            _fmpz_vec_content(d, NF_ELEM_NUMREF(a), lenf - 1);
+
+            if (!fmpz_is_one(d))
+            {
+                fmpz_gcd(d, d, NF_ELEM_DENREF(a));
+
+                if (!fmpz_is_one(d))
+                {
+                    _fmpz_vec_scalar_divexact_fmpz(NF_ELEM_NUMREF(a), NF_ELEM_NUMREF(a), lenf - 1, d);
+                    fmpz_divexact(NF_ELEM_DENREF(a), NF_ELEM_DENREF(a), d);
+                }
+            }
+
+            fmpz_clear(d);
+        } else
+            fmpz_one(NF_ELEM_DENREF(a));
+
+        _fmpq_poly_set_length(NF_ELEM(a), lenf - 1);
+        _fmpq_poly_normalise(NF_ELEM(a));
+    }
+}
+
 void nf_elem_randtest_not_zero(nf_elem_t a, flint_rand_t state, 
                                                mp_bitcnt_t bits, const nf_t nf)
 {

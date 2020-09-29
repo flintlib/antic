@@ -34,7 +34,14 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
                                                mp_bitcnt_t bits, const nf_t nf)
 
     Generate a random number field element $a$ in the number field \code{nf}
-    whose coefficients have up to the given number of bits.
+    whose rational coefficients have up to the given number of bits.
+
+void nf_elem_randtest_bounded(nf_elem_t a, flint_rand_t state,
+                                               mp_bitcnt_t bits, const nf_t nf)
+
+    Generate a random number field element $a$ in the number field \code{nf}
+    whose coefficients have up to the given number of bits, with combined
+    denominator also bounded by the given number of bits.
 
 void nf_elem_canonicalise(nf_elem_t a, nf_t nf)
 

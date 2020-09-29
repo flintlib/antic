@@ -22,6 +22,7 @@ void nf_init_randtest(nf_t nf, flint_rand_t state,
 {
     fmpq_poly_t pol;
     fmpz_poly_t q;
+    fmpz_t d;
 
     if (len < 2 || bits_in < 1)
     {
@@ -53,7 +54,15 @@ void nf_init_randtest(nf_t nf, flint_rand_t state,
         fmpz_randtest_not_zero(fmpq_poly_denref(pol), state, bits_in);
     fmpq_poly_canonicalise(pol);
 
+    fmpz_init(d);
+
+    _fmpz_vec_content(d, fmpq_poly_numref(pol), fmpq_poly_length(pol));
+
+    if (!fmpz_is_one(d))
+        _fmpz_vec_scalar_divexact_fmpz(fmpq_poly_numref(pol), fmpq_poly_numref(pol), fmpq_poly_length(pol), d);
+
     nf_init(nf, pol);
     fmpq_poly_clear(pol);
     fmpz_poly_clear(q);
+    fmpz_clear(d);
 }

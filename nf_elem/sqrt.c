@@ -26,7 +26,6 @@
      * add termination bound for nonsquare case
      * Prove homomorphism to Z/pZ in all cases or exclude primes
      * Deal with lousy starting bounds (they are too optimistic if f is not monic)
-     * Fix bug in antic norm function
      * Remove small squares from denominator before rationalising
      * Cache factorisation of f(n) on number field for future square roots
      * add is_square function

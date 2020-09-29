@@ -83,6 +83,9 @@ FLINT_DLL void nf_elem_clear(nf_elem_t a, const nf_t nf);
 FLINT_DLL void nf_elem_randtest(nf_elem_t a, flint_rand_t state, 
                                               mp_bitcnt_t bits, const nf_t nf);
 
+FLINT_DLL void nf_elem_randtest_bounded(nf_elem_t a, flint_rand_t state,
+                                              mp_bitcnt_t bits, const nf_t nf);
+
 FLINT_DLL void nf_elem_randtest_not_zero(nf_elem_t a, flint_rand_t state, 
                                               mp_bitcnt_t bits, const nf_t nf);
 
