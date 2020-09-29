@@ -32,7 +32,6 @@
      * add is_square function
      * test non-squares
      * fix bug in fmpz_factor_trial #843
-     * valgrind
 */
 
 #define ROT(u,v,t)   \
@@ -514,6 +513,7 @@ quadratic_cleanup:
                {
                   res = 0;
                   nf_elem_zero(a, nf);
+                  _fmpz_vec_clear(r, fac->num);
                   _fmpz_vec_clear(modulus, fac->num);
                   goto cleanup;
                }
@@ -687,6 +687,7 @@ quadratic_cleanup:
          }
          
          fmpz_clear(m);
+         _fmpz_vec_clear(r, fac->num);
          _fmpz_vec_clear(mr, fac->num);
          _fmpz_vec_clear(modulus, fac->num);
          nf_elem_clear(sqr, nf);
@@ -703,7 +704,6 @@ cleanup:
       fmpz_clear(temp);
       fmpz_clear(z);
 
-      _fmpz_vec_clear(r, fac->num);
       _fmpz_vec_clear(bz, NF_ELEM(b)->length);
       _fmpz_vec_clear(bz1, NF_ELEM(b)->length);
 
