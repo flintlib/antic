@@ -336,6 +336,19 @@ void nf_elem_trace(fmpq_t res, const nf_elem_t a, const nf_t nf)
     Set \code{res} to the absolute trace of the given number field
     element $a$.
 
+int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
+
+    If \code{a} is a square, set \code{a} to the square root and return
+    \code{1}, else return \code{0}. No aliasing is allowed.
+
+int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
+
+    If \code{a} is a square, set \code{a} to the square root and return                                                     \code{1}, else return \code{0}.
+
+int nf_elem_is_square(const nf_elem_t b, const nf_t nf)
+
+    Return \code{1} if \code{b} is a square.
+
 *******************************************************************************
 
     Representation matrix

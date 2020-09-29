@@ -941,6 +941,8 @@ FLINT_DLL int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
 FLINT_DLL int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
+FLINT_DLL int nf_elem_is_square(const nf_elem_t b, const nf_t nf);
+
 /******************************************************************************
 
     Modular reduction

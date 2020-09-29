@@ -22,14 +22,10 @@
    TODO:
 
      * try to reuse information from previous failed attempt
-     * improve bounds
-     * add termination bound for nonsquare case
      * Prove homomorphism to Z/pZ in all cases or exclude primes
      * Deal with lousy starting bounds (they are too optimistic if f is not monic)
      * Remove small squares from denominator before rationalising
      * Cache factorisation of f(n) on number field for future square roots
-     * add is_square function
-     * test non-squares
      * fix bug in fmpz_factor_trial #843
 */
 
@@ -85,6 +81,9 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       fmpz * const aden = LNF_ELEM_DENREF(a);
       fmpz_t r;
       int res = 1;
+
+      if (fmpz_sgn(bnum) < 0)
+         return 0;
 
       fmpz_init(r);
       
@@ -166,14 +165,16 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       fmpq_mul(tq, r, r);
       fmpq_mul_2exp(tq2, s, 2);
       fmpq_sub(tq, tq, tq2);
-      fmpz_sqrtrem(fmpq_numref(s), t, fmpq_numref(tq));
-      if (!fmpz_is_zero(t))
+      if (fmpz_sgn(fmpq_numref(tq)) >= 0)
+         fmpz_sqrtrem(fmpq_numref(s), t, fmpq_numref(tq));
+      if (fmpz_sgn(fmpq_numref(tq)) < 0 || !fmpz_is_zero(t))
       {
          ret = 0;
          nf_elem_zero(a, nf);
 
          goto quadratic_cleanup;
       }
+
       fmpz_sqrtrem(fmpq_denref(s), t, fmpq_denref(tq));
       if (!fmpz_is_zero(t))
       {
@@ -195,8 +196,12 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       fmpq_div_fmpz(s, s, d);
 
       /* compute m and +/- n */
-      fmpz_sqrtrem(t2, t, fmpq_numref(r));
-      sq = fmpz_is_zero(t);
+      if (fmpz_sgn(fmpq_numref(r)) >= 0)
+      {
+         fmpz_sqrtrem(t2, t, fmpq_numref(r));
+         sq = fmpz_is_zero(t);
+      } else
+         sq = 0;
       if (sq)
       {
          fmpz_sqrtrem(t3, t, fmpq_denref(r));
@@ -207,8 +212,12 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
          fmpq_mul_fmpz(s, s, d);
          fmpq_div_fmpz(r, r, d);
          fmpq_swap(r, s);
-         fmpz_sqrtrem(t2, t, fmpq_numref(r));
-         sq = fmpz_is_zero(t);
+         if (fmpz_sgn(fmpq_numref(r)) >= 0)
+         {
+            fmpz_sqrtrem(t2, t, fmpq_numref(r));
+            sq = fmpz_is_zero(t);
+         } else
+            sq = 0;
          if (sq)
          {
             fmpz_sqrtrem(t3, t, fmpq_denref(r));
@@ -224,8 +233,9 @@ int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
       }
       fmpz_swap(fmpq_numref(r), t2);
       fmpz_swap(fmpq_denref(r), t3);
-      fmpz_sqrtrem(fmpq_numref(s), t, fmpq_numref(s));
-      if (!fmpz_is_zero(t))
+      if (fmpz_sgn(fmpq_numref(s)) >= 0)
+         fmpz_sqrtrem(fmpq_numref(s), t, fmpq_numref(s));
+      if (fmpz_sgn(fmpq_numref(s)) < 0 || !fmpz_is_zero(t))
       {
          ret = 0;
          nf_elem_zero(a, nf);
