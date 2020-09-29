@@ -53,6 +53,11 @@ void _nf_elem_norm(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf)
       if (!fmpz_is_one(nf->pol->coeffs + 2) && alen > 1)
       {
          fmpz_pow_ui(pow, nf->pol->coeffs + 2, alen - 1);
+         if (fmpz_sgn(pow) < 0)
+         {
+            fmpz_neg(one, one);
+            fmpz_neg(pow, pow);
+         }
          _fmpq_mul(rnum, rden, rnum, rden, one, pow);
          
          if (fmpz_sgn(rden) < 0)
@@ -91,6 +96,11 @@ void _nf_elem_norm(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf)
       if (!fmpz_is_one(coeffs + len - 1) && alen > 1)
       {
          fmpz_pow_ui(pow, coeffs + len - 1, alen - 1);
+         if (fmpz_sgn(pow) < 0)
+         {
+            fmpz_neg(one, one);
+            fmpz_neg(pow, pow);
+         }
          _fmpq_mul(rnum, rden, rnum, rden, one, pow);
          
          if (fmpz_sgn(rden) < 0)
