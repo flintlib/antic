@@ -406,6 +406,10 @@ quadratic_cleanup:
 
       _fmpz_poly_discriminant(disc, fmpq_poly_numref(nf->pol), lenf);
 
+      /* denominator only has primes dividing the discriminant and gcd(lc(f), tc(f)) */
+      fmpz_gcd(temp, fmpq_poly_numref(nf->pol) + 0, fmpq_poly_numref(nf->pol) + lenf - 1);
+      fmpz_mul(disc, disc, temp);
+
       do /* continue increasing nbits until square root found */
       {
          fmpz_t fac1;
