@@ -347,7 +347,8 @@ int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
 
 int nf_elem_is_square(const nf_elem_t b, const nf_t nf)
 
-    Return \code{1} if \code{b} is a square.
+    Return \code{1} if \code{b} is a square. This is currently not faster than
+    computing the square root.
 
 *******************************************************************************
 
