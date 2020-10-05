@@ -298,7 +298,7 @@ quadratic_cleanup:
       fmpq_t bnorm;
       fmpz_factor_t fac;
       flint_rand_t state;
-      fmpz_t disc, z, temp, n, m, az, d, bden;
+      fmpz_t disc, z, temp, n, m, az, d, bden, g, maxd;
       nf_elem_t sqr;
       slong i, j, k;
       fmpz * r, * mr, * bz, * bz1, * modulus;
@@ -362,6 +362,8 @@ quadratic_cleanup:
          }
       }
 
+      fmpz_factor_clear(fac);
+
       fmpz_fdiv_q(temp, NF_ELEM_DENREF(b), bden);
       fmpz_fdiv_q(temp, temp, bden);
 
@@ -402,14 +404,18 @@ quadratic_cleanup:
       fmpz_set_ui(d, 1);
 
       fmpz_init(disc);
+      fmpz_init(g);
+      fmpz_init(maxd);
       flint_randinit(state);
 
       _fmpz_poly_discriminant(disc, fmpq_poly_numref(nf->pol), lenf);
 
       /* denominator only has primes dividing the discriminant and gcd(lc(f), tc(f)) */
-      fmpz_gcd(temp, fmpq_poly_numref(nf->pol) + 0, fmpq_poly_numref(nf->pol) + lenf - 1);
-      fmpz_mul(disc, disc, temp);
-
+      fmpz_gcd(g, fmpq_poly_numref(nf->pol) + 0, fmpq_poly_numref(nf->pol) + lenf - 1);
+      fmpz_pow_ui(temp, g, FLINT_MAX((lenf - 2)*(lenf - 3) - lenf/2, 0));
+      fmpz_mul(maxd, disc, temp);
+      fmpz_mul(disc, disc, g);
+      
       do /* continue increasing nbits until square root found */
       {
          fmpz_t fac1;
@@ -666,7 +672,7 @@ quadratic_cleanup:
                fmpz_set(r, m); fmpz_zero(s);
                fmpz_set(num, z); fmpz_one(den);
 
-               while (!res && !fmpz_is_zero(num)) /* try rational coeffs */
+               while (!res && !fmpz_is_zero(num) && fmpz_cmpabs(den, maxd) <= 0) /* try rational coeffs */
                {
                   fmpz_fdiv_q(q, r, num);
                   fmpz_mul(t, q, num); fmpz_sub(t, r, t); ROT(r, num, t);
@@ -688,7 +694,7 @@ quadratic_cleanup:
                      NF_ELEM(a)->length = _fmpz_poly_get_n_adic(NF_ELEM_NUMREF(a),
                                                                      lenf - 1, num, n);
             
-                     fmpz_mul(NF_ELEM_DENREF(a), NF_ELEM_DENREF(b), den);
+                     fmpz_mul(NF_ELEM_DENREF(a), bden, den);
 
                      if (!fmpz_is_one(d))
                      {
@@ -730,6 +736,8 @@ quadratic_cleanup:
 cleanup:
       flint_randclear(state);
       fmpz_clear(disc);
+      fmpz_clear(g);
+      fmpz_clear(maxd);
 
       fmpz_clear(n);
       fmpz_clear(d);

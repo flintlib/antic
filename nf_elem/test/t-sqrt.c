@@ -38,6 +38,62 @@ main(void)
 
         /* f = x^3 - 1953*x^2 - x + 1 */
         fmpq_poly_init(f);
+        fmpq_poly_set_coeff_si(f, 0, 7);
+        fmpq_poly_set_coeff_si(f, 1, -2);
+        fmpq_poly_set_coeff_si(f, 2, 1);
+        fmpq_poly_set_coeff_si(f, 3, -2);
+        fmpq_poly_set_coeff_si(f, 4, 7);
+
+        nf_init(nf, f);
+
+        nf_elem_init(a, nf);
+        nf_elem_init(b, nf);
+        nf_elem_init(c, nf);
+        nf_elem_init(d, nf);
+
+        /* a = -26977/6*x^2+40549/6 */
+        fmpq_poly_set_coeff_si(NF_ELEM(a), 0, 3);
+        fmpq_poly_set_coeff_si(NF_ELEM(a), 1, -97);
+        fmpq_poly_set_coeff_si(NF_ELEM(a), 2, 7);
+        fmpq_poly_set_coeff_si(NF_ELEM(a), 3, 30);
+        fmpz_set_ui(NF_ELEM_DENREF(a), 2);
+
+        nf_elem_mul(b, a, a, nf);
+
+        is_square = nf_elem_sqrt(c, b, nf);
+
+        nf_elem_mul(d, c, c, nf);
+
+        result = is_square && nf_elem_equal(d, b, nf);
+        if (!result)
+        {
+           printf("FAIL 1:\n");
+           printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
+           printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
+           printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
+           printf("d = "); nf_elem_print_pretty(d, nf, "x"); printf("\n");
+           abort();
+        }
+
+        nf_elem_clear(a, nf);
+        nf_elem_clear(b, nf);
+        nf_elem_clear(c, nf);
+        nf_elem_clear(d, nf);
+
+        nf_clear(nf);
+
+        fmpq_poly_clear(f);
+    }
+
+    /* Regression test */
+    {
+        nf_t nf;
+        nf_elem_t a, b, c, d;
+        int is_square;
+        fmpq_poly_t f;
+
+        /* f = x^3 - 1953*x^2 - x + 1 */
+        fmpq_poly_init(f);
         fmpq_poly_set_coeff_si(f, 0, 1);
         fmpq_poly_set_coeff_si(f, 1, -1);
         fmpq_poly_set_coeff_si(f, 2, -1953);
@@ -64,7 +120,7 @@ main(void)
         result = is_square && nf_elem_equal(d, b, nf);
         if (!result)
         {
-           printf("FAIL:\n");
+           printf("FAIL 2:\n");
            printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
            printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
            printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
@@ -118,7 +174,7 @@ main(void)
         result = is_square && nf_elem_equal(d, b, nf);
         if (!result)
         {
-           printf("FAIL:\n");
+           printf("FAIL 3:\n");
            printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
            printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
            printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
@@ -172,7 +228,7 @@ main(void)
         result = is_square && nf_elem_equal(d, b, nf);
         if (!result)
         {
-           printf("FAIL:\n");
+           printf("FAIL 4:\n");
            printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
            printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
            printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
@@ -222,7 +278,7 @@ main(void)
         result = is_square && nf_elem_equal(d, b, nf);
         if (!result)
         {
-           printf("FAIL:\n");
+           printf("FAIL 5:\n");
            printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
            printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
            printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
@@ -289,6 +345,7 @@ main(void)
            if (!result)
            {
               printf("FAIL:\n");
+              printf("f = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
               printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
               printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
               printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
@@ -320,7 +377,6 @@ main(void)
         abits = n_randint(state, 15) + 1;
         
         nf_init_randtest(nf, state, flen, fbits);
-
         fmpz_poly_factor_init(fac);
 
         pol->coeffs = nf->pol->coeffs;
@@ -354,6 +410,7 @@ main(void)
            if (!result)
            {
               printf("FAIL:\n");
+              printf("f = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
               printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
               printf("b = "); nf_elem_print_pretty(b, nf, "x"); printf("\n");
               printf("c = "); nf_elem_print_pretty(c, nf, "x"); printf("\n");
