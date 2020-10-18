@@ -117,8 +117,7 @@ void _nf_elem_reduce(nf_elem_t a, const nf_t nf)
 void nf_elem_reduce(nf_elem_t a, const nf_t nf)
 {
    if (!(nf->flag & NF_LINEAR))
-   {
       _nf_elem_reduce(a, nf);
-      nf_elem_canonicalise(a, nf);
-   }
+   
+   nf_elem_canonicalise(a, nf);
 }

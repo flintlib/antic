@@ -46,7 +46,8 @@ main(void)
         nf_elem_scalar_mul_fmpq(t, b, c, nf);
         nf_elem_scalar_div_fmpq(a, t, c, nf);
 
-        if (!nf_elem_equal(a, b, nf))
+        result = nf_elem_equal(a, b, nf);
+        if (!result)
         {
            printf("FAIL:\n");
            printf("nf = "); nf_print(nf); printf("\n");
@@ -84,7 +85,8 @@ main(void)
         nf_elem_scalar_mul_fmpq(b, b, c, nf);
         nf_elem_scalar_div_fmpq(b, b, c, nf);
 
-        if (!nf_elem_equal(a, b, nf))
+        result = nf_elem_equal(a, b, nf);
+        if (!result)
         {
            printf("FAIL:\n");
            printf("(with aliasing)\n");
