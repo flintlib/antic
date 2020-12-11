@@ -68,7 +68,51 @@ main(void)
         fmpq_poly_clear(g);
     }
 
-    flint_randclear(state);
+    /* try unreduced polys */
+    for (i = 0; i < 100 * antic_test_multiplier(); i++)
+    {
+        fmpq_poly_t f, g, r;
+        nf_t nf;
+        nf_elem_t a;
+
+        fmpq_poly_init(f);
+        fmpq_poly_init(g);
+        fmpq_poly_init(r);
+
+        nf_init_randtest(nf, state, 20, 200);
+
+        fmpq_poly_randtest(f, state, n_randint(state, 30), 200);
+
+        nf_elem_init(a, nf);
+        nf_elem_set_fmpq_poly(a, f, nf);
+        nf_elem_get_fmpq_poly(g, a, nf);
+        
+        fmpq_poly_rem(r, f, nf->pol);
+
+        result = fmpq_poly_equal(r, g);
+        if (!result)
+        {
+            flint_printf("FAIL:\n");
+            flint_printf("a = "); nf_elem_print_pretty(a, nf, "a");
+            printf("\n");
+            flint_printf("f = "); fmpq_poly_print_pretty(f, "x");
+            printf("\n");
+            flint_printf("g = "); fmpq_poly_print_pretty(f, "x");
+            printf("\n");
+            flint_printf("r = "); fmpq_poly_print_pretty(r, "x");
+            abort();
+        }
+
+        nf_elem_clear(a, nf);
+        
+        nf_clear(nf);
+
+        fmpq_poly_clear(f);
+        fmpq_poly_clear(g);
+        fmpq_poly_clear(r);
+    }
+
+   flint_randclear(state);
     flint_cleanup();
     flint_printf("PASS\n");
     return 0;

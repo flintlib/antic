@@ -462,13 +462,23 @@ void nf_elem_set_fmpq(nf_elem_t a, const fmpq_t c, const nf_t nf)
 NF_ELEM_INLINE
 void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
 {
+   if (fmpq_poly_length(pol) >= fmpq_poly_length(nf->pol))
+   {
+       fmpq_poly_t r;
+       fmpq_poly_init(r);
+       fmpq_poly_rem(r, pol, nf->pol);
+       nf_elem_set_fmpq_poly(a, r, nf);
+       fmpq_poly_clear(r);
+       return;
+   }
+
    if (nf->flag & NF_LINEAR)
    {
       if (pol->length == 0)
 	  {
 	     fmpz_zero(LNF_ELEM_NUMREF(a));
 		 fmpz_one(LNF_ELEM_DENREF(a));
-	  } else
+	  } else if (pol->length == 1)
 	  {
 	     fmpz_set(LNF_ELEM_NUMREF(a), fmpq_poly_numref(pol));
          fmpz_set(LNF_ELEM_DENREF(a), fmpq_poly_denref(pol));
