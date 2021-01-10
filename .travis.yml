@@ -11,6 +11,10 @@ env:
 os:
   - osx
   - linux
+env:
+  - FLINT_TAG: v2.6.3
+  - FLINT_TAG: v2.7.0
+  - FLINT_TAG: trunk
 
 osx_image: xcode6.4
 
