@@ -16,21 +16,37 @@
 
 #include "nf_elem.h"
 
+#if __FLINT_RELEASE >= 20700
+#define FMPZ_MOD_POLY_FIT_LENGTH(POL, N, CTX) fmpz_mod_poly_fit_length(POL, N, CTX)
+#define FMPZ_MOD(F, G, CTX, P) fmpz_mod(F, G, (CTX)->n)
+#define FMPZ_MOD_POLY_ZERO(POL, CTX) fmpz_mod_poly_zero(POL, CTX)
+#define FMPZ_MOD_POLY_SCALAR_DIV_FMPZ(RES, POL, X, CTX) fmpz_mod_poly_scalar_div_fmpz(RES, POL, X, CTX)
+#else
+#define FMPZ_MOD_POLY_FIT_LENGTH(POL, N, CTX) fmpz_mod_poly_fit_length(POL, N)
+#define FMPZ_MOD(F, G, CTX, P) fmpz_mod(F, G, P)
+#define FMPZ_MOD_POLY_ZERO(POL, CTX) fmpz_mod_poly_zero(POL)
+#define FMPZ_MOD_POLY_SCALAR_DIV_FMPZ(RES, POL, X, CTX) fmpz_mod_poly_scalar_div_fmpz(RES, POL, X)
+#endif
+
+#if __FLINT_RELEASE >= 20700
 void _nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a,
                                        const nf_t nf, const fmpz_mod_ctx_t ctx)
+#else
+void _nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf)
+#endif
 {
     if (nf_elem_is_zero(a, nf))
     {
-        fmpz_mod_poly_zero(pol, ctx);
+        FMPZ_MOD_POLY_ZERO(pol, ctx);
         
         return;
     }
     if (nf->flag & NF_LINEAR)
     {
         {
-            fmpz_mod_poly_fit_length(pol, 1, ctx);
+            FMPZ_MOD_POLY_FIT_LENGTH(pol, 1, ctx);
         
-            fmpz_mod(pol->coeffs + 0, LNF_ELEM_NUMREF(a), ctx->n);
+            FMPZ_MOD(pol->coeffs + 0, LNF_ELEM_NUMREF(a), ctx, &(pol->p));
         
             _fmpz_mod_poly_set_length(pol, 1);
             _fmpz_mod_poly_normalise(pol);
@@ -38,11 +54,11 @@ void _nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a,
         }
     } else if (nf->flag & NF_QUADRATIC)
     {
-        fmpz_mod_poly_fit_length(pol, 3, ctx);
+        FMPZ_MOD_POLY_FIT_LENGTH(pol, 3, ctx);
         
-        fmpz_mod(pol->coeffs + 0, QNF_ELEM_NUMREF(a), ctx->n);
-        fmpz_mod(pol->coeffs + 1, QNF_ELEM_NUMREF(a) + 1, ctx->n);
-        fmpz_mod(pol->coeffs + 2, QNF_ELEM_NUMREF(a) + 2, ctx->n);
+        FMPZ_MOD(pol->coeffs + 0, QNF_ELEM_NUMREF(a), ctx, &(pol->p));
+        FMPZ_MOD(pol->coeffs + 1, QNF_ELEM_NUMREF(a) + 1, ctx, &(pol->p));
+        FMPZ_MOD(pol->coeffs + 2, QNF_ELEM_NUMREF(a) + 2, ctx, &(pol->p));
         
         _fmpz_mod_poly_set_length(pol, 3);
         _fmpz_mod_poly_normalise(pol);
@@ -51,33 +67,48 @@ void _nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a,
         slong len = NF_ELEM(a)->length;
         slong i;
 
-        fmpz_mod_poly_fit_length(pol, len, ctx);
+        FMPZ_MOD_POLY_FIT_LENGTH(pol, len, ctx);
         
         for (i = 0; i < len; i++)
-            fmpz_mod(pol->coeffs + i, NF_ELEM_NUMREF(a) + i, ctx->n);
+            FMPZ_MOD(pol->coeffs + i, NF_ELEM_NUMREF(a) + i, ctx, &(pol->p));
         
         _fmpz_mod_poly_set_length(pol, len);
         _fmpz_mod_poly_normalise(pol);
     }
 }
 
+#if __FLINT_RELEASE >= 20700
 void nf_elem_get_fmpz_mod_poly_den(fmpz_mod_poly_t pol, const nf_elem_t a,
                               const nf_t nf, int den, const fmpz_mod_ctx_t ctx)
+#else
+void nf_elem_get_fmpz_mod_poly_den(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf, int den)
+#endif
 {
+#if __FLINT_RELEASE >= 20700
     _nf_elem_get_fmpz_mod_poly(pol, a, nf, ctx);
+#else
+    _nf_elem_get_fmpz_mod_poly(pol, a, nf);
+#endif
     if (den)
     {
         if (nf->flag & NF_LINEAR)
-            fmpz_mod_poly_scalar_div_fmpz(pol, pol, LNF_ELEM_DENREF(a), ctx);
+            FMPZ_MOD_POLY_SCALAR_DIV_FMPZ(pol, pol, LNF_ELEM_DENREF(a), ctx);
         else if (nf->flag & NF_QUADRATIC)
-            fmpz_mod_poly_scalar_div_fmpz(pol, pol, QNF_ELEM_DENREF(a), ctx);
+            FMPZ_MOD_POLY_SCALAR_DIV_FMPZ(pol, pol, QNF_ELEM_DENREF(a), ctx);
         else
-            fmpz_mod_poly_scalar_div_fmpz(pol, pol, NF_ELEM_DENREF(a), ctx);
+            FMPZ_MOD_POLY_SCALAR_DIV_FMPZ(pol, pol, NF_ELEM_DENREF(a), ctx);
     }
 }
 
+#if __FLINT_RELEASE >= 20700
 void nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a,
                                        const nf_t nf, const fmpz_mod_ctx_t ctx)
 {
     nf_elem_get_fmpz_mod_poly_den(pol, a, nf, 1, ctx);
 }
+#else
+void nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf)
+{
+    nf_elem_get_fmpz_mod_poly_den(pol, a, nf, 1);
+}
+#endif

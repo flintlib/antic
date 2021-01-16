@@ -553,6 +553,7 @@ void nf_elem_get_nmod_poly_den(nmod_poly_t pol,
 FLINT_DLL
 void nf_elem_get_nmod_poly(nmod_poly_t pol, const nf_elem_t a, const nf_t nf);
 
+#if __FLINT_RELEASE >= 20700
 FLINT_DLL
 void _nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol,
                    const nf_elem_t a, const nf_t nf, const fmpz_mod_ctx_t ctx);
@@ -564,6 +565,16 @@ void nf_elem_get_fmpz_mod_poly_den(fmpz_mod_poly_t pol,
 FLINT_DLL
 void nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol,
                    const nf_elem_t a, const nf_t nf, const fmpz_mod_ctx_t ctx);
+#else
+FLINT_DLL
+void _nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf);
+
+FLINT_DLL
+void nf_elem_get_fmpz_mod_poly_den(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf, int den);
+
+FLINT_DLL
+void nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf);
+#endif
 
 /******************************************************************************
  
