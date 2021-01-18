@@ -986,8 +986,11 @@ void nf_elem_coprime_den_signed(nf_elem_t res, const nf_elem_t a, const fmpz_t m
 }
 #endif
 
-// To maintain compatibility with FLINT 2.6 until most distributions have
-// caught up with FLINT 2.7.
+/******************************************************************************
+
+    Helpers for compatibility with FLINT 2.6
+
+******************************************************************************/
 #if __FLINT_RELEASE >= 20700
 #define FMPZ_MOD_POLY_FIT_LENGTH(POL, N, CTX) fmpz_mod_poly_fit_length(POL, N, CTX)
 #define FMPZ_MOD(F, G, CTX, P) fmpz_mod(F, G, (CTX)->n)
