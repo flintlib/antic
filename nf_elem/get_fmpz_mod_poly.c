@@ -17,18 +17,6 @@
 #include "nf_elem.h"
 
 #if __FLINT_RELEASE >= 20700
-#define FMPZ_MOD_POLY_FIT_LENGTH(POL, N, CTX) fmpz_mod_poly_fit_length(POL, N, CTX)
-#define FMPZ_MOD(F, G, CTX, P) fmpz_mod(F, G, (CTX)->n)
-#define FMPZ_MOD_POLY_ZERO(POL, CTX) fmpz_mod_poly_zero(POL, CTX)
-#define FMPZ_MOD_POLY_SCALAR_DIV_FMPZ(RES, POL, X, CTX) fmpz_mod_poly_scalar_div_fmpz(RES, POL, X, CTX)
-#else
-#define FMPZ_MOD_POLY_FIT_LENGTH(POL, N, CTX) fmpz_mod_poly_fit_length(POL, N)
-#define FMPZ_MOD(F, G, CTX, P) fmpz_mod(F, G, P)
-#define FMPZ_MOD_POLY_ZERO(POL, CTX) fmpz_mod_poly_zero(POL)
-#define FMPZ_MOD_POLY_SCALAR_DIV_FMPZ(RES, POL, X, CTX) fmpz_mod_poly_scalar_div_fmpz(RES, POL, X)
-#endif
-
-#if __FLINT_RELEASE >= 20700
 void _nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a,
                                        const nf_t nf, const fmpz_mod_ctx_t ctx)
 #else
