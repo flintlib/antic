@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MAKE=${MAKE:=make}
+
 set -exo pipefail
 
 wget http://mpir.org/mpir-2.7.2.tar.bz2
@@ -8,22 +10,22 @@ mkdir -p local
 
 pushd mpir-2.7.2
 ./configure ABI=$ABI --enable-gmpcompat --prefix=${LOCAL}
-make
-make install
+${MAKE}
+${MAKE} install
 popd
 
 wget http://www.mpfr.org/mpfr-4.0.0/mpfr-4.0.0.tar.bz2
 tar -xf mpfr-4.0.0.tar.bz2
 pushd mpfr-4.0.0
 ./configure ABI=$ABI --with-gmp=${LOCAL} --prefix=${LOCAL}
-make
-make install
+${MAKE}
+${MAKE} install
 popd
  
 git clone --branch $FLINT_TAG https://github.com/wbhart/flint2
 pushd flint2
 ./configure --with-mpir=${LOCAL} --with-mpfr=${LOCAL} --prefix=${LOCAL}
-make
-make install
+${MAKE}
+${MAKE} install
 popd
 
