@@ -37,7 +37,9 @@ main(void)
         nf_elem_t a;
         fmpz_mod_poly_t reduced_elem;
         fmpz_t coeff, mod, reduced_coeff;
+#if __FLINT_RELEASE >= 20700
         fmpz_mod_ctx_t ctx;
+#endif
 
         fmpz_init(mod);
         fmpz_randtest_unsigned(mod, state, 2 * FLINT_BITS);
@@ -45,8 +47,12 @@ main(void)
 
         fmpz_init(coeff);
         fmpz_init(reduced_coeff);
+#if __FLINT_RELEASE >= 20700
         fmpz_mod_ctx_init(ctx, mod);
         fmpz_mod_poly_init(reduced_elem, ctx);
+#else
+        fmpz_mod_poly_init(reduced_elem, &mod);
+#endif
 
         nf_init_randtest(nf, state, 40, 200);
 
@@ -54,13 +60,21 @@ main(void)
 
         nf_elem_randtest(a, state, 200, nf);
 
+#if __FLINT_RELEASE >= 20700
         nf_elem_get_fmpz_mod_poly_den(reduced_elem, a, nf, 0, ctx);
+#else
+        nf_elem_get_fmpz_mod_poly_den(reduced_elem, a, nf, 0);
+#endif
 
         for (j = 0; j < fmpq_poly_degree(nf->pol); j++)
         {
             nf_elem_get_coeff_fmpz(coeff, a, j, nf);
             fmpz_mod(coeff, coeff, mod);
+#if __FLINT_RELEASE >= 20700
             fmpz_mod_poly_get_coeff_fmpz(reduced_coeff, reduced_elem, j, ctx);
+#else
+            fmpz_mod_poly_get_coeff_fmpz(reduced_coeff, reduced_elem, j);
+#endif
             result = fmpz_equal(reduced_coeff, coeff);
             if (!result)
             {
@@ -68,14 +82,24 @@ main(void)
                 printf("f = "); fmpq_poly_print_pretty(nf->pol, "x"); printf("\n");
                 printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
                 printf("n = "); fmpz_print(mod); printf("\n");
-                printf("a mod n = "); fmpz_mod_poly_print_pretty(reduced_elem, "x", ctx); printf("\n");
+                printf("a mod n = ");
+#if __FLINT_RELEASE >= 20700
+                fmpz_mod_poly_print_pretty(reduced_elem, "x", ctx);
+#else
+                fmpz_mod_poly_print_pretty(reduced_elem, "x");
+#endif
+                printf("\n");
                 abort();
             }
         }
 
         nf_elem_clear(a, nf);
+#if __FLINT_RELEASE >= 20700
         fmpz_mod_poly_clear(reduced_elem, ctx);
         fmpz_mod_ctx_clear(ctx);
+#else
+        fmpz_mod_poly_clear(reduced_elem);
+#endif
         fmpz_clear(coeff);
         fmpz_clear(mod);
         nf_clear(nf);
@@ -88,7 +112,9 @@ main(void)
         nf_elem_t a;
         fmpz_mod_poly_t reduced_elem;
         fmpz_t coeff, reduced_coeff, den, mod, d_mod, d_modinv;
+#if __FLINT_RELEASE >= 20700
         fmpz_mod_ctx_t ctx;
+#endif
 
         fmpz_init(coeff);
         fmpz_init(den);
@@ -101,9 +127,12 @@ main(void)
         fmpz_randtest_unsigned(mod, state, 2 * FLINT_BITS);
         fmpz_add_ui(mod, mod, 2);
 
+#if __FLINT_RELEASE >= 20700
         fmpz_mod_ctx_init(ctx, mod);
-
         fmpz_mod_poly_init(reduced_elem, ctx);
+#else
+        fmpz_mod_poly_init(reduced_elem, &mod);
+#endif
 
         nf_init_randtest(nf, state, 40, 200);
 
@@ -116,7 +145,11 @@ main(void)
             fmpz_gcd(d_mod, d_mod, mod);
         } while (!fmpz_is_one(d_mod));
 
+#if __FLINT_RELEASE >= 20700
         nf_elem_get_fmpz_mod_poly(reduced_elem, a, nf, ctx);
+#else
+        nf_elem_get_fmpz_mod_poly(reduced_elem, a, nf);
+#endif
 
         for (j = 0; j < fmpq_poly_degree(nf->pol); j++)
         {
@@ -125,14 +158,24 @@ main(void)
             fmpz_invmod(d_modinv, den, mod);
             fmpz_mul(coeff, coeff, d_modinv);
             fmpz_mod(coeff, coeff, mod);
+#if __FLINT_RELEASE >= 20700
             fmpz_mod_poly_get_coeff_fmpz(reduced_coeff, reduced_elem, j, ctx);
+#else
+            fmpz_mod_poly_get_coeff_fmpz(reduced_coeff, reduced_elem, j);
+#endif
             result = (fmpz_equal(coeff, reduced_coeff));
             if (!result)
             {
                 printf("FAIL: Reducing element with denominator\n");
                 printf("a = "); nf_elem_print_pretty(a, nf, "x"); printf("\n");
                 printf("n = "); fmpz_print(mod); flint_printf("\n");
-                printf("a mod n = "); fmpz_mod_poly_print_pretty(reduced_elem, "x", ctx); printf("\n");
+                printf("a mod n = ");
+#if __FLINT_RELEASE >= 20700
+                fmpz_mod_poly_print_pretty(reduced_elem, "x", ctx);
+#else
+                fmpz_mod_poly_print_pretty(reduced_elem, "x");
+#endif
+                printf("\n");
                 abort();
             }
         }
@@ -144,8 +187,12 @@ main(void)
         fmpz_clear(d_mod);
         fmpz_clear(d_modinv);
         nf_elem_clear(a, nf);
+#if __FLINT_RELEASE >= 20700
         fmpz_mod_poly_clear(reduced_elem, ctx);
         fmpz_mod_ctx_clear(ctx);
+#else
+        fmpz_mod_poly_clear(reduced_elem);
+#endif
         nf_clear(nf);
     }
 

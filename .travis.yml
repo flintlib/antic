@@ -6,11 +6,16 @@ addons:
     packages:
       - texinfo
 env:
-  MAKE="make -j4"
+  MAKEFLAGS=-j2
 
 os:
   - osx
   - linux
+env:
+  - FLINT_TAG: v2.6.3
+  - FLINT_TAG: v2.7.0
+  - FLINT_TAG: v2.7.1
+  - FLINT_TAG: trunk
 
 osx_image: xcode6.4
 
@@ -23,12 +28,12 @@ install:
   - while sleep 30; do echo "still alive"; done &
   - ./.build_dependencies
   - ./configure --with-mpir=${LOCAL} --with-mpfr=${LOCAL} --with-flint=${LOCAL} --prefix=${LOCAL}
-  - ${MAKE}
+  - make
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -L libantic.dylib; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ldd libantic.so; fi
 
 script:
-  - ${MAKE} check
-  - ${MAKE} install
+  - make check
+  - make install
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -L local/lib/libantic.dylib; fi
   - PREFIX=$(pwd)/local ./.check_post_install
