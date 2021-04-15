@@ -50,9 +50,9 @@ main(void)
         nf_elem_randtest(a, state, 200, nf);
         nf_elem_set(b, a, nf);
 
-        coeff = (slong) n_randint(state, fmpq_poly_length(nf->pol));
-        
-        fmpz_randtest(d, state, 200);
+        coeff = (slong) n_randint(state, fmpq_poly_degree(nf->pol));
+
+	fmpz_randtest(d, state, 200);
 
         nf_elem_get_den(fmpq_denref(tempcoeff), a, nf);
         fmpz_set(fmpq_numref(tempcoeff), d);

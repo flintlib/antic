@@ -618,14 +618,24 @@ void nf_elem_get_coeff_fmpq(fmpq_t a, const nf_elem_t b,
 {
    if (nf->flag & NF_LINEAR)
    {
-      fmpz_set(fmpq_numref(a), LNF_ELEM_NUMREF(b));
-      fmpz_set(fmpq_denref(a), LNF_ELEM_DENREF(b));
+      if (i > 0)
+         fmpq_zero(a);
+      else
+      {
+         fmpz_set(fmpq_numref(a), LNF_ELEM_NUMREF(b));
+         fmpz_set(fmpq_denref(a), LNF_ELEM_DENREF(b));
+      }
    } else if (nf->flag & NF_QUADRATIC)
    {
       const fmpz * const bnum = QNF_ELEM_NUMREF(b);
       
-      fmpz_set(fmpq_numref(a), bnum + i);
-      fmpz_set(fmpq_denref(a), QNF_ELEM_DENREF(b));
+      if (i > 2) /* element may be unreduced */
+         fmpq_zero(a);
+      else
+      {
+         fmpz_set(fmpq_numref(a), bnum + i);
+         fmpz_set(fmpq_denref(a), QNF_ELEM_DENREF(b));
+      }
 
       fmpq_canonicalise(a);
    } else
@@ -638,12 +648,18 @@ void nf_elem_get_coeff_fmpz(fmpz_t a, const nf_elem_t b,
 {
    if (nf->flag & NF_LINEAR)
    {
-      fmpz_set(a, LNF_ELEM_NUMREF(b));
+      if (i > 0)
+         fmpz_zero(a);
+      else
+         fmpz_set(a, LNF_ELEM_NUMREF(b));
    } else if (nf->flag & NF_QUADRATIC)
    {
       const fmpz * const bnum = QNF_ELEM_NUMREF(b);
       
-      fmpz_set(a, bnum + i);
+      if (i > 2) /* element may be unreduced */
+         fmpz_zero(a);
+      else
+         fmpz_set(a, bnum + i);
    } else
       fmpq_poly_get_coeff_fmpz(a, NF_ELEM(b), i);
 }
@@ -666,7 +682,12 @@ int nf_elem_den_is_one(const nf_elem_t a, const nf_t nf)
 NF_ELEM_INLINE
 void _nf_elem_set_coeff_num_fmpz(nf_elem_t a, slong i, const fmpz_t b, const nf_t nf)
 {
- 
+    if (i > 2*(fmpq_poly_degree(nf->pol) - 1))
+    {
+        flint_printf("Degree out of range\n");
+	flint_abort();
+    }
+
     if (nf->flag & NF_LINEAR)
     {
         fmpz_set(LNF_ELEM_NUMREF(a), b);
