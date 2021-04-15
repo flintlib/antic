@@ -10,9 +10,15 @@
 #
 # antic   => soname
 # 0.0.1   => 0.0.0
+# 0.2.0   => 0.0.0
+# 0.2.1   => 0.0.0
+# 0.2.2   => 0.0.0
+# 0.2.3   => 0.0.0
+# 0.2.4   => 0.2.4 
+
 ANTIC_MAJOR=0
-ANTIC_MINOR=0
-ANTIC_PATCH=1
+ANTIC_MINOR=2
+ANTIC_PATCH=4
 
 PREFIX="/usr/local"
 GMP_DIR="/usr/local"
