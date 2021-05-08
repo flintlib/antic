@@ -38,6 +38,13 @@ main(void)
         nf_init_randtest(nf, state, 40, 200);
 
         nf_elem_init(a, nf);
+
+        if (!nf_elem_is_zero(a, nf))
+        {
+            flint_printf("FAIL\n");
+            abort();
+        }
+
         nf_elem_randtest(a, state, 200, nf);
         nf_elem_clear(a, nf);
         
