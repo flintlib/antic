@@ -23,6 +23,7 @@ void nf_elem_init(nf_elem_t a, const nf_t nf)
     {
         fmpz_init(LNF_ELEM_NUMREF(a));
         fmpz_init(LNF_ELEM_DENREF(a));
+        fmpz_one(LNF_ELEM_DENREF(a));
     } else if (nf->flag & NF_QUADRATIC)
     {
         fmpz * const anum = QNF_ELEM_NUMREF(a);
@@ -32,6 +33,7 @@ void nf_elem_init(nf_elem_t a, const nf_t nf)
         fmpz_init(anum + 1);
         fmpz_init(anum + 2);
         fmpz_init(aden);
+        fmpz_one(aden);
     }
     else
     {
