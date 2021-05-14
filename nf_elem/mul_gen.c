@@ -22,9 +22,22 @@ void nf_elem_mul_gen(nf_elem_t a, const nf_elem_t b, const nf_t nf)
   {
       fmpz * den = LNF_ELEM_DENREF(a);
 	    fmpz * num = LNF_ELEM_NUMREF(a);
-      _fmpq_mul(num, den, LNF_ELEM_NUMREF(b), LNF_ELEM_DENREF(b), fmpq_poly_numref(nf->pol), fmpq_poly_numref(nf->pol) + 1);
+      /* _fmpq_mul assumes a positive denominator */
+      if (fmpz_sgn(fmpq_poly_numref(nf->pol) + 1) < 0)
+      {
+          fmpz_t t;
+          fmpz_init(t);
+          fmpz_neg(t, fmpq_poly_numref(nf->pol) + 1);
+          _fmpq_mul(num, den, LNF_ELEM_NUMREF(b), LNF_ELEM_DENREF(b), fmpq_poly_numref(nf->pol), t);
+          fmpz_clear(t);
+      }
+      else
+      {
+          _fmpq_mul(num, den, LNF_ELEM_NUMREF(b), LNF_ELEM_DENREF(b), fmpq_poly_numref(nf->pol), fmpq_poly_numref(nf->pol) + 1);
+          fmpz_neg(num, num);
+      }
+
       _fmpq_canonicalise(num, den);
-      fmpz_neg(num, num);
   }
   else if (nf->flag & NF_QUADRATIC)
   {
