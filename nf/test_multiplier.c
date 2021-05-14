@@ -32,7 +32,7 @@ long int antic_test_multiplier()
 
         if (s == NULL)
         {
-            _antic_test_multiplier = 1;
+            _antic_test_multiplier = 10;
         }
         else
         {
