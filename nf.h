@@ -61,6 +61,7 @@ typedef nf_struct nf_t[1];
 #define NF_MONIC 1
 #define NF_LINEAR 2
 #define NF_QUADRATIC 4
+#define NF_GAUSSIAN 8
 
 /******************************************************************************
 
