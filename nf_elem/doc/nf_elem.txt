@@ -34,7 +34,14 @@ void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
                                                mp_bitcnt_t bits, const nf_t nf)
 
     Generate a random number field element $a$ in the number field \code{nf}
-    whose coefficients have up to the given number of bits.
+    whose rational coefficients have up to the given number of bits.
+
+void nf_elem_randtest_bounded(nf_elem_t a, flint_rand_t state,
+                                               mp_bitcnt_t bits, const nf_t nf)
+
+    Generate a random number field element $a$ in the number field \code{nf}
+    whose coefficients have up to the given number of bits, with combined
+    denominator also bounded by the given number of bits.
 
 void nf_elem_canonicalise(nf_elem_t a, nf_t nf)
 
@@ -328,6 +335,20 @@ void nf_elem_trace(fmpq_t res, const nf_elem_t a, const nf_t nf)
 
     Set \code{res} to the absolute trace of the given number field
     element $a$.
+
+int _nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
+
+    If \code{a} is a square, set \code{a} to the square root and return
+    \code{1}, else return \code{0}. No aliasing is allowed.
+
+int nf_elem_sqrt(nf_elem_t a, const nf_elem_t b, const nf_t nf)
+
+    If \code{a} is a square, set \code{a} to the square root and return                                                     \code{1}, else return \code{0}.
+
+int nf_elem_is_square(const nf_elem_t b, const nf_t nf)
+
+    Return \code{1} if \code{b} is a square. This is currently not faster than
+    computing the square root.
 
 *******************************************************************************
 

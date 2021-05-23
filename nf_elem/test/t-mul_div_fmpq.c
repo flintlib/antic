@@ -21,7 +21,7 @@
 int
 main(void)
 {
-    int i, result;
+    int i;
     flint_rand_t state;
 
     flint_randinit(state);
