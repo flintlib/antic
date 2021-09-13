@@ -37,6 +37,16 @@
                          __ANTIC_VERSION_MINOR * 100 + \
                          __ANTIC_VERSION_PATCHLEVEL)
 
+#if defined _WIN32 || defined __CYGWIN__
+#ifdef ANTIC_BUILD_DLL
+#define ANTIC_DLL __declspec(dllexport)
+#else
+#define ANTIC_DLL __declspec(dllimport)
+#endif
+#else
+#define ANTIC_DLL
+#endif
+
 long int antic_test_multiplier(void);
 
 typedef struct {
@@ -69,13 +79,13 @@ typedef nf_struct nf_t[1];
 
 ******************************************************************************/
 
-FLINT_DLL void nf_init(nf_t nf, const fmpq_poly_t pol);
+ANTIC_DLL void nf_init(nf_t nf, const fmpq_poly_t pol);
 
-FLINT_DLL void nf_init_randtest(nf_t nf, flint_rand_t state, slong len,  mp_bitcnt_t bits_in);
+ANTIC_DLL void nf_init_randtest(nf_t nf, flint_rand_t state, slong len,  mp_bitcnt_t bits_in);
 
-FLINT_DLL void nf_clear(nf_t nf);
+ANTIC_DLL void nf_clear(nf_t nf);
 
-FLINT_DLL void nf_print(const nf_t nf);
+ANTIC_DLL void nf_print(const nf_t nf);
 
 #ifdef __cplusplus
 }
