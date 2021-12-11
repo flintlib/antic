@@ -13,6 +13,7 @@ jobs:
     strategy:
       matrix:
         on: [ ubuntu-20.04, macos-10.15 ]
+        libflint: [ 2.8.4 ]
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
@@ -21,7 +22,7 @@ jobs:
       - name: install dependencies
         shell: bash -l {0}
         run: |
-          mamba install -y libflint c-compiler gmp mpfr
+          mamba install -y libflint=${{ matrix.libflint }} c-compiler gmp mpfr
           conda list
       - name: build antic
         shell: bash -l {0}
