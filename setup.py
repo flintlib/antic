@@ -133,7 +133,8 @@ class NoBinaryBuild(build):
     """
 
     def run(self):
-        raise NotImplementedError("No binary wheels can be built for Antic currently because the installation prefix is hard-coded in some of its header files. To skip this step when using pip, run with --no-binary :all:")
+        # We don't want to support building wheels since they reference symbols from flint and other libraries that we cannot install in a controlled version with pip.
+        raise NotImplementedError("No binary wheels can be built for Antic currently. To skip this step when using pip, run with --no-binary :all:")
 
 
 class ConfigureMakeInstall(install, AutotoolsCommand):
