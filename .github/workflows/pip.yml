@@ -36,10 +36,13 @@ jobs:
     container: ${{ matrix.container }}
     strategy:
       matrix:
-        container:
-          - sagemath/sagemath-dev:9.3
-          - sagemath/sagemath-dev:9.4
-          - ubuntu:hirsute
+        include:
+        - container: ubuntu:hirsute
+          pip: pip
+        - container: sagemath/sagemath-dev:9.3
+          pip: sage -pip
+        - container: sagemath/sagemath-dev:9.4
+          pip: sage -pip
     steps:
       - name: install dependencies
         shell: bash
@@ -58,4 +61,4 @@ jobs:
         shell: bash
         run: |
           export EXTRA_SHARED_FLAGS=-Wl,--no-undefined
-          pip install ${{ steps.sdist.outputs.download-path }}/antic*.tar.gz --verbose --no-binary :all:
+          ${{ matrix.pip }} install ${{ steps.sdist.outputs.download-path }}/antic*.tar.gz --verbose --no-binary :all:
