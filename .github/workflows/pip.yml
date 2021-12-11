@@ -53,7 +53,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: antic-sdist
+          path: dist/
       - name: install antic
         shell: bash
         run: |
+          export EXTRA_SHARED_FLAGS=-Wl,--no-undefined
           pip install ${{ steps.sdist.outputs.download-path }}/antic*.tar.gz --verbose --no-binary :all:
