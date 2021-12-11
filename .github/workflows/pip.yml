@@ -1,7 +1,7 @@
 name: Install with pip
 on:
-  push: { branches: [ "master" ] }
-  pull_request: { branches: [ "master" ] }
+  push: { branches: [ "trunk" ] }
+  pull_request: { branches: [ "trunk" ] }
 
 concurrency:
   group: pip-${{ github.ref }}
@@ -13,13 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
-      - uses: conda-incubator/setup-miniconda@v2
-        with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true, python-version: "3.9" }
-      - name: install dependencies
-        shell: bash -l {0}
-        run: |
-          mamba install -y libflint
-          conda list
       - name: create Antic sdist
         shell: bash -l {0}
         run: |
@@ -62,3 +55,6 @@ jobs:
         run: |
           export EXTRA_SHARED_FLAGS=-Wl,--no-undefined
           ${{ matrix.pip }} install ${{ steps.sdist.outputs.download-path }}/antic*.tar.gz --verbose --no-binary :all:
+
+env:
+  MAKEFLAGS: -j2

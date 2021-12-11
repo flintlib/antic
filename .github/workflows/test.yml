@@ -1,0 +1,35 @@
+name: Run Test Suite
+on:
+  push: { branches: [ "trunk" ] }
+  pull_request: { branches: [ "trunk" ] }
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ${{ matrix.on }}
+    strategy:
+      matrix:
+        on: [ ubuntu-20.04, macos-10.15 ]
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - uses: conda-incubator/setup-miniconda@v2
+        with: { mamba-version: "*", channels: "conda-forge", channel-priority: true, python-version: "3.9" }
+      - name: install dependencies
+        shell: bash -l {0}
+        run: |
+          mamba install -y libflint c-compiler gmp mpfr
+          conda list
+      - name: build antic
+        shell: bash -l {0}
+        run: |
+          ./configure --prefix=$CONDA_PREFIX --with-flint=$CONDA_PREFIX --with-gmp=$CONDA_PREFIX --with-mpfr=$CONDA_PREFIX
+          make
+          make install
+          make check
+
+env:
+  MAKEFLAGS: -j2
