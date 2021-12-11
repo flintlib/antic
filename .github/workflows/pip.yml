@@ -1,0 +1,59 @@
+name: Install with pip
+on:
+  push: { branches: [ "master" ] }
+  pull_request: { branches: [ "master" ] }
+
+concurrency:
+  group: pip-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sdist:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - uses: conda-incubator/setup-miniconda@v2
+        with: { mamba-version: "*", channels: "flatsurf,conda-forge", channel-priority: true, python-version: "3.9" }
+      - name: install dependencies
+        shell: bash -l {0}
+        run: |
+          mamba install -y libflint
+          conda list
+      - name: create Antic sdist
+        shell: bash -l {0}
+        run: |
+          python setup.py sdist
+      - name: upload Antic sdist
+        uses: actions/upload-artifact@v2
+        with:
+          name: antic-sdist
+          path:
+            dist/**
+  install:
+    needs: sdist
+    runs-on: ubuntu-20.04
+    container: ${{ matrix.container }}
+    strategy:
+      matrix:
+        container:
+          - sagemath/sagemath-dev:9.3
+          - sagemath/sagemath-dev:9.4
+          - ubuntu:hirsute
+    steps:
+      - name: install dependencies
+        shell: bash
+        run: |
+          apt update
+          export DEBIAN_FRONTEND=noninteractive
+          apt install -y pip libgmp-dev libmpfr-dev libflint-dev
+        if: ${{ startswith(matrix.container, 'ubuntu') }}
+      - name: download antic sdist
+        id: sdist
+        uses: actions/download-artifact@v2
+        with:
+          name: antic-sdist
+      - name: install antic
+        shell: bash
+        run: |
+          pip install ${{ steps.sdist.outputs.download-path }}/antic*.tar.gz --verbose --no-binary :all:
