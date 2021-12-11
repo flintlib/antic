@@ -1,7 +1,7 @@
 r"""
 Pip-compatible setup instructions for Antic.
 
-Being a C/C++-library with a few dependencies, Antic cannot be sanely
+Being a C library with a few dependencies, Antic cannot be sanely
 installed with pip from binary builds. It should be installed through a proper
 package manager. When this is not possible, it needs to be installed from
 source with configure-make-make-install. However, in some scenarios, hiding
