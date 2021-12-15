@@ -1,0 +1,15 @@
+include AUTHORS
+include configure
+include gpl-2.0.txt
+include INSTALL
+include LICENSE
+include Makefile.in
+include Makefile.subdirs
+include NEWS
+include nf_elem.h
+include nf.h
+include qfb.h
+include README
+graft qfb
+graft nf
+graft nf_elem

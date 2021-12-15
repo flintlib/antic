@@ -1,0 +1,60 @@
+name: Install with pip
+on:
+  push: { branches: [ "trunk" ] }
+  pull_request: { branches: [ "trunk" ] }
+
+concurrency:
+  group: pip-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sdist:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - name: create Antic sdist
+        shell: bash -l {0}
+        run: |
+          python setup.py sdist
+      - name: upload Antic sdist
+        uses: actions/upload-artifact@v2
+        with:
+          name: antic-sdist
+          path:
+            dist/**
+  install:
+    needs: sdist
+    runs-on: ubuntu-20.04
+    container: ${{ matrix.container }}
+    strategy:
+      matrix:
+        include:
+        - container: ubuntu:hirsute
+          pip: pip
+        - container: sagemath/sagemath-dev:9.3
+          pip: sage -pip
+        - container: sagemath/sagemath-dev:9.4
+          pip: sage -pip
+    steps:
+      - name: install dependencies
+        shell: bash
+        run: |
+          apt update
+          export DEBIAN_FRONTEND=noninteractive
+          apt install -y pip libgmp-dev libmpfr-dev libflint-dev
+        if: ${{ startswith(matrix.container, 'ubuntu') }}
+      - name: download antic sdist
+        id: sdist
+        uses: actions/download-artifact@v2
+        with:
+          name: antic-sdist
+          path: /tmp/dist/
+      - name: install antic
+        shell: bash
+        run: |
+          export EXTRA_SHARED_FLAGS=-Wl,--no-undefined
+          ${{ matrix.pip }} install ${{ steps.sdist.outputs.download-path }}/antic*.tar.gz --verbose --no-binary :all:
+
+env:
+  MAKEFLAGS: -j2
