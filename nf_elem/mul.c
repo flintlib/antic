@@ -137,6 +137,7 @@ void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
          return;
       }
 
+      fmpq_poly_fit_length(NF_ELEM(a), plen);
       if (len1 >= len2)
       {
          _fmpz_poly_mul(NF_ELEM_NUMREF(a), NF_ELEM_NUMREF(b), len1,
