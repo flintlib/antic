@@ -393,6 +393,7 @@ if [ -z "$ANTIC_LIB" ]; then
 	 EXTRA_SHARED_FLAGS="-Wl,-soname,libantic.so.$ANTIC_MAJOR"
 	 ANTIC_SOLIB=1;;
    esac
+	 EXTRA_SHARED_FLAGS="${EXTRA_SHARED_FLAGS} -Wl,--version-script=libantic.map"
    EXTRA_SHARED_FLAGS="${EXTRA_SHARED_FLAGS} -Wl,-rpath,${GMP_LIB_DIR} -Wl,-rpath,${MPFR_LIB_DIR} -Wl,-rpath,${FLINT_LIB_DIR}"
 fi
 

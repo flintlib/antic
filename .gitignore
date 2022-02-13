@@ -1,4 +1,5 @@
 libantic*
+!libantic.map
 Makefile
 build/
 antic
