@@ -178,7 +178,7 @@ setup(
 
         Please consult Antic's home page for further details: https://github.com/wbhart/antic
         """),
-    version='0.2.1',
+    version='0.2.4',
     license='LGPL 2.1+',
     license_files=('LICENSE', 'gpl-2.0.txt'),
     setup_requires=["wheel"],
