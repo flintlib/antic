@@ -47,7 +47,12 @@ void nf_init(nf_t nf, const fmpq_poly_t pol)
     } else if (len == 2) /* linear case */
        nf->flag |= NF_LINEAR;
     else if (len == 3) /* quadratic case */
+    {
        nf->flag |= NF_QUADRATIC;
+       if (fmpz_is_one(pol->coeffs + 0) && fmpz_is_zero(pol->coeffs + 1) &&
+            fmpz_is_one(pol->coeffs + 2) && fmpz_is_one(pol->den))
+          nf->flag |= NF_GAUSSIAN;
+    }
     else if (len <= NF_POWERS_CUTOFF) /* compute powers of generator mod pol */
     {
        if (nf->flag & NF_MONIC)

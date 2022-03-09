@@ -18,7 +18,7 @@
 #define NF_ELEM_H
 
 #ifdef NF_ELEM_INLINES_C
-#define NF_ELEM_INLINE FLINT_DLL
+#define NF_ELEM_INLINE ANTIC_DLL
 #else
 #define NF_ELEM_INLINE static __inline__
 #endif
@@ -76,14 +76,14 @@ typedef nf_elem_struct nf_elem_t[1];
 
 ******************************************************************************/
 
-FLINT_DLL void nf_elem_init(nf_elem_t a, const nf_t nf);
+ANTIC_DLL void nf_elem_init(nf_elem_t a, const nf_t nf);
 
-FLINT_DLL void nf_elem_clear(nf_elem_t a, const nf_t nf);
+ANTIC_DLL void nf_elem_clear(nf_elem_t a, const nf_t nf);
 
-FLINT_DLL void nf_elem_randtest(nf_elem_t a, flint_rand_t state, 
+ANTIC_DLL void nf_elem_randtest(nf_elem_t a, flint_rand_t state,
                                               mp_bitcnt_t bits, const nf_t nf);
 
-FLINT_DLL void nf_elem_randtest_not_zero(nf_elem_t a, flint_rand_t state, 
+ANTIC_DLL void nf_elem_randtest_not_zero(nf_elem_t a, flint_rand_t state,
                                               mp_bitcnt_t bits, const nf_t nf);
 
 NF_ELEM_INLINE
@@ -97,11 +97,11 @@ void nf_elem_canonicalise(nf_elem_t a, const nf_t nf)
       fmpq_poly_canonicalise(NF_ELEM(a));
 }
 
-FLINT_DLL void _nf_elem_reduce(nf_elem_t a, const nf_t nf);
+ANTIC_DLL void _nf_elem_reduce(nf_elem_t a, const nf_t nf);
 
-FLINT_DLL void nf_elem_reduce(nf_elem_t a, const nf_t nf);
+ANTIC_DLL void nf_elem_reduce(nf_elem_t a, const nf_t nf);
 
-FLINT_DLL int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf);
+ANTIC_DLL int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf);
 
 /******************************************************************************
 
@@ -109,9 +109,9 @@ FLINT_DLL int _nf_elem_invertible_check(nf_elem_t a, const nf_t nf);
 
 ******************************************************************************/
 
-FLINT_DLL int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
+ANTIC_DLL int _nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
-FLINT_DLL int nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
+ANTIC_DLL int nf_elem_equal(const nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
 NF_ELEM_INLINE
 int nf_elem_is_zero(const nf_elem_t a, const nf_t nf)
@@ -122,7 +122,7 @@ int nf_elem_is_zero(const nf_elem_t a, const nf_t nf)
    } else if (nf->flag & NF_QUADRATIC)
    {
       const fmpz * const anum = QNF_ELEM_NUMREF(a);
-      
+
       return fmpz_is_zero(anum) && fmpz_is_zero(anum + 1);
    } else
       return fmpq_poly_is_zero(a->elem);
@@ -137,51 +137,14 @@ int nf_elem_is_one(const nf_elem_t a, const nf_t nf)
    } else if (nf->flag & NF_QUADRATIC)
    {
       const fmpz * const anum = QNF_ELEM_NUMREF(a);
-      
-      return fmpz_is_one(anum) && fmpz_is_zero(anum + 1) 
+
+      return fmpz_is_one(anum) && fmpz_is_zero(anum + 1)
           && fmpz_is_one(QNF_ELEM_DENREF(a));
    } else
       return fmpq_poly_is_one(a->elem);
 }
 
-NF_ELEM_INLINE
-int nf_elem_is_gen(const nf_elem_t a, const nf_t nf)
-{
-   if (nf->flag & NF_LINEAR)
-   {
-      fmpz_t t1, t2;
-	  int is_gen;
-	  
-	  /* fast path */
-	  if (fmpz_equal(LNF_ELEM_DENREF(a), nf->pol->coeffs + 1))
-	    return fmpz_cmpabs(LNF_ELEM_DENREF(a), nf->pol->coeffs) == 0
-            && fmpz_sgn(LNF_ELEM_DENREF(a)) == -fmpz_sgn(nf->pol->coeffs);	
-			
-	  /* slow path */
-	  fmpz_init(t1);
-	  fmpz_init(t2);
-	  
-	  fmpz_mul(t1, LNF_ELEM_NUMREF(a), nf->pol->coeffs + 1);
-	  fmpz_mul(t2, LNF_ELEM_DENREF(a), nf->pol->coeffs);
-	  fmpz_neg(t1, t1);
-	  
-	  is_gen = fmpz_equal(t1, t2);
-	  
-	  fmpz_clear(t1);
-	  fmpz_clear(t2);
-	  
-	  return is_gen;
-   } else if (nf->flag & NF_QUADRATIC)
-   {
-      const fmpz * const anum = QNF_ELEM_NUMREF(a);
-      
-      return fmpz_equal(anum + 1, QNF_ELEM_DENREF(a)) 
-	      && fmpz_is_zero(anum);
-   } else
-      return fmpq_poly_length(NF_ELEM(a)) == 2
-	      && fmpz_equal(NF_ELEM(a)->coeffs + 1, NF_ELEM(a)->den)
-		  && fmpz_is_zero(NF_ELEM(a)->coeffs);
-}
+ANTIC_DLL int nf_elem_is_gen(const nf_elem_t a, const nf_t nf);
 
 NF_ELEM_INLINE
 int nf_elem_is_integer(const nf_elem_t a, const nf_t nf)
@@ -292,36 +255,11 @@ int nf_elem_equal_fmpq(const nf_elem_t a, const fmpq_t b, const nf_t nf)
 
 ******************************************************************************/
 
-FLINT_DLL void nf_elem_print_pretty(const nf_elem_t a, 
+ANTIC_DLL void nf_elem_print_pretty(const nf_elem_t a,
                              const nf_t nf, const char * var);
 
-NF_ELEM_INLINE
-char * nf_elem_get_str_pretty(const nf_elem_t a, 
-                              const char * var, const nf_t nf)
-{
-   if (nf->flag & NF_LINEAR)
-   {
-      const fmpz * const den = LNF_ELEM_DENREF(a);
-      const fmpz * const num = LNF_ELEM_NUMREF(a);
-      slong len = 1 - fmpz_is_zero(num);
-
-      return _fmpq_poly_get_str_pretty(num, den, len, var);
-   }
-   else if (nf->flag & NF_QUADRATIC)
-   {
-      const fmpz * const den = QNF_ELEM_DENREF(a);
-      const fmpz * const num = QNF_ELEM_NUMREF(a);
-      slong len = 3;
-
-      while (len != 0 && fmpz_is_zero(num + len - 1))
-         len--;
-
-      return _fmpq_poly_get_str_pretty(num, den, len, var);
-   } else
-   {
-      return fmpq_poly_get_str_pretty(NF_ELEM(a), var);
-   }
-}
+ANTIC_DLL char * nf_elem_get_str_pretty(const nf_elem_t a,
+                              const char * var, const nf_t nf);
 
 /******************************************************************************
 
@@ -339,7 +277,7 @@ void nf_elem_zero(nf_elem_t a, const nf_t nf)
    } else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
-      
+
       fmpz_zero(anum);
       fmpz_zero(anum + 1);
       fmpz_one(QNF_ELEM_DENREF(a));
@@ -357,7 +295,7 @@ void nf_elem_one(nf_elem_t a, const nf_t nf)
    } else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
-      
+
       fmpz_one(anum);
       fmpz_zero(anum + 1);
       fmpz_one(QNF_ELEM_DENREF(a));
@@ -376,7 +314,7 @@ void nf_elem_gen(nf_elem_t a, const nf_t nf)
    } else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
-      
+
       fmpz_one(anum + 1);
       fmpz_zero(anum);
       fmpz_one(QNF_ELEM_DENREF(a));
@@ -397,7 +335,7 @@ void nf_elem_set_si(nf_elem_t a, slong c, const nf_t nf)
    } else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
-      
+
       fmpz_set_si(anum, c);
       fmpz_zero(anum + 1);
       fmpz_one(QNF_ELEM_DENREF(a));
@@ -433,7 +371,7 @@ void nf_elem_set_fmpz(nf_elem_t a, const fmpz_t c, const nf_t nf)
    } else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
-      
+
       fmpz_set(anum, c);
       fmpz_zero(anum + 1);
       fmpz_one(QNF_ELEM_DENREF(a));
@@ -451,7 +389,7 @@ void nf_elem_set_fmpq(nf_elem_t a, const fmpq_t c, const nf_t nf)
    } else if (nf->flag & NF_QUADRATIC)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
-      
+
       fmpz_set(anum, fmpq_numref(c));
       fmpz_zero(anum + 1);
       fmpz_set(QNF_ELEM_DENREF(a), fmpq_denref(c));
@@ -459,53 +397,7 @@ void nf_elem_set_fmpq(nf_elem_t a, const fmpq_t c, const nf_t nf)
       fmpq_poly_set_fmpq(NF_ELEM(a), c);
 }
 
-NF_ELEM_INLINE
-void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
-{
-   if (fmpq_poly_length(pol) >= fmpq_poly_length(nf->pol))
-   {
-       fmpq_poly_t r;
-       fmpq_poly_init(r);
-       fmpq_poly_rem(r, pol, nf->pol);
-       nf_elem_set_fmpq_poly(a, r, nf);
-       fmpq_poly_clear(r);
-       return;
-   }
-
-   if (nf->flag & NF_LINEAR)
-   {
-      if (pol->length == 0)
-	  {
-	     fmpz_zero(LNF_ELEM_NUMREF(a));
-		 fmpz_one(LNF_ELEM_DENREF(a));
-	  } else if (pol->length == 1)
-	  {
-	     fmpz_set(LNF_ELEM_NUMREF(a), fmpq_poly_numref(pol));
-         fmpz_set(LNF_ELEM_DENREF(a), fmpq_poly_denref(pol));
-	  }
-   } else if (nf->flag & NF_QUADRATIC)
-   {
-      fmpz * const anum = QNF_ELEM_NUMREF(a);
-      
-      if (pol->length == 0)
-	  {
-	     fmpz_zero(anum);
-		 fmpz_zero(anum + 1);
-		 fmpz_one(QNF_ELEM_DENREF(a));
-	  } else if (pol->length == 1)
-	  {
-		 fmpz_zero(anum + 1);
-		 fmpz_set(anum, fmpq_poly_numref(pol));
-		 fmpz_set(QNF_ELEM_DENREF(a), fmpq_poly_denref(pol));
-	  } else
-	  {
-	     fmpz_set(anum, fmpq_poly_numref(pol));
-	     fmpz_set(anum + 1, fmpq_poly_numref(pol) + 1);
-         fmpz_set(QNF_ELEM_DENREF(a), fmpq_poly_denref(pol));
-	  }
-   } else
-      fmpq_poly_set(NF_ELEM(a), pol);
-}
+ANTIC_DLL void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf);
 
 /******************************************************************************
 
@@ -513,72 +405,53 @@ void nf_elem_set_fmpq_poly(nf_elem_t a, const fmpq_poly_t pol, const nf_t nf)
 
 ******************************************************************************/
 
-FLINT_DLL
-void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M, 
+ANTIC_DLL
+void nf_elem_set_fmpz_mat_row(nf_elem_t b, const fmpz_mat_t M,
                                      const slong i, fmpz_t den, const nf_t nf);
 
-FLINT_DLL 
-void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const slong i, fmpz_t den, 
+ANTIC_DLL
+void nf_elem_get_fmpz_mat_row(fmpz_mat_t M, const slong i, fmpz_t den,
                                              const nf_elem_t b, const nf_t nf);
 
-NF_ELEM_INLINE
-void nf_elem_get_fmpq_poly(fmpq_poly_t pol, const nf_elem_t a, const nf_t nf)
-{
-    if (nf->flag & NF_LINEAR)
-    {
-        fmpq_poly_set_fmpz(pol, LNF_ELEM_NUMREF(a));
-        fmpz_set(fmpq_poly_denref(pol), LNF_ELEM_DENREF(a));
-    } else if (nf->flag & NF_QUADRATIC)
-    {
-        const fmpz * const anum = QNF_ELEM_NUMREF(a);
-
-        fmpq_poly_fit_length(pol, 2);
-        _fmpq_poly_set_length(pol, 2);
-        _fmpz_vec_set(pol->coeffs, anum, 2);
-        _fmpq_poly_normalise(pol);
-        fmpz_set(pol->den, QNF_ELEM_DENREF(a));
-    } else
-    {
-        fmpq_poly_set(pol, NF_ELEM(a));
-    }
-}
-
 FLINT_DLL
+void nf_elem_get_fmpq_poly(fmpq_poly_t pol, const nf_elem_t a, const nf_t nf);
+
+ANTIC_DLL
 void _nf_elem_get_nmod_poly(nmod_poly_t pol, const nf_elem_t a, const nf_t nf);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_get_nmod_poly_den(nmod_poly_t pol,
                                     const nf_elem_t a, const nf_t nf, int den);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_get_nmod_poly(nmod_poly_t pol, const nf_elem_t a, const nf_t nf);
 
 #if __FLINT_RELEASE >= 20700
-FLINT_DLL
+ANTIC_DLL
 void _nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol,
                    const nf_elem_t a, const nf_t nf, const fmpz_mod_ctx_t ctx);
 
-FLINT_DLL
-void nf_elem_get_fmpz_mod_poly_den(fmpz_mod_poly_t pol, 
+ANTIC_DLL
+void nf_elem_get_fmpz_mod_poly_den(fmpz_mod_poly_t pol,
           const nf_elem_t a, const nf_t nf, int den, const fmpz_mod_ctx_t ctx);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol,
                    const nf_elem_t a, const nf_t nf, const fmpz_mod_ctx_t ctx);
 #else
-FLINT_DLL
+ANTIC_DLL
 void _nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_get_fmpz_mod_poly_den(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf, int den);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_get_fmpz_mod_poly(fmpz_mod_poly_t pol, const nf_elem_t a, const nf_t nf);
 #endif
 
 /******************************************************************************
- 
-    Basic manipulation 
+
+    Basic manipulation
 
 ******************************************************************************/
 
@@ -612,57 +485,11 @@ void nf_elem_set_den(nf_elem_t b, fmpz_t d, const nf_t nf)
    }
 }
 
-NF_ELEM_INLINE
-void nf_elem_get_coeff_fmpq(fmpq_t a, const nf_elem_t b, 
-                                                        slong i, const nf_t nf)
-{
-   if (nf->flag & NF_LINEAR)
-   {
-      if (i > 0)
-         fmpq_zero(a);
-      else
-      {
-         fmpz_set(fmpq_numref(a), LNF_ELEM_NUMREF(b));
-         fmpz_set(fmpq_denref(a), LNF_ELEM_DENREF(b));
-      }
-   } else if (nf->flag & NF_QUADRATIC)
-   {
-      const fmpz * const bnum = QNF_ELEM_NUMREF(b);
-      
-      if (i > 2) /* element may be unreduced */
-         fmpq_zero(a);
-      else
-      {
-         fmpz_set(fmpq_numref(a), bnum + i);
-         fmpz_set(fmpq_denref(a), QNF_ELEM_DENREF(b));
-      }
+ANTIC_DLL
+void nf_elem_get_coeff_fmpq(fmpq_t a, const nf_elem_t b, slong i, const nf_t nf);
 
-      fmpq_canonicalise(a);
-   } else
-      fmpq_poly_get_coeff_fmpq(a, NF_ELEM(b), i);
-}
-
-NF_ELEM_INLINE
-void nf_elem_get_coeff_fmpz(fmpz_t a, const nf_elem_t b, 
-                                                        slong i, const nf_t nf)
-{
-   if (nf->flag & NF_LINEAR)
-   {
-      if (i > 0)
-         fmpz_zero(a);
-      else
-         fmpz_set(a, LNF_ELEM_NUMREF(b));
-   } else if (nf->flag & NF_QUADRATIC)
-   {
-      const fmpz * const bnum = QNF_ELEM_NUMREF(b);
-      
-      if (i > 2) /* element may be unreduced */
-         fmpz_zero(a);
-      else
-         fmpz_set(a, bnum + i);
-   } else
-      fmpq_poly_get_coeff_fmpz(a, NF_ELEM(b), i);
-}
+ANTIC_DLL
+void nf_elem_get_coeff_fmpz(fmpz_t a, const nf_elem_t b, slong i, const nf_t nf);
 
 NF_ELEM_INLINE
 int nf_elem_den_is_one(const nf_elem_t a, const nf_t nf)
@@ -679,52 +506,8 @@ int nf_elem_den_is_one(const nf_elem_t a, const nf_t nf)
     }
 }
 
-NF_ELEM_INLINE
-void _nf_elem_set_coeff_num_fmpz(nf_elem_t a, slong i, const fmpz_t b, const nf_t nf)
-{
-    if (i > 2*(fmpq_poly_degree(nf->pol) - 1))
-    {
-        flint_printf("Degree out of range\n");
-	flint_abort();
-    }
-
-    if (nf->flag & NF_LINEAR)
-    {
-        fmpz_set(LNF_ELEM_NUMREF(a), b);
-        nf_elem_canonicalise(a, nf);
-    } else if (nf->flag & NF_QUADRATIC)
-    {
-        fmpz_set(QNF_ELEM_NUMREF(a) + i, b);
-        nf_elem_canonicalise(a, nf);
-    } else
-    {
-        slong len = NF_ELEM(a)->length;
-        const int replace = (i < len && !fmpz_is_zero(NF_ELEM(a)->coeffs + i));
-    
-        if (!replace && fmpz_is_zero(b))
-            return;
-    
-        if (i + 1 > len)
-        {
-            fmpq_poly_fit_length(NF_ELEM(a), i + 1);
-            _fmpq_poly_set_length(NF_ELEM(a), i + 1);
-            flint_mpn_zero((mp_ptr) NF_ELEM(a)->coeffs + len, (i + 1) - len);
-        }
-    
-        if (*NF_ELEM(a)->den == WORD(1))
-        {
-            fmpz_set(NF_ELEM(a)->coeffs + i, b);
-            if (replace)
-                _fmpq_poly_normalise(NF_ELEM(a));
-        }
-        else
-        {
-            fmpz_set(NF_ELEM(a)->coeffs + i, b);
-            if (replace)
-                fmpq_poly_canonicalise(NF_ELEM(a));
-        }
-    }
-}
+ANTIC_DLL
+void _nf_elem_set_coeff_num_fmpz(nf_elem_t a, slong i, const fmpz_t b, const nf_t nf);
 
 /******************************************************************************
 
@@ -743,7 +526,7 @@ void nf_elem_set(nf_elem_t a, const nf_elem_t b, const nf_t nf)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
       const fmpz * const bnum = QNF_ELEM_NUMREF(b);
-      
+
       fmpz_set(anum, bnum);
       fmpz_set(anum + 1, bnum + 1);
       fmpz_set(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b));
@@ -762,7 +545,7 @@ void nf_elem_neg(nf_elem_t a, const nf_elem_t b, const nf_t nf)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
       const fmpz * const bnum = QNF_ELEM_NUMREF(b);
-      
+
       fmpz_neg(anum, bnum);
       fmpz_neg(anum + 1, bnum + 1);
       fmpz_set(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b));
@@ -781,7 +564,7 @@ void nf_elem_swap(nf_elem_t a, nf_elem_t b, const nf_t nf)
    {
       fmpz * const anum = QNF_ELEM_NUMREF(a);
       fmpz * const bnum = QNF_ELEM_NUMREF(b);
-      
+
       fmpz_swap(anum, bnum);
       fmpz_swap(anum + 1, bnum + 1);
       fmpz_swap(anum + 2, bnum + 2);
@@ -790,71 +573,71 @@ void nf_elem_swap(nf_elem_t a, nf_elem_t b, const nf_t nf)
       fmpq_poly_swap(NF_ELEM(a), NF_ELEM(b));
 }
 
-FLINT_DLL void nf_elem_add_si(nf_elem_t a, 
+ANTIC_DLL void nf_elem_add_si(nf_elem_t a,
                                    const nf_elem_t b, slong c, const nf_t nf);
-								   
-FLINT_DLL void nf_elem_add_fmpz(nf_elem_t a,
+
+ANTIC_DLL void nf_elem_add_fmpz(nf_elem_t a,
                                   const nf_elem_t b, const fmpz_t c, const nf_t nf);
 
-FLINT_DLL void nf_elem_add_fmpq(nf_elem_t a,
+ANTIC_DLL void nf_elem_add_fmpq(nf_elem_t a,
                                   const nf_elem_t b, const fmpq_t c, const nf_t nf);
 
-FLINT_DLL void nf_elem_sub_si(nf_elem_t a, 
+ANTIC_DLL void nf_elem_sub_si(nf_elem_t a,
                                    const nf_elem_t b, slong c, const nf_t nf);
-								   
-FLINT_DLL void nf_elem_sub_fmpz(nf_elem_t a,
+
+ANTIC_DLL void nf_elem_sub_fmpz(nf_elem_t a,
                                   const nf_elem_t b, const fmpz_t c, const nf_t nf);
 
-FLINT_DLL void nf_elem_sub_fmpq(nf_elem_t a,
+ANTIC_DLL void nf_elem_sub_fmpq(nf_elem_t a,
                                   const nf_elem_t b, const fmpq_t c, const nf_t nf);
 
-FLINT_DLL void nf_elem_si_sub(nf_elem_t a, 
+ANTIC_DLL void nf_elem_si_sub(nf_elem_t a,
                                    slong c, const nf_elem_t b, const nf_t nf);
-								   
-FLINT_DLL void nf_elem_fmpz_sub(nf_elem_t a,
+
+ANTIC_DLL void nf_elem_fmpz_sub(nf_elem_t a,
                                   const fmpz_t c, const nf_elem_t b, const nf_t nf);
 
-FLINT_DLL void nf_elem_fmpq_sub(nf_elem_t a,
+ANTIC_DLL void nf_elem_fmpq_sub(nf_elem_t a,
                                   const fmpq_t c, const nf_elem_t b, const nf_t nf);
 
-FLINT_DLL void nf_elem_scalar_mul_si(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void nf_elem_scalar_mul_si(nf_elem_t a, const nf_elem_t b,
                                                       slong c, const nf_t nf);
 
-FLINT_DLL void nf_elem_scalar_mul_fmpz(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void nf_elem_scalar_mul_fmpz(nf_elem_t a, const nf_elem_t b,
                                                      const fmpz_t c, const nf_t nf);
 
-FLINT_DLL void nf_elem_scalar_mul_fmpq(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void nf_elem_scalar_mul_fmpq(nf_elem_t a, const nf_elem_t b,
                                                      const fmpq_t c, const nf_t nf);
 									
-FLINT_DLL void nf_elem_scalar_div_si(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void nf_elem_scalar_div_si(nf_elem_t a, const nf_elem_t b,
                                                       slong c, const nf_t nf);
 
-FLINT_DLL void nf_elem_scalar_div_fmpz(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void nf_elem_scalar_div_fmpz(nf_elem_t a, const nf_elem_t b,
                                                      const fmpz_t c, const nf_t nf);
 
-FLINT_DLL void nf_elem_scalar_div_fmpq(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void nf_elem_scalar_div_fmpq(nf_elem_t a, const nf_elem_t b,
                                                      const fmpq_t c, const nf_t nf);
 									
-FLINT_DLL void _nf_elem_add_lf(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void _nf_elem_add_lf(nf_elem_t a, const nf_elem_t b,
                                    const nf_elem_t c, const nf_t nf, int can);
 
-FLINT_DLL void _nf_elem_sub_lf(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void _nf_elem_sub_lf(nf_elem_t a, const nf_elem_t b,
                                    const nf_elem_t c, const nf_t nf, int can);
 
-FLINT_DLL void _nf_elem_add_qf(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void _nf_elem_add_qf(nf_elem_t a, const nf_elem_t b,
                                    const nf_elem_t c, const nf_t nf, int can);
 
-FLINT_DLL void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void _nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
                                    const nf_elem_t c, const nf_t nf, int can);
 
-FLINT_DLL void nf_elem_add_qf(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void nf_elem_add_qf(nf_elem_t a, const nf_elem_t b,
                                             const nf_elem_t c, const nf_t nf);
 
-FLINT_DLL void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void nf_elem_sub_qf(nf_elem_t a, const nf_elem_t b,
                                             const nf_elem_t c, const nf_t nf);
 
 NF_ELEM_INLINE
-void _nf_elem_add(nf_elem_t a, const nf_elem_t b, 
+void _nf_elem_add(nf_elem_t a, const nf_elem_t b,
                                               const nf_elem_t c, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
@@ -866,7 +649,7 @@ void _nf_elem_add(nf_elem_t a, const nf_elem_t b,
 }
 
 NF_ELEM_INLINE
-void _nf_elem_sub(nf_elem_t a, const nf_elem_t b, 
+void _nf_elem_sub(nf_elem_t a, const nf_elem_t b,
                                               const nf_elem_t c, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
@@ -878,7 +661,7 @@ void _nf_elem_sub(nf_elem_t a, const nf_elem_t b,
 }
 
 NF_ELEM_INLINE
-void nf_elem_add(nf_elem_t a, const nf_elem_t b, 
+void nf_elem_add(nf_elem_t a, const nf_elem_t b,
                                               const nf_elem_t c, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
@@ -890,7 +673,7 @@ void nf_elem_add(nf_elem_t a, const nf_elem_t b,
 }
 
 NF_ELEM_INLINE
-void nf_elem_sub(nf_elem_t a, const nf_elem_t b, 
+void nf_elem_sub(nf_elem_t a, const nf_elem_t b,
                                               const nf_elem_t c, const nf_t nf)
 {
    if (nf->flag & NF_LINEAR)
@@ -901,80 +684,50 @@ void nf_elem_sub(nf_elem_t a, const nf_elem_t b,
       fmpq_poly_sub_can(NF_ELEM(a), NF_ELEM(b), NF_ELEM(c), 1);
 }
 
-NF_ELEM_INLINE
-void nf_elem_mul_gen(nf_elem_t a, const nf_elem_t b, const nf_t nf)
-{
-  if (nf->flag & NF_LINEAR)
-  {
-      fmpz * den = LNF_ELEM_DENREF(a);
-	    fmpz * num = LNF_ELEM_NUMREF(a);
-      _fmpq_mul(num, den, LNF_ELEM_NUMREF(b), LNF_ELEM_DENREF(b), fmpq_poly_numref(nf->pol), fmpq_poly_numref(nf->pol) + 1);
-      _fmpq_canonicalise(num, den);
-      fmpz_neg(num, num);
-  }
-  else if (nf->flag & NF_QUADRATIC)
-  {
-      fmpz * anum = QNF_ELEM_NUMREF(a);
-      fmpz const * bnum = QNF_ELEM_NUMREF(b);
+FLINT_DLL void nf_elem_mul_gen(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
-      fmpz_set(anum + 2, bnum + 1);
-      fmpz_set(anum + 1, bnum);
-      fmpz_zero(anum);
-      fmpz_set(QNF_ELEM_DENREF(a), QNF_ELEM_DENREF(b));
-
-      nf_elem_reduce(a, nf);
-      nf_elem_canonicalise(a, nf);
-  }
-  else
-  {
-      fmpq_poly_shift_left(NF_ELEM(a), NF_ELEM(b), 1);
-      nf_elem_reduce(a, nf);
-      nf_elem_canonicalise(a, nf);
-  }
-}
-
-FLINT_DLL void _nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void _nf_elem_mul(nf_elem_t a, const nf_elem_t b,
                                              const nf_elem_t c, const nf_t nf);
 
-FLINT_DLL void nf_elem_mul(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void nf_elem_mul(nf_elem_t a, const nf_elem_t b,
                                              const nf_elem_t c, const nf_t nf);
 
-FLINT_DLL void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
                                     const nf_elem_t c, const nf_t nf, int red);
 
-FLINT_DLL void nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
+ANTIC_DLL void nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
                                     const nf_elem_t c, const nf_t nf, int red);
 
-FLINT_DLL void _nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
+ANTIC_DLL void _nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
-FLINT_DLL void nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
+ANTIC_DLL void nf_elem_inv(nf_elem_t a, const nf_elem_t b, const nf_t nf);
 
-FLINT_DLL void _nf_elem_div(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, const nf_t nf);
+ANTIC_DLL void _nf_elem_div(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, const nf_t nf);
 
-FLINT_DLL void nf_elem_div(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, const nf_t nf);
+ANTIC_DLL void nf_elem_div(nf_elem_t a, const nf_elem_t b, const nf_elem_t c, const nf_t nf);
 
-FLINT_DLL void _nf_elem_pow(nf_elem_t res, const nf_elem_t b, ulong e, const nf_t nf);
+ANTIC_DLL void _nf_elem_pow(nf_elem_t res, const nf_elem_t b, ulong e, const nf_t nf);
 
-FLINT_DLL void nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t nf);
+ANTIC_DLL void nf_elem_pow(nf_elem_t res, const nf_elem_t a, ulong e, const nf_t nf);
 
-FLINT_DLL void _nf_elem_norm(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf);
+ANTIC_DLL void _nf_elem_norm(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, const nf_t nf);
 
-FLINT_DLL void nf_elem_norm(fmpq_t res, const nf_elem_t a, const nf_t nf);
+ANTIC_DLL void nf_elem_norm(fmpq_t res, const nf_elem_t a, const nf_t nf);
 
-FLINT_DLL void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a,
+ANTIC_DLL void _nf_elem_norm_div(fmpz_t rnum, fmpz_t rden, const nf_elem_t a,
                              const nf_t nf, const fmpz_t divisor, slong nbits);
 
-FLINT_DLL void nf_elem_norm_div(fmpq_t res, const nf_elem_t a, const nf_t nf,
+ANTIC_DLL void nf_elem_norm_div(fmpq_t res, const nf_elem_t a, const nf_t nf,
                                             const fmpz_t divisor, slong nbits);
 
-FLINT_DLL void _nf_elem_trace(fmpz_t rnum, fmpz_t rden, const nf_elem_t a, 
+ANTIC_DLL void _nf_elem_trace(fmpz_t rnum, fmpz_t rden, const nf_elem_t a,
                                                                 const nf_t nf);
 
-FLINT_DLL void nf_elem_trace(fmpq_t res, const nf_elem_t a, const nf_t nf);
+ANTIC_DLL void nf_elem_trace(fmpq_t res, const nf_elem_t a, const nf_t nf);
 
-FLINT_DLL void nf_elem_rep_mat(fmpq_mat_t res, const nf_elem_t a, const nf_t nf);
+ANTIC_DLL void nf_elem_rep_mat(fmpq_mat_t res, const nf_elem_t a, const nf_t nf);
 
-FLINT_DLL void nf_elem_rep_mat_fmpz_mat_den(fmpz_mat_t res, fmpz_t den, const nf_elem_t a, const nf_t nf);
+ANTIC_DLL void nf_elem_rep_mat_fmpz_mat_den(fmpz_mat_t res, fmpz_t den, const nf_elem_t a, const nf_t nf);
 
 /******************************************************************************
 
@@ -982,25 +735,25 @@ FLINT_DLL void nf_elem_rep_mat_fmpz_mat_den(fmpz_mat_t res, fmpz_t den, const nf
 
 ******************************************************************************/
 
-FLINT_DLL
+ANTIC_DLL
 void _nf_elem_mod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf, int sign);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_mod_fmpz_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf, int den);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_smod_fmpz_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf, int den);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_mod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_smod_fmpz(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_coprime_den(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf);
 
-FLINT_DLL
+ANTIC_DLL
 void nf_elem_coprime_den_signed(nf_elem_t res, const nf_elem_t a, const fmpz_t mod, const nf_t nf);
 
 #ifdef __cplusplus

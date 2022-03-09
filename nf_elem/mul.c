@@ -16,6 +16,62 @@
 
 #include "nf_elem.h"
 
+void _nf_elem_mul_gaussian(fmpz * anum, fmpz * aden,
+        const fmpz * bnum, const fmpz * bden,
+        const fmpz * cnum, const fmpz * cden)
+{
+   fmpz_t t;
+   fmpz_init(t);
+
+   if (anum == bnum || anum == cnum)  /* aliasing */
+   {
+      if (bnum == cnum && bden == cden) /* squaring */
+      {
+         fmpz_fmms(t, bnum + 0, bnum + 0, bnum + 1, bnum + 1);
+         fmpz_mul(anum + 1, bnum + 0, bnum + 1);
+         fmpz_mul_2exp(anum + 1, anum + 1, 1);
+      }
+      else
+      {
+         fmpz_fmms(t, bnum + 0, cnum + 0, bnum + 1, cnum + 1);
+         fmpz_fmma(anum + 1, bnum + 0, cnum + 1, bnum + 1, cnum + 0);
+      }
+      fmpz_swap(anum + 0, t);
+   }
+   else
+   {
+      if (bnum == cnum && bden == cden) /* squaring */
+      {
+         fmpz_fmms(anum + 0, bnum + 0, bnum + 0, bnum + 1, bnum + 1);
+         fmpz_mul(anum + 1, bnum + 0, bnum + 1);
+         fmpz_mul_2exp(anum + 1, anum + 1, 1);
+      }
+      else
+      {
+         fmpz_fmms(anum + 0, bnum + 0, cnum + 0, bnum + 1, cnum + 1);
+         fmpz_fmma(anum + 1, bnum + 0, cnum + 1, bnum + 1, cnum + 0);
+      }
+   }
+   fmpz_zero(anum + 2);
+   fmpz_mul(aden, bden, cden);
+   if (!fmpz_is_one(aden))
+   {
+#ifdef HAVE_FMPZ_GCD3
+      fmpz_gcd3(t, anum + 0, anum + 1, aden);
+#else
+      fmpz_gcd(t, anum + 0, anum + 1);
+      fmpz_gcd(t, t, aden);
+#endif
+      if (!fmpz_is_one(t))
+      {
+         fmpz_divexact(anum + 0, anum + 0, t);
+         fmpz_divexact(anum + 1, anum + 1, t);
+         fmpz_divexact(aden, aden, t);
+      }
+   }
+   fmpz_clear(t);
+}
+
 void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b, 
                                      const nf_elem_t c, const nf_t nf, int red)
 {
@@ -29,9 +85,9 @@ void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
       fmpz * const aden = LNF_ELEM_DENREF(a);
       
       fmpz_mul(anum, bnum, cnum);
-      
       fmpz_mul(aden, bden, cden);
-   } else if (nf->flag & NF_QUADRATIC)
+   }
+   else if (nf->flag & NF_QUADRATIC)
    {
       const fmpz * const bnum = QNF_ELEM_NUMREF(b);
       const fmpz * const bden = QNF_ELEM_DENREF(b);
@@ -39,10 +95,9 @@ void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
       const fmpz * const cden = QNF_ELEM_DENREF(c);
       fmpz * const anum = QNF_ELEM_NUMREF(a);
       fmpz * const aden = QNF_ELEM_DENREF(a);
-      
+
       fmpz_mul(anum, bnum, cnum);
-      fmpz_mul(anum + 1, bnum, cnum + 1);
-      fmpz_addmul(anum + 1, bnum + 1, cnum);
+      fmpz_fmma(anum + 1, bnum, cnum + 1, bnum + 1, cnum);
       fmpz_mul(anum + 2, bnum + 1, cnum + 1);
 
       fmpz_mul(aden, bden, cden);
@@ -82,6 +137,7 @@ void _nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
          return;
       }
 
+      fmpq_poly_fit_length(NF_ELEM(a), plen);
       if (len1 >= len2)
       {
          _fmpz_poly_mul(NF_ELEM_NUMREF(a), NF_ELEM_NUMREF(b), len1,
@@ -172,9 +228,19 @@ void nf_elem_mul_red(nf_elem_t a, const nf_elem_t b,
    nf_elem_t t;
    
    if (nf->flag & NF_LINEAR)
+   {
       _fmpq_mul(LNF_ELEM_NUMREF(a), LNF_ELEM_DENREF(a), 
                 LNF_ELEM_NUMREF(b), LNF_ELEM_DENREF(b),
                 LNF_ELEM_NUMREF(c), LNF_ELEM_DENREF(c));
+   }
+   else if ((nf->flag & NF_GAUSSIAN) &&
+      fmpz_is_zero(QNF_ELEM_NUMREF(b) + 2) &&
+      fmpz_is_zero(QNF_ELEM_NUMREF(c) + 2))
+   {
+     _nf_elem_mul_gaussian(QNF_ELEM_NUMREF(a), QNF_ELEM_DENREF(a),
+        QNF_ELEM_NUMREF(b), QNF_ELEM_DENREF(b),
+        QNF_ELEM_NUMREF(c), QNF_ELEM_DENREF(c));
+   }
    else
    {
       if (a == b || a == c)

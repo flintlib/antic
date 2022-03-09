@@ -10,33 +10,29 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2013 Fredrik Johansson
-    Copyright (C) 2013, 2014 William Hart
+    Copyright (C) 2014 William Hart
 
 ******************************************************************************/
 
 #include "nf_elem.h"
 
-void nf_elem_init(nf_elem_t a, const nf_t nf)
+void nf_elem_get_fmpq_poly(fmpq_poly_t pol, const nf_elem_t a, const nf_t nf)
 {
     if (nf->flag & NF_LINEAR)
     {
-        fmpz_init(LNF_ELEM_NUMREF(a));
-        fmpz_init(LNF_ELEM_DENREF(a));
-        fmpz_one(LNF_ELEM_DENREF(a));
+        fmpq_poly_set_fmpz(pol, LNF_ELEM_NUMREF(a));
+        fmpz_set(fmpq_poly_denref(pol), LNF_ELEM_DENREF(a));
     } else if (nf->flag & NF_QUADRATIC)
     {
-        fmpz * const anum = QNF_ELEM_NUMREF(a);
-        fmpz * const aden = QNF_ELEM_DENREF(a);
+        const fmpz * const anum = QNF_ELEM_NUMREF(a);
 
-        fmpz_init(anum);
-        fmpz_init(anum + 1);
-        fmpz_init(anum + 2);
-        fmpz_init(aden);
-        fmpz_one(aden);
-    }
-    else
+        fmpq_poly_fit_length(pol, 2);
+        _fmpq_poly_set_length(pol, 2);
+        _fmpz_vec_set(pol->coeffs, anum, 2);
+        _fmpq_poly_normalise(pol);
+        fmpz_set(pol->den, QNF_ELEM_DENREF(a));
+    } else
     {
-        fmpq_poly_init2(NF_ELEM(a), FLINT_MAX(2*nf->pol->length - 3, 0));
+        fmpq_poly_set(pol, NF_ELEM(a));
     }
 }

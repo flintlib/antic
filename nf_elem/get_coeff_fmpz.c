@@ -10,33 +10,29 @@
 =============================================================================*/
 /******************************************************************************
 
-    Copyright (C) 2013 Fredrik Johansson
-    Copyright (C) 2013, 2014 William Hart
+    Copyright (C) 2014 William Hart
 
 ******************************************************************************/
 
 #include "nf_elem.h"
 
-void nf_elem_init(nf_elem_t a, const nf_t nf)
+void nf_elem_get_coeff_fmpz(fmpz_t a, const nf_elem_t b, 
+                                                        slong i, const nf_t nf)
 {
-    if (nf->flag & NF_LINEAR)
-    {
-        fmpz_init(LNF_ELEM_NUMREF(a));
-        fmpz_init(LNF_ELEM_DENREF(a));
-        fmpz_one(LNF_ELEM_DENREF(a));
-    } else if (nf->flag & NF_QUADRATIC)
-    {
-        fmpz * const anum = QNF_ELEM_NUMREF(a);
-        fmpz * const aden = QNF_ELEM_DENREF(a);
-
-        fmpz_init(anum);
-        fmpz_init(anum + 1);
-        fmpz_init(anum + 2);
-        fmpz_init(aden);
-        fmpz_one(aden);
-    }
-    else
-    {
-        fmpq_poly_init2(NF_ELEM(a), FLINT_MAX(2*nf->pol->length - 3, 0));
-    }
+   if (nf->flag & NF_LINEAR)
+   {
+      if (i > 0)
+         fmpz_zero(a);
+      else
+         fmpz_set(a, LNF_ELEM_NUMREF(b));
+   } else if (nf->flag & NF_QUADRATIC)
+   {
+      const fmpz * const bnum = QNF_ELEM_NUMREF(b);
+      
+      if (i > 2) /* element may be unreduced */
+         fmpz_zero(a);
+      else
+         fmpz_set(a, bnum + i);
+   } else
+      fmpq_poly_get_coeff_fmpz(a, NF_ELEM(b), i);
 }
