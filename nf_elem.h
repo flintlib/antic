@@ -502,7 +502,7 @@ int nf_elem_den_is_one(const nf_elem_t a, const nf_t nf)
         return fmpz_is_one(QNF_ELEM_DENREF(a));
     } else
     {
-        return fmpz_is_one(LNF_ELEM_DENREF(a));
+        return fmpz_is_one(NF_ELEM_DENREF(a));
     }
 }
 
