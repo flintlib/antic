@@ -547,23 +547,6 @@ lLIBS="-lantic $lLIBS2"
 LIBS2="$LLIBS $lLIBS2"
 LIBS="$LLIBS $lLIBS"
 
-#test support for fmpz_gcd3 from FLINT
-
-mkdir -p build
-rm -f build/test-fmpz-gcd3 > /dev/null 2>&1
-MSG="Testing fmpz_gcd3..."
-printf "%s" "$MSG"
-echo "void fmpz_gcd3(); int main(int, char**) { fmpz_gcd3(); }" > build/test-fmpz-gcd3.c
-$CC build/test-fmpz-gcd3.c -o ./build/test-fmpz-gcd3 > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-   printf "%s\n" "yes"
-   CFLAGS="$CFLAGS -DHAVE_FMPZ_GCD3"
-   rm -f build/test-fmpz-gcd3{,.c}
-else
-   rm -f build/test-fmpz-gcd3.c
-   printf "%s\n" "no"
-fi
-
 #paths for dynamic linker
 
 case "$OS" in
