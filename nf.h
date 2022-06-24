@@ -31,8 +31,8 @@
 
 #define __ANTIC_VERSION 0
 #define __ANTIC_VERSION_MINOR 2
-#define __ANTIC_VERSION_PATCHLEVEL 4
-#define ANTIC_VERSION "0.2.4"
+#define __ANTIC_VERSION_PATCHLEVEL 5
+#define ANTIC_VERSION "0.2.5"
 #define __ANTIC_RELEASE (__ANTIC_VERSION * 10000 + \
                          __ANTIC_VERSION_MINOR * 100 + \
                          __ANTIC_VERSION_PATCHLEVEL)

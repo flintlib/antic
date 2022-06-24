@@ -15,10 +15,11 @@
 # 0.2.2   => 0.0.0
 # 0.2.3   => 0.0.0
 # 0.2.4   => 0.2.4 
+# 0.2.5   => 0.2.5
 
 ANTIC_MAJOR=0
 ANTIC_MINOR=2
-ANTIC_PATCH=4
+ANTIC_PATCH=5
 
 PREFIX="/usr/local"
 GMP_DIR="/usr/local"
