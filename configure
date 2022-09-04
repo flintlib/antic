@@ -383,7 +383,7 @@ if [ -z "$ANTIC_LIB" ]; then
       Darwin)
          ANTIC_LIBNAME="libantic.dylib"
          ANTIC_LIB="libantic.$ANTIC_MAJOR.dylib"
-         EXTRA_SHARED_FLAGS="-install_name $PREFIX/lib/$ANTIC_LIB -compatibility_version $ANTIC_MAJOR -current_version $ANTIC_MAJOR.$ANTIC_MINOR.$ANTIC_PATCH";;
+         EXTRA_SHARED_FLAGS="-install_name $PREFIX/lib/$ANTIC_LIB -compatibility_version $ANTIC_MAJOR.$ANTIC_MINOR -current_version $ANTIC_MAJOR.$ANTIC_MINOR.$ANTIC_PATCH";;
       CYGWIN* | MINGW*)
          ANTIC_LIBNAME="libantic.dll"
          ANTIC_LIB="libantic-$ANTIC_MAJOR.dll"
