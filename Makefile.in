@@ -164,8 +164,8 @@ install: library
 	mkdir -p $(DESTDIR)$(PREFIX)/include/antic
 	$(AT)if [ "$(ANTIC_SHARED)" -eq "1" ]; then \
 		cp $(ANTIC_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
-		[[ $(ANTIC_LIB_ALIAS) == $(ANTIC_LIB) ]] || ln -s $(ANTIC_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)/$(ANTIC_LIB_ALIAS)"
-		[[ $(ANTIC_LIB_SONAME) == $(ANTIC_LIB) ]] || ln -s $(ANTIC_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)/$(ANTIC_LIB_SONAME)"
+		[[ $(ANTIC_LIB_ALIAS) == $(ANTIC_LIB) ]] || ln -s $(ANTIC_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)/$(ANTIC_LIB_ALIAS)" \
+		[[ $(ANTIC_LIB_SONAME) == $(ANTIC_LIB) ]] || ln -s $(ANTIC_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)/$(ANTIC_LIB_SONAME)" \
 	fi
 	$(AT)if [ "$(ANTIC_STATIC)" -eq "1" ]; then \
 		cp libantic.a $(DESTDIR)$(PREFIX)/$(LIBDIR); \
