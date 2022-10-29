@@ -129,7 +129,7 @@ class NoBinaryBuild(build):
     Disables building binary wheels for this package.
 
     Since such binary wheels are not relocatable because we hard code library
-    paths into our hedaer files so cppyy known where things are located.
+    paths into our hedaer files so cppyy knows where things are located.
     """
 
     def run(self):
