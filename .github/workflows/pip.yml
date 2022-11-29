@@ -30,7 +30,7 @@ jobs:
     strategy:
       matrix:
         include:
-        - container: ubuntu:hirsute
+        - container: ubuntu:jammy
           pip: pip
         - container: sagemath/sagemath-dev:9.3
           pip: sage -pip

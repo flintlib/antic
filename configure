@@ -5,17 +5,7 @@
 # (C) 2012, William Hart, Jean-Pierre Flori, Thomas DuBuisson
 # (C) 2012, Jan Engelhardt
 # (C) 2017, Vincent Delecroix
-
-# soname version
-#
-# antic   => soname
-# 0.0.1   => 0.0.0
-# 0.2.0   => 0.0.0
-# 0.2.1   => 0.0.0
-# 0.2.2   => 0.0.0
-# 0.2.3   => 0.0.0
-# 0.2.4   => 0.2.4 
-# 0.2.5   => 0.2.5
+# (C) 2022, Julian Rüth
 
 ANTIC_MAJOR=0
 ANTIC_MINOR=2
@@ -375,24 +365,30 @@ fi
 
 echo "Configuring...${MACHINE}-${OS}"
 
-#name for ANTIC shared library
+# Filenames for the ANTIC shared library:
+# ANTIC_LIB: the name of the shared library that we compile to
+# ANTIC_LIB_ALIAS: a short alias of this library that symlinks to ANTIC_LIB
+# ANTIC_LIB_SONAME: the soname of this library that symlinks to ANTIC_LIB
 
 ANTIC_SOLIB=0
 if [ -z "$ANTIC_LIB" ]; then
    case "$OS" in
       Darwin)
-         ANTIC_LIBNAME="libantic.dylib"
-	 ANTIC_LIB="libantic-$ANTIC_MAJOR.$ANTIC_MINOR.$ANTIC_PATCH.dylib"
+         ANTIC_LIB="libantic.$ANTIC_MAJOR.$ANTIC_MINOR.$ANTIC_PATCH.dylib"
+         ANTIC_LIB_ALIAS="libantic.dylib"
+         ANTIC_LIB_SONAME="libantic.$ANTIC_MAJOR.$ANTIC_MINOR.dylib"
          EXTRA_SHARED_FLAGS="-install_name $PREFIX/lib/$ANTIC_LIB -compatibility_version $ANTIC_MAJOR.$ANTIC_MINOR -current_version $ANTIC_MAJOR.$ANTIC_MINOR.$ANTIC_PATCH";;
       CYGWIN* | MINGW*)
-         ANTIC_LIBNAME="libantic.dll"
-	 ANTIC_LIB="libantic-$ANTIC_MAJOR.dll"
-	 EXTRA_SHARED_FLAGS="-static-libgcc -shared -Wl,--export-all-symbols -Wl,-soname,libantic-$ANTIC_MAJOR.dll.$ANTIC_MINOR.$ANTIC_PATCH";;
+         ANTIC_LIB="libantic-$ANTIC_MAJOR.$ANTIC_MINOR.dll"
+         ANTIC_LIB_ALIAS=$ANTIC_LIB
+         ANTIC_LIB_SONAME=$ANTIC_LIB
+         EXTRA_SHARED_FLAGS="-static-libgcc -shared -Wl,--export-all-symbols -Wl,-soname,$ANTIC_LIB_SONAME";;
       *)
-         ANTIC_LIBNAME="libantic.so"
-	 ANTIC_LIB="libantic.so.$ANTIC_MAJOR.$ANTIC_MINOR.$ANTIC_PATCH"
-	 EXTRA_SHARED_FLAGS="-Wl,-soname,libantic.so.$ANTIC_MAJOR"
-	 ANTIC_SOLIB=1;;
+         ANTIC_LIB="libantic.so.$ANTIC_MAJOR.$ANTIC_MINOR.$ANTIC_PATCH"
+         ANTIC_LIB_ALIAS="libantic.so"
+         ANTIC_LIB_SONAME="libantic.so.$ANTIC_MAJOR.$ANTIC_MINOR"
+         EXTRA_SHARED_FLAGS="-Wl,-soname,$ANTIC_LIB_SONAME"
+         ANTIC_SOLIB=1;;
    esac
    EXTRA_SHARED_FLAGS="${EXTRA_SHARED_FLAGS} -Wl,-rpath,${GMP_LIB_DIR} -Wl,-rpath,${MPFR_LIB_DIR} -Wl,-rpath,${FLINT_LIB_DIR}"
 fi

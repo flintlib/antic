@@ -60,7 +60,7 @@ verbose:
 clean:
 	$(AT)$(foreach dir, $(BUILD_DIRS), BUILD_DIR=../build/$(dir); export BUILD_DIR; MOD_DIR=$(dir); export MOD_DIR; $(MAKE) -f ../Makefile.subdirs -C $(dir) clean || exit $$?;)
 	$(AT)$(foreach ext, $(EXTENSIONS), $(foreach dir, $(patsubst $(ext)/%.h, %, $(wildcard $(ext)/*.h)), BUILD_DIR=$(CURDIR)/build/$(dir); export BUILD_DIR; MOD_DIR=$(dir); export MOD_DIR; $(MAKE) -f $(CURDIR)/Makefile.subdirs -C $(ext)/$(dir) clean || exit $$?;))
-	rm -f $(OBJS) $(LOBJS) $(TESTS) $(PROFS) $(EXMPS) $(wildcard $(ANTIC_LIBNAME)*) libantic.a
+	rm -f $(OBJS) $(LOBJS) $(TESTS) $(PROFS) $(EXMPS) $(ANTIC_LIB) libantic.a
 	rm -rf build
 
 distclean: clean
@@ -99,8 +99,6 @@ $(ANTIC_LIB): $(LOBJS) $(LIB_SOURCES) $(EXT_SOURCES) $(HEADERS) $(EXT_HEADERS) |
 	-$(AT)if [ "$(ANTIC_SOLIB)" -eq "1" ]; then \
 		$(LDCONFIG) -n "$(CURDIR)"; \
 	fi
-	ln -sf "$(ANTIC_LIB)" "$(ANTIC_LIBNAME)"; \
-	ln -sf "$(ANTIC_LIB)" "$(ANTIC_LIBNAME).$(ANTIC_MAJOR)"; \
 
 libantic.a: $(OBJS) $(LIB_SOURCES) $(EXT_SOURCES) $(HEADERS) $(EXT_HEADERS) | build build/interfaces
 	$(AT)$(foreach ext, $(EXTENSIONS), $(foreach dir, $(patsubst $(ext)/%.h, %, $(wildcard $(ext)/*.h)), mkdir -p build/$(dir); BUILD_DIR=$(CURDIR)/build/$(dir); export BUILD_DIR; MOD_DIR=$(dir); export MOD_DIR; $(MAKE) -f $(CURDIR)/Makefile.subdirs -C $(ext)/$(dir) static || exit $$?;))
@@ -166,7 +164,12 @@ install: library
 	mkdir -p $(DESTDIR)$(PREFIX)/include/antic
 	$(AT)if [ "$(ANTIC_SHARED)" -eq "1" ]; then \
 		cp $(ANTIC_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
-		cp -a $(shell ls $(ANTIC_LIBNAME)*) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
+		if [ "$(ANTIC_LIB_ALIAS)" = "$(ANTIC_LIB)" ]; then \
+			ln -s $(ANTIC_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)/$(ANTIC_LIB_ALIAS)"; \
+	  fi; \
+		if [ "$(ANTIC_LIB_SONAME)" = "$(ANTIC_LIB)" ]; then \
+			ln -s $(ANTIC_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)/$(ANTIC_LIB_SONAME)"; \
+		fi; \
 	fi
 	$(AT)if [ "$(ANTIC_STATIC)" -eq "1" ]; then \
 		cp libantic.a $(DESTDIR)$(PREFIX)/$(LIBDIR); \
